@@ -1,1 +1,1 @@
-export { Button } from './styles'
+export { Button, Image, Pattern } from './styles'

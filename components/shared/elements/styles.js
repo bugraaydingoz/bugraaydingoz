@@ -9,7 +9,7 @@ export const Button = styled.button`
   background-color: var(--primary-color);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   font-weight: bold;
   font-size: 14px;
   line-height: 21px;
@@ -17,4 +17,17 @@ export const Button = styled.button`
   &:hover {
     cursor: pointer;
   }
+`
+
+export const Image = styled.img`
+  display: flex;
+  width: 320px;
+  height: 320px;
+  filter: drop-shadow(0px 2px 20px rgba(20, 20, 40, 0.1));
+`
+
+export const Pattern = styled.img`
+  position: absolute;
+  right: 60px;
+  top: 60px;
 `

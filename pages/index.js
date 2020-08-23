@@ -1,14 +1,14 @@
 // Components
-import { Meta } from '../components/shared'
+import { Meta } from '../components/shared/meta'
 import { Header } from '../components/header'
+import { About } from '../components/about'
 
-// Styles
-import { Container } from './styles'
 export default function Home() {
   return (
-    <Container>
+    <>
       <Meta />
       <Header />
-    </Container>
+      <About />
+    </>
   )
 }
