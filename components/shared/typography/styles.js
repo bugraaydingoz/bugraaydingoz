@@ -36,3 +36,7 @@ export const Emphasize = styled.span`
   font-weight: 600;
   color: var(--primary-color);
 `
+
+export const Text = styled.div`
+  font-weight: 400;
+`
