@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
 export const Body1 = styled.p`
   margin: 0;
@@ -38,5 +38,9 @@ export const Emphasize = styled.span`
 `
 
 export const Text = styled.div`
-  font-weight: 400;
+  ${({ size, weight }) =>
+    css`
+      font-size: ${size ?? '16px'};
+      font-weight: ${weight ?? '400'};
+    `}
 `

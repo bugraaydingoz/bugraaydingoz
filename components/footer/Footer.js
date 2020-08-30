@@ -4,16 +4,24 @@ import GithubIcon from '../shared/icons/github.svg'
 import TwitterIcon from '../shared/icons/twitter.svg'
 
 // Styles
-import { FooterContainer, Email } from './styles'
+import { FooterContainer, Email, Link } from './styles'
 import { Text } from '../shared/typography'
 import { Flex } from '../shared/layout'
 
 export function Footer() {
   return (
     <FooterContainer>
-      <h4 style={{ marginBottom: 'var(--space-sm)' }}>GET IN TOUCH</h4>
-      <Text style={{ marginBottom: 'var(--space-xxs)' }}>Don’t be shy.</Text>
-      <Text style={{ marginBottom: 'var(--space-sm)' }}>
+      <Text
+        size="22px"
+        weight="600"
+        style={{ marginBottom: 'var(--space-sm)' }}
+      >
+        GET IN TOUCH
+      </Text>
+      <Text size="18px" style={{ marginBottom: 'var(--space-xxs)' }}>
+        Don’t be shy.
+      </Text>
+      <Text size="18px" style={{ marginBottom: 'var(--space-sm)' }}>
         I am looking forward to hearing from you.
       </Text>
       <Email
@@ -23,9 +31,15 @@ export function Footer() {
         hello@bugraaydingoz.com
       </Email>
       <Flex>
-        <LinkedinIcon />
-        <GithubIcon />
-        <TwitterIcon />
+        <Link href="https://linkedin.com/in/bugraaydingoz" target="_blank">
+          <LinkedinIcon />
+        </Link>
+        <Link href="https://github.com/bugraaydingoz" target="_blank">
+          <GithubIcon />
+        </Link>
+        <Link href="https://twitter.com/bugraaydingoz" target="_blank">
+          <TwitterIcon />
+        </Link>
       </Flex>
     </FooterContainer>
   )
