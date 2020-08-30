@@ -19,10 +19,10 @@ export function Footer() {
         GET IN TOUCH
       </Text>
       <Text size="18px" style={{ marginBottom: 'var(--space-xxs)' }}>
-        Don’t be shy.
+        Have an idea?
       </Text>
       <Text size="18px" style={{ marginBottom: 'var(--space-sm)' }}>
-        I am looking forward to hearing from you.
+        I am looking forward to discussing it
       </Text>
       <Email
         style={{ marginBottom: 'var(--space-lg)' }}
