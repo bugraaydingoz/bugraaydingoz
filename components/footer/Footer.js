@@ -1,7 +1,8 @@
 // Components
-import LinkedinIcon from '../shared/icons/linkedin.svg'
-import GithubIcon from '../shared/icons/github.svg'
-import TwitterIcon from '../shared/icons/twitter.svg'
+import { GithubIcon, LinkedinIcon, TwitterIcon } from '../shared/icons'
+
+// Hooks
+import useTheme from '../../hooks/useTheme'
 
 // Styles
 import { FooterContainer, Email, Link } from './styles'
