@@ -10,7 +10,7 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>Merhaba!</h1>
+        <h1 className={styles.title}>Merhaba</h1>
 
         <p className={styles.description}>You can reach me at:</p>
         <a href="mailto:hello@bugraaydingoz.com" className={styles.link}>
