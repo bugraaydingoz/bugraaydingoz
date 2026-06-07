@@ -1,0 +1,3 @@
+# AGENTS
+
+- Tech stack: Astro
