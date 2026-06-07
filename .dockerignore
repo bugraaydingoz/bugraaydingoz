@@ -1,0 +1,14 @@
+node_modules
+**/node_modules
+
+.git
+.DS_Store
+
+build
+dist
+.astro
+.svelte-kit
+.vite
+coverage
+playwright-report
+test-results

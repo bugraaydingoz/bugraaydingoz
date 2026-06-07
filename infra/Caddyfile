@@ -1,0 +1,7 @@
+bugraaydingoz.com {
+	reverse_proxy portfolio:3000
+}
+
+myanaesthesie.bugraaydingoz.com {
+	reverse_proxy myanaesthesie:3000
+}
