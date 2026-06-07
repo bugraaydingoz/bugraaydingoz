@@ -1,3 +1,1 @@
-# bugraaydingoz
-
 Product Engineer with 8+ years of experience creating intuitive, user-focused applications. Strong expertise in frontend development and design (TypeScript, React, Figma), complemented by backend skills (Node.js, Go, and MySQL) and leading teams.
