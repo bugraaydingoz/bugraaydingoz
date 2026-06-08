@@ -20,7 +20,7 @@ test("calculates noradrenalin and switches patient defaults", async ({ page }) =
 test("shows physiology parameters from shared patient inputs", async ({ page }) => {
   await page.goto("/");
 
-  await page.getByRole("button", { name: "Parameter" }).click();
+  await page.getByRole("button", { name: /Parameter/ }).click();
 
   await expect(page.getByRole("heading", { name: "Physiologische Parameter" })).toBeVisible();
   await expect(page.getByText("Ideales Körpergewicht")).toBeVisible();
@@ -32,4 +32,29 @@ test("shows physiology parameters from shared patient inputs", async ({ page }) 
   await page.getByRole("radio", { name: "Weiblich" }).click();
   await expect(page.getByText("Blutvolumen · 61 ml/kg")).toBeVisible();
   await expect(page.getByText("4,9 L")).toBeVisible();
+});
+
+test("calculates concentration dilution both ways", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /Konz/ }).click();
+
+  await expect(page.getByRole("heading", { name: "Konzentrationsrechner" })).toBeVisible();
+  await expect(page.getByText("Konzentration")).toBeVisible();
+  await expect(page.getByText("NaCl")).toBeVisible();
+  await expect(page.getByText("Ziel")).toBeVisible();
+  await expect(page.getByText("5 mg/ml")).toBeVisible();
+  await expect(page.getByText("2,5 mg/ml")).toBeVisible();
+
+  await page.getByLabel("NaCl Menge in Milliliter").fill("30");
+  await expect(page.getByLabel("Zielkonzentration in Prozent")).toHaveValue("0,125");
+  await expect(page.getByText("1,25 mg/ml")).toBeVisible();
+
+  await page.getByLabel("Zielkonzentration in Prozent").fill("0,1");
+  await expect(page.getByLabel("NaCl Menge in Milliliter")).toHaveValue("40");
+  await expect(page.getByText("1 mg/ml")).toBeVisible();
+
+  await page.getByLabel("Zielkonzentration in Milligramm pro Milliliter").fill("2");
+  await expect(page.getByLabel("Zielkonzentration in Prozent")).toHaveValue("0,2");
+  await expect(page.getByLabel("NaCl Menge in Milliliter")).toHaveValue("15");
 });
