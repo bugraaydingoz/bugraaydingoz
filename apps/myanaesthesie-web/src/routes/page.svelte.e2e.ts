@@ -11,7 +11,7 @@ test("calculates noradrenalin and switches patient defaults", async ({ page }) =
     "Konzentration fehlt",
   );
 
-  await page.getByRole("button", { name: "Kind" }).click();
+  await page.getByRole("radio", { name: "Kind", exact: true }).click();
 
   await expect(page.getByLabel("Noradrenalin Laufbahn", { exact: true })).toHaveValue("0");
   await expect(page.getByLabel("Adrenalin Laufbahn", { exact: true })).toHaveValue("0.1");
