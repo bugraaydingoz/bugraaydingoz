@@ -40,19 +40,19 @@ test("calculates concentration dilution both ways", async ({ page }) => {
   await page.getByRole("button", { name: /Konz/ }).click();
 
   await expect(page.getByRole("heading", { name: "Konzentrationsrechner" })).toBeVisible();
-  await expect(page.getByText("Konzentration")).toBeVisible();
-  await expect(page.getByText("NaCl")).toBeVisible();
-  await expect(page.getByText("Ziel")).toBeVisible();
-  await expect(page.getByText("5 mg/ml")).toBeVisible();
-  await expect(page.getByText("2,5 mg/ml")).toBeVisible();
+  await expect(page.getByLabel("Ausgangskonzentration in Prozent")).toHaveValue("0,5");
+  await expect(page.getByLabel("Medikament Menge in Milliliter")).toHaveValue("10");
+  await expect(page.getByLabel("NaCl Menge in Milliliter")).toHaveValue("10");
+  await expect(page.getByLabel("Zielkonzentration in Prozent")).toHaveValue("0,25");
+  await expect(page.getByLabel("Zielkonzentration in Milligramm pro Milliliter")).toHaveValue("2,5");
 
   await page.getByLabel("NaCl Menge in Milliliter").fill("30");
   await expect(page.getByLabel("Zielkonzentration in Prozent")).toHaveValue("0,125");
-  await expect(page.getByText("1,25 mg/ml")).toBeVisible();
+  await expect(page.getByLabel("Zielkonzentration in Milligramm pro Milliliter")).toHaveValue("1,25");
 
   await page.getByLabel("Zielkonzentration in Prozent").fill("0,1");
   await expect(page.getByLabel("NaCl Menge in Milliliter")).toHaveValue("40");
-  await expect(page.getByText("1 mg/ml")).toBeVisible();
+  await expect(page.getByLabel("Zielkonzentration in Milligramm pro Milliliter")).toHaveValue("1");
 
   await page.getByLabel("Zielkonzentration in Milligramm pro Milliliter").fill("2");
   await expect(page.getByLabel("Zielkonzentration in Prozent")).toHaveValue("0,2");
