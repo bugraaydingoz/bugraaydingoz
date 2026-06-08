@@ -7,7 +7,7 @@ Compose network.
 
 - `caddy`: terminates HTTP/HTTPS and proxies by hostname.
 - `bugraaydingoz-web`: builds `apps/bugraaydingoz-web` and serves the static Astro output on port `3000`.
-- `myanaesthesie-web`: builds `apps/myanaesthesie-web` and serves the SvelteKit preview on port `3000`.
+- `myanaesthesie-web`: builds `apps/myanaesthesie-web` and serves the static Vite output on port `3000`.
 
 ## Run
 

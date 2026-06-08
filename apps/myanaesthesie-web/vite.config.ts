@@ -1,14 +1,19 @@
 import { defineConfig } from "vitest/config";
 import { playwright } from "@vitest/browser-playwright";
-import { sveltekit } from "@sveltejs/kit/vite";
+import { svelte } from "@sveltejs/vite-plugin-svelte";
 import tailwindcss from "@tailwindcss/vite";
-import { SvelteKitPWA } from "@vite-pwa/sveltekit";
+import { VitePWA } from "vite-plugin-pwa";
+import { fileURLToPath } from "node:url";
 
 export default defineConfig({
   plugins: [
     tailwindcss(),
-    sveltekit(),
-    SvelteKitPWA({
+    svelte({
+      compilerOptions: {
+        runes: true,
+      },
+    }),
+    VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg", "robots.txt"],
       manifest: {
@@ -31,10 +36,15 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ["client/**/*.{js,css,ico,png,svg,webp,woff2}"],
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,woff2}"],
       },
     }),
   ],
+  resolve: {
+    alias: {
+      $lib: fileURLToPath(new URL("./src/lib", import.meta.url)),
+    },
+  },
   test: {
     expect: { requireAssertions: true },
     projects: [
