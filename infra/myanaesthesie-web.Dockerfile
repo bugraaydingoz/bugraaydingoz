@@ -1,4 +1,4 @@
-FROM node:24-alpine
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
@@ -14,8 +14,9 @@ COPY apps/myanaesthesie-web apps/myanaesthesie-web
 RUN pnpm --filter myanaesthesie-web exec svelte-kit sync \
 	&& pnpm --filter myanaesthesie-web build
 
-ENV NODE_ENV=production
+FROM caddy:2-alpine
+
+COPY infra/myanaesthesie-web.Caddyfile /etc/caddy/Caddyfile
+COPY --from=builder /app/apps/myanaesthesie-web/build /srv
 
 EXPOSE 3000
-
-CMD ["pnpm", "--filter", "myanaesthesie-web", "preview", "--host", "0.0.0.0", "--port", "3000"]
