@@ -20,6 +20,42 @@ describe("perfusor calculator", () => {
     ).toBeCloseTo(14.4);
   });
 
+  it("calculates propofol ml/h from milligram per kg per hour", () => {
+    const propofol = medications.find((medication) => medication.id === "propofol");
+
+    expect(propofol).toBeDefined();
+    expect(
+      calculateMlPerHour({
+        dose: 5.6,
+        weightKg: 80,
+        medication: propofol!,
+      }),
+    ).toBeCloseTo(44.8);
+  });
+
+  it("converts microgram dose to milligram concentration when needed", () => {
+    expect(
+      calculateMlPerHour({
+        dose: 100,
+        weightKg: 1,
+        medication: {
+          id: "test",
+          name: "Test",
+          color: "black",
+          unit: "microg/kg/min",
+          defaults: {
+            adult: null,
+            child: null,
+          },
+          concentration: {
+            value: 1,
+            unit: "milligram",
+          },
+        },
+      }),
+    ).toBeCloseTo(6);
+  });
+
   it("parses decimal input with comma or dot notation", () => {
     expect(parseDecimalInput("0,03")).toBe(0.03);
     expect(parseDecimalInput("5.6")).toBe(5.6);
@@ -44,15 +80,15 @@ describe("perfusor calculator", () => {
     });
   });
 
-  it("does not calculate medications without concentration data", () => {
-    const remifentanil = medications.find((medication) => medication.id === "remifentanil");
+  it("does not calculate medication units without matching concentration semantics", () => {
+    const insulin = medications.find((medication) => medication.id === "insulin");
 
-    expect(remifentanil).toBeDefined();
+    expect(insulin).toBeDefined();
     expect(
       calculateMlPerHour({
-        dose: 0.2,
+        dose: 1,
         weightKg: 80,
-        medication: remifentanil!,
+        medication: insulin!,
       }),
     ).toBeNull();
   });

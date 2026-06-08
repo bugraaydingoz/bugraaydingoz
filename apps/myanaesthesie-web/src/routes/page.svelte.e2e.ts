@@ -7,9 +7,7 @@ test("calculates noradrenalin and switches patient defaults", async ({ page }) =
   await expect(page.getByLabel("Gewicht in Kilogramm")).toHaveValue("80");
 
   await expect(page.getByRole("row", { name: /Noradrenalin/ })).toContainText("14,4");
-  await expect(page.getByRole("row", { name: /Remifentanil/ })).toContainText(
-    "Konzentration fehlt",
-  );
+  await expect(page.getByRole("row", { name: /Remifentanil/ })).toContainText("96");
 
   await page.getByRole("radio", { name: "Kind", exact: true }).click();
 

@@ -4,8 +4,11 @@ export type DoseUnit = "microg/kg/min" | "mg/kg/h" | "IE/kg/h";
 
 export type MedicationColor = "purple" | "blue" | "yellow" | "red" | "black";
 
+export type ConcentrationUnit = "microgram" | "milligram";
+
 export type Concentration = {
-  microgramPerMl: number;
+  value: number;
+  unit: ConcentrationUnit;
 };
 
 export type Medication = {
@@ -28,7 +31,8 @@ export const medications = [
       child: 0,
     },
     concentration: {
-      microgramPerMl: 10,
+      value: 10,
+      unit: "microgram",
     },
   },
   {
@@ -40,6 +44,10 @@ export const medications = [
       adult: 0.2,
       child: 0.1,
     },
+    concentration: {
+      value: 10,
+      unit: "microgram",
+    },
   },
   {
     id: "propofol",
@@ -49,6 +57,10 @@ export const medications = [
     defaults: {
       adult: 5.6,
       child: 4,
+    },
+    concentration: {
+      value: 10,
+      unit: "milligram",
     },
   },
   {
@@ -60,6 +72,10 @@ export const medications = [
       adult: null,
       child: 0.1,
     },
+    concentration: {
+      value: 10,
+      unit: "microgram",
+    },
   },
   {
     id: "insulin",
@@ -69,6 +85,10 @@ export const medications = [
     defaults: {
       adult: null,
       child: null,
+    },
+    concentration: {
+      value: 10,
+      unit: "microgram",
     },
   },
 ] satisfies Medication[];
@@ -113,10 +133,40 @@ export function calculateMlPerHour({
 
   switch (medication.unit) {
     case "microg/kg/min":
-      return (dose * weightKg * 60) / medication.concentration.microgramPerMl;
+      return calculateByConcentration({
+        microgramPerHour: dose * weightKg * 60,
+        concentration: medication.concentration,
+      });
     case "mg/kg/h":
-      return (dose * 1000 * weightKg) / medication.concentration.microgramPerMl;
+      return calculateByConcentration({
+        milligramPerHour: dose * weightKg,
+        concentration: medication.concentration,
+      });
     case "IE/kg/h":
       return null;
   }
+}
+
+function calculateByConcentration({
+  concentration,
+  microgramPerHour,
+  milligramPerHour,
+}: {
+  concentration: Concentration;
+  microgramPerHour?: number;
+  milligramPerHour?: number;
+}) {
+  if (concentration.value <= 0) {
+    return null;
+  }
+
+  if (concentration.unit === "microgram") {
+    const hourlyDose = microgramPerHour ?? (milligramPerHour ?? 0) * 1000;
+
+    return hourlyDose / concentration.value;
+  }
+
+  const hourlyDose = milligramPerHour ?? (microgramPerHour ?? 0) / 1000;
+
+  return hourlyDose / concentration.value;
 }
