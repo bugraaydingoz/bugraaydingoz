@@ -1,6 +1,6 @@
 <script lang="ts">
     import * as Card from "$lib/components/ui/card/index.js";
-    import { Input } from "$lib/components/ui/input/index.js";
+    import UnitInput from "$lib/components/app/unit-input.svelte";
     import { Label } from "$lib/components/ui/label/index.js";
     import * as ToggleGroup from "$lib/components/ui/toggle-group/index.js";
     import { patient, type PatientSex } from "$lib/patient-state.svelte";
@@ -42,44 +42,6 @@
             </ToggleGroup.Root>
         </div>
 
-        <Label class="grid gap-2 text-sm font-medium text-card-foreground">
-            Gewicht
-            <div class="relative">
-                <Input
-                    class="h-14 rounded-lg bg-background px-4 pr-12 text-2xl font-semibold md:text-2xl"
-                    inputmode="decimal"
-                    type="text"
-                    autocomplete="off"
-                    bind:value={patient.weightInput}
-                    aria-label="Gewicht in Kilogramm"
-                />
-                <span
-                    class="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-sm font-semibold text-muted-foreground"
-                >
-                    kg
-                </span>
-            </div>
-        </Label>
-
-        <Label class="grid gap-2 text-sm font-medium text-card-foreground">
-            Größe
-            <div class="relative">
-                <Input
-                    class="h-14 rounded-lg bg-background px-4 pr-12 text-2xl font-semibold md:text-2xl"
-                    inputmode="decimal"
-                    type="text"
-                    autocomplete="off"
-                    bind:value={patient.heightInput}
-                    aria-label="Größe in Zentimeter"
-                />
-                <span
-                    class="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-sm font-semibold text-muted-foreground"
-                >
-                    cm
-                </span>
-            </div>
-        </Label>
-
         <div class="grid gap-2">
             <p class="text-sm font-medium text-card-foreground">Geschlecht</p>
             <ToggleGroup.Root
@@ -95,6 +57,26 @@
                     </ToggleGroup.Item>
                 {/each}
             </ToggleGroup.Root>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+            <Label class="grid gap-2 text-sm font-medium text-card-foreground">
+                Gewicht
+                <UnitInput
+                    bind:value={patient.weightInput}
+                    unit="kg"
+                    aria-label="Gewicht in Kilogramm"
+                />
+            </Label>
+
+            <Label class="grid gap-2 text-sm font-medium text-card-foreground">
+                Größe
+                <UnitInput
+                    bind:value={patient.heightInput}
+                    unit="cm"
+                    aria-label="Größe in Zentimeter"
+                />
+            </Label>
         </div>
     </Card.Content>
 </Card.Root>

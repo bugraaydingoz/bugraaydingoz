@@ -1,6 +1,6 @@
 <script lang="ts">
     import * as Card from "$lib/components/ui/card/index.js";
-    import { Input } from "$lib/components/ui/input/index.js";
+    import UnitInput from "$lib/components/app/unit-input.svelte";
     import { Label } from "$lib/components/ui/label/index.js";
     import * as Table from "$lib/components/ui/table/index.js";
     import { patient } from "$lib/patient-state.svelte";
@@ -73,7 +73,7 @@
         <Card.Description>Laufbahn anpassen und ml/h ablesen</Card.Description>
     </Card.Header>
     <Card.Content class="p-0">
-        <Table.Root class="min-w-[42rem]">
+        <Table.Root class="min-w-2xl">
             <Table.Header class="bg-muted/70">
                 <Table.Row>
                     <Table.Head
@@ -106,6 +106,7 @@
                         weightKg: parsedWeight,
                         medication,
                     })}
+                    {@const doseUnit = formatDoseUnit(medication.unit)}
                     <Table.Row
                         class={cn(
                             "border-l-4 bg-card",
@@ -132,19 +133,13 @@
                             </div>
                         </Table.Cell>
                         <Table.Cell class="px-4 py-4 align-middle">
-                            <Label
-                                class="grid max-w-44 gap-1 text-xs font-medium text-muted-foreground"
-                            >
-                                {formatDoseUnit(medication.unit)}
-                                <Input
-                                    class="h-11 bg-background text-base font-medium md:text-base"
-                                    inputmode="decimal"
-                                    type="text"
-                                    autocomplete="off"
-                                    placeholder={formatDoseUnit(
-                                        medication.unit,
-                                    )}
+                            <Label class="grid max-w-52 gap-1">
+                                <span class="sr-only">
+                                    {medication.name} Laufbahn
+                                </span>
+                                <UnitInput
                                     value={doseInputs[medication.id] ?? ""}
+                                    unit={doseUnit}
                                     aria-label={`${medication.name} Laufbahn`}
                                     oninput={(
                                         event: Event & {

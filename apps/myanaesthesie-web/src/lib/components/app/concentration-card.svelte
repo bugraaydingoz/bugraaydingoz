@@ -1,6 +1,6 @@
 <script lang="ts">
     import * as Card from "$lib/components/ui/card/index.js";
-    import { Input } from "$lib/components/ui/input/index.js";
+    import UnitInput from "$lib/components/app/unit-input.svelte";
     import { Label } from "$lib/components/ui/label/index.js";
     import {
         calculateDilutedConcentration,
@@ -117,53 +117,34 @@
                     Konzentration
                 </p>
                 <div class="grid gap-2">
-                    <div class="relative">
-                        <Input
-                            class="h-11 bg-background pr-10 text-base font-medium md:text-base"
-                            inputmode="decimal"
-                            type="text"
-                            autocomplete="off"
-                            value={sourcePercentageInput}
-                            aria-label="Ausgangskonzentration in Prozent"
-                            oninput={(
-                                event: Event & {
-                                    currentTarget: HTMLInputElement;
-                                },
-                            ) => {
-                                sourcePercentageInput =
-                                    event.currentTarget.value;
-                                syncConcentrationInputs();
-                            }}
-                        />
-                        <span
-                            class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-sm font-semibold text-muted-foreground"
-                        >
-                            %
-                        </span>
-                    </div>
-                    <div class="relative">
-                        <Input
-                            class="h-11 bg-background pr-10 text-base font-medium md:text-base"
-                            inputmode="decimal"
-                            type="text"
-                            autocomplete="off"
-                            value={drugVolumeInput}
-                            aria-label="Medikament Menge in Milliliter"
-                            oninput={(
-                                event: Event & {
-                                    currentTarget: HTMLInputElement;
-                                },
-                            ) => {
-                                drugVolumeInput = event.currentTarget.value;
-                                syncConcentrationInputs();
-                            }}
-                        />
-                        <span
-                            class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-sm font-semibold text-muted-foreground"
-                        >
-                            ml
-                        </span>
-                    </div>
+                    <UnitInput
+                        class="h-11 text-base font-medium md:text-base"
+                        value={sourcePercentageInput}
+                        unit="%"
+                        aria-label="Ausgangskonzentration in Prozent"
+                        oninput={(
+                            event: Event & {
+                                currentTarget: HTMLInputElement;
+                            },
+                        ) => {
+                            sourcePercentageInput = event.currentTarget.value;
+                            syncConcentrationInputs();
+                        }}
+                    />
+                    <UnitInput
+                        class="h-11 text-base font-medium md:text-base"
+                        value={drugVolumeInput}
+                        unit="ml"
+                        aria-label="Medikament Menge in Milliliter"
+                        oninput={(
+                            event: Event & {
+                                currentTarget: HTMLInputElement;
+                            },
+                        ) => {
+                            drugVolumeInput = event.currentTarget.value;
+                            syncConcentrationInputs();
+                        }}
+                    />
                 </div>
                 <p class="text-xs font-medium text-muted-foreground">
                     {formatConcentrationValue(sourceMgPerMl)} mg/ml
@@ -178,28 +159,19 @@
 
             <Label class="grid gap-2 text-sm font-medium text-card-foreground">
                 NaCl
-                <div class="relative">
-                    <Input
-                        class="h-11 bg-background pr-10 text-base font-medium md:text-base"
-                        inputmode="decimal"
-                        type="text"
-                        autocomplete="off"
-                        value={diluentVolumeInput}
-                        aria-label="NaCl Menge in Milliliter"
-                        oninput={(
-                            event: Event & {
-                                currentTarget: HTMLInputElement;
-                            },
-                        ) => {
-                            handleDiluentInput(event.currentTarget.value);
-                        }}
-                    />
-                    <span
-                        class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-sm font-semibold text-muted-foreground"
-                    >
-                        ml
-                    </span>
-                </div>
+                <UnitInput
+                    class="h-11 text-base font-medium md:text-base"
+                    value={diluentVolumeInput}
+                    unit="ml"
+                    aria-label="NaCl Menge in Milliliter"
+                    oninput={(
+                        event: Event & {
+                            currentTarget: HTMLInputElement;
+                        },
+                    ) => {
+                        handleDiluentInput(event.currentTarget.value);
+                    }}
+                />
             </Label>
 
             <div
@@ -211,54 +183,34 @@
             <div class="grid gap-2">
                 <p class="text-sm font-medium text-card-foreground">Ziel</p>
                 <div class="grid gap-2">
-                    <div class="relative">
-                        <Input
-                            class="h-11 bg-background pr-10 text-base font-medium md:text-base"
-                            inputmode="decimal"
-                            type="text"
-                            autocomplete="off"
-                            value={targetPercentageInput}
-                            aria-label="Zielkonzentration in Prozent"
-                            oninput={(
-                                event: Event & {
-                                    currentTarget: HTMLInputElement;
-                                },
-                            ) => {
-                                handleTargetPercentageInput(
-                                    event.currentTarget.value,
-                                );
-                            }}
-                        />
-                        <span
-                            class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-sm font-semibold text-muted-foreground"
-                        >
-                            %
-                        </span>
-                    </div>
-                    <div class="relative">
-                        <Input
-                            class="h-11 bg-background pr-16 text-base font-medium md:text-base"
-                            inputmode="decimal"
-                            type="text"
-                            autocomplete="off"
-                            value={targetMgPerMlInput}
-                            aria-label="Zielkonzentration in Milligramm pro Milliliter"
-                            oninput={(
-                                event: Event & {
-                                    currentTarget: HTMLInputElement;
-                                },
-                            ) => {
-                                handleTargetMgPerMlInput(
-                                    event.currentTarget.value,
-                                );
-                            }}
-                        />
-                        <span
-                            class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-sm font-semibold text-muted-foreground"
-                        >
-                            mg/ml
-                        </span>
-                    </div>
+                    <UnitInput
+                        class="h-11 text-base font-medium md:text-base"
+                        value={targetPercentageInput}
+                        unit="%"
+                        aria-label="Zielkonzentration in Prozent"
+                        oninput={(
+                            event: Event & {
+                                currentTarget: HTMLInputElement;
+                            },
+                        ) => {
+                            handleTargetPercentageInput(
+                                event.currentTarget.value,
+                            );
+                        }}
+                    />
+                    <UnitInput
+                        class="h-11 text-base font-medium md:text-base"
+                        value={targetMgPerMlInput}
+                        unit="mg/ml"
+                        aria-label="Zielkonzentration in Milligramm pro Milliliter"
+                        oninput={(
+                            event: Event & {
+                                currentTarget: HTMLInputElement;
+                            },
+                        ) => {
+                            handleTargetMgPerMlInput(event.currentTarget.value);
+                        }}
+                    />
                 </div>
                 <p class="text-xs font-medium text-muted-foreground">
                     {formatConcentrationValue(sourcePercentage)}% + {formatConcentrationValue(
