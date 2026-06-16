@@ -11,49 +11,28 @@ export function getStaticPaths() {
 
 const { article } = Astro.props;
 
-const icons = {
-    arrowLeft:
-        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M224 128a8 8 0 0 1-8 8H59.31l58.35 58.34a8 8 0 0 1-11.32 11.32l-72-72a8 8 0 0 1 0-11.32l72-72a8 8 0 0 1 11.32 11.32L59.31 120H216a8 8 0 0 1 8 8Z"/></svg>',
-    caretDown:
-        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M213.66 101.66l-80 80a8 8 0 0 1-11.32 0l-80-80a8 8 0 0 1 11.32-11.32L128 164.69l74.34-74.35a8 8 0 0 1 11.32 11.32Z"/></svg>',
-    cloud:
-        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M160 40a72.08 72.08 0 0 0-67.42 46.75A56 56 0 0 0 96 200h64a64 64 0 0 0 0-128c-1.14 0-2.28 0-3.41.09A72.4 72.4 0 0 0 160 40Zm0 144H96a40 40 0 1 1 4.5-79.75 8 8 0 0 0 8.59-5.66A56 56 0 0 1 216 120a48.05 48.05 0 0 1-48 64Z"/></svg>',
-    doc:
-        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M216 88v128a8 8 0 0 1-8 8H48a8 8 0 0 1-8-8V40a8 8 0 0 1 8-8h112a8 8 0 0 1 5.66 2.34l48 48A8 8 0 0 1 216 88Zm-56-36.69V88h36.69ZM200 104h-48a8 8 0 0 1-8-8V48H56v160h144Zm-112 40a8 8 0 0 1 8-8h64a8 8 0 0 1 0 16H96a8 8 0 0 1-8-8Zm0 32a8 8 0 0 1 8-8h64a8 8 0 0 1 0 16H96a8 8 0 0 1-8-8Z"/></svg>',
-    dots:
-        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M128 104a24 24 0 1 0 24 24 24 24 0 0 0-24-24Zm0-16a24 24 0 1 0-24-24 24 24 0 0 0 24 24Zm0 80a24 24 0 1 0 24 24 24 24 0 0 0-24-24Z"/></svg>',
-    globe:
-        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24Zm87.63 96h-39.7c-1.28-28.56-8.23-53.23-18.36-69.46A88.19 88.19 0 0 1 215.63 120ZM128 40c12.44 0 28.31 30.3 31.93 80H96.07C99.69 70.3 115.56 40 128 40Zm-29.57 10.54C88.3 66.77 81.35 91.44 80.07 120h-39.7a88.19 88.19 0 0 1 58.06-69.46ZM40.37 136h39.7c1.28 28.56 8.23 53.23 18.36 69.46A88.19 88.19 0 0 1 40.37 136ZM128 216c-12.44 0-28.31-30.3-31.93-80h63.86C156.31 185.7 140.44 216 128 216Zm29.57-10.54c10.13-16.23 17.08-40.9 18.36-69.46h39.7a88.19 88.19 0 0 1-58.06 69.46Z"/></svg>',
-    image:
-        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M216 40H40a16 16 0 0 0-16 16v144a16 16 0 0 0 16 16h176a16 16 0 0 0 16-16V56a16 16 0 0 0-16-16Zm0 16v100.69l-26.34-26.35a8 8 0 0 0-11.32 0L152 156.69l-58.34-58.35a8 8 0 0 0-11.32 0L40 140.69V56Zm-176 160v-52.69l48-48 58.34 58.35a8 8 0 0 0 11.32 0L184 147.31l32 32V216Zm112-112a16 16 0 1 1 16 16 16 16 0 0 1-16-16Z"/></svg>',
-    link:
-        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M137.54 186.36a8 8 0 0 1 0 11.31l-9.94 9.94a56 56 0 0 1-79.2-79.21l24.34-24.34a56 56 0 0 1 79.21 0 8 8 0 1 1-11.32 11.31 40 40 0 0 0-56.57 0L59.72 139.72a40 40 0 0 0 56.57 56.57l9.94-9.93a8 8 0 0 1 11.31 0Zm70.06-137.97a56.08 56.08 0 0 0-79.2 0l-9.94 9.94a8 8 0 0 0 11.31 11.31l9.94-9.93a40 40 0 0 1 56.57 56.57l-24.34 24.34a40 40 0 0 1-56.57 0 8 8 0 0 0-11.32 11.31 56 56 0 0 0 79.21 0l24.34-24.34a56.08 56.08 0 0 0 0-79.2Z"/></svg>',
-    listBullets:
-        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M88 64a8 8 0 0 1 8-8h128a8 8 0 0 1 0 16H96a8 8 0 0 1-8-8Zm136 56H96a8 8 0 0 0 0 16h128a8 8 0 0 0 0-16Zm0 64H96a8 8 0 0 0 0 16h128a8 8 0 0 0 0-16ZM56 52a12 12 0 1 0 12 12 12 12 0 0 0-12-12Zm0 64a12 12 0 1 0 12 12 12 12 0 0 0-12-12Zm0 64a12 12 0 1 0 12 12 12 12 0 0 0-12-12Z"/></svg>',
-    minus:
-        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M224 128a8 8 0 0 1-8 8H40a8 8 0 0 1 0-16h176a8 8 0 0 1 8 8Z"/></svg>',
-    paintRoller:
-        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M232 64v48a24 24 0 0 1-24 24h-72v16a24 24 0 0 1-24 24h-8v40a16 16 0 0 1-32 0v-48a8 8 0 0 1 8-8h32a8 8 0 0 0 8-8v-16H64a40 40 0 0 1 0-80h144a24 24 0 0 1 24 24Zm-16 0a8 8 0 0 0-8-8H64a24 24 0 0 0 0 48h152Z"/></svg>',
-    pencil:
-        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M227.31 73.37 182.63 28.69a16 16 0 0 0-22.63 0L36.69 152A15.86 15.86 0 0 0 32 163.31V208a16 16 0 0 0 16 16h44.69A15.86 15.86 0 0 0 104 219.31L227.31 96a16 16 0 0 0 0-22.63ZM92.69 208H48v-44.69l88-88L180.69 120Zm99.31-99.31L147.31 64l24-24L216 84.69Z"/></svg>',
-    plus:
-        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M224 128a8 8 0 0 1-8 8h-80v80a8 8 0 0 1-16 0v-80H40a8 8 0 0 1 0-16h80V40a8 8 0 0 1 16 0v80h80a8 8 0 0 1 8 8Z"/></svg>',
-    printer:
-        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M214.67 72H200V40a8 8 0 0 0-8-8H64a8 8 0 0 0-8 8v32H41.33A25.35 25.35 0 0 0 16 97.33v77.34A25.35 25.35 0 0 0 41.33 200H56v16a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-16h14.67A25.35 25.35 0 0 0 240 174.67V97.33A25.35 25.35 0 0 0 214.67 72ZM72 48h112v24H72Zm112 160H72v-56h112Zm40-33.33a9.34 9.34 0 0 1-9.33 9.33H200v-32h8a8 8 0 0 0 0-16H48a8 8 0 0 0 0 16h8v32H41.33A9.34 9.34 0 0 1 32 174.67V97.33A9.34 9.34 0 0 1 41.33 88h173.34A9.34 9.34 0 0 1 224 97.33Z"/></svg>',
-    redo:
-        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M221.66 90.34a8 8 0 0 0-11.32 0L184 116.69V104a64.07 64.07 0 0 0-64-64H72a8 8 0 0 0 0 16h48a48.05 48.05 0 0 1 48 48v12.69l-26.34-26.35a8 8 0 0 0-11.32 11.32l40 40a8 8 0 0 0 11.32 0l40-40a8 8 0 0 0 0-11.32ZM184 192H80a48.05 48.05 0 0 1-48-48v-16a8 8 0 0 0-16 0v16a64.07 64.07 0 0 0 64 64h104a8 8 0 0 0 0-16Z"/></svg>',
-    search:
-        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M229.66 218.34 179.28 168A88.11 88.11 0 1 0 168 179.28l50.34 50.38a8 8 0 0 0 11.32-11.32ZM40 112a72 72 0 1 1 72 72 72.08 72.08 0 0 1-72-72Z"/></svg>',
-    star:
-        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M239.2 97.29a16 16 0 0 0-13.81-11L166 81.17l-23.22-55.36a16 16 0 0 0-29.56 0L90 81.17l-59.4 5.15a16 16 0 0 0-9.13 28.06l45.11 39.42-13.52 58.54a16 16 0 0 0 23.84 17.34L128 198.49l51.1 31.19a16 16 0 0 0 23.84-17.34l-13.52-58.54 45.11-39.42a16 16 0 0 0 4.67-17.09Zm-62.47 45.68a8 8 0 0 0-2.56 7.91L188.3 212 134.17 179a8 8 0 0 0-8.34 0L71.7 212l14.13-61.12a8 8 0 0 0-2.56-7.91L36.5 102.11l61.63-5.34a8 8 0 0 0 6.75-4.88L128 36.73l23.12 55.16a8 8 0 0 0 6.75 4.88l61.63 5.34Z"/></svg>',
-    tab:
-        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M208 40H48a16 16 0 0 0-16 16v144a16 16 0 0 0 16 16h160a16 16 0 0 0 16-16V56a16 16 0 0 0-16-16ZM48 56h160v32H48Zm160 144H48v-96h160Z"/></svg>',
-    textAlignLeft:
-        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M32 64a8 8 0 0 1 8-8h176a8 8 0 0 1 0 16H40a8 8 0 0 1-8-8Zm8 56h128a8 8 0 0 0 0-16H40a8 8 0 0 0 0 16Zm176 32H40a8 8 0 0 0 0 16h176a8 8 0 0 0 0-16Zm-48 48H40a8 8 0 0 0 0 16h128a8 8 0 0 0 0-16Z"/></svg>',
-    underline:
-        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M200 216a8 8 0 0 1-8 8H64a8 8 0 0 1 0-16h128a8 8 0 0 1 8 8ZM80 112V40a8 8 0 0 0-16 0v72a64 64 0 0 0 128 0V40a8 8 0 0 0-16 0v72a48 48 0 0 1-96 0Z"/></svg>',
-    undo:
-        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M224 128v16a64.07 64.07 0 0 1-64 64H56a8 8 0 0 1 0-16h104a48.05 48.05 0 0 0 48-48v-16a48.05 48.05 0 0 0-48-48H88.69l26.65 26.34a8 8 0 0 1-11.25 11.38l-40-39.52a8 8 0 0 1-.06-11.34l40-40a8 8 0 0 1 11.32 11.32L88.69 64H160a64.07 64.07 0 0 1 64 64Z"/></svg>',
+const iconClasses = {
+    arrowLeft: "ph ph-arrow-left",
+    caretDown: "ph ph-caret-down",
+    cloud: "ph ph-cloud",
+    doc: "ph ph-file-text",
+    dots: "ph ph-dots-three-vertical",
+    globe: "ph ph-globe",
+    image: "ph ph-image",
+    link: "ph ph-link",
+    listBullets: "ph ph-list-bullets",
+    minus: "ph ph-minus",
+    paintRoller: "ph ph-paint-roller",
+    pencil: "ph ph-pencil-simple",
+    plus: "ph ph-plus",
+    printer: "ph ph-printer",
+    redo: "ph ph-arrow-clockwise",
+    search: "ph ph-magnifying-glass",
+    star: "ph ph-star",
+    tab: "ph ph-sidebar-simple",
+    textAlignLeft: "ph ph-text-align-left",
+    underline: "ph ph-text-underline",
+    undo: "ph ph-arrow-counter-clockwise",
 };
 
 const menuGroups = [
@@ -68,11 +47,11 @@ const menuGroups = [
 ];
 
 const toolbarIcons = [
-    ["Search menus", icons.search],
-    ["Undo", icons.undo],
-    ["Redo", icons.redo],
-    ["Print", icons.printer],
-    ["Paint format", icons.paintRoller],
+    ["Search menus", iconClasses.search],
+    ["Undo", iconClasses.undo],
+    ["Redo", iconClasses.redo],
+    ["Print", iconClasses.printer],
+    ["Paint format", iconClasses.paintRoller],
 ];
 ---
 
@@ -81,13 +60,19 @@ const toolbarIcons = [
         <header class="docs-topbar">
             <section class="title-cluster" aria-label="Document title">
                 <a class="docs-logo" href="/" aria-label="Back to home">
-                    <span class="ph" set:html={icons.doc} />
+                    <i class={iconClasses.doc} aria-hidden="true"></i>
                 </a>
                 <div class="title-stack">
                     <div class="title-row">
                         <span class="doc-title">{article.title}</span>
-                        <span class="ph subtle" set:html={icons.star} />
-                        <span class="ph subtle" set:html={icons.cloud} />
+                        <i
+                            class={`${iconClasses.star} subtle`}
+                            aria-hidden="true"
+                        ></i>
+                        <i
+                            class={`${iconClasses.cloud} subtle`}
+                            aria-hidden="true"
+                        ></i>
                     </div>
                     <nav class="menu-bar" aria-label="Mock document menu">
                         {
@@ -112,9 +97,12 @@ const toolbarIcons = [
                 </button>
                 <span class="avatar" aria-label="Buğra Aydıngöz">B</span>
                 <button class="share-action" type="button">
-                    <span class="ph" set:html={icons.globe} />
+                    <i class={iconClasses.globe} aria-hidden="true"></i>
                     <span>Share</span>
-                    <span class="ph tiny" set:html={icons.caretDown} />
+                    <i
+                        class={`${iconClasses.caretDown} tiny`}
+                        aria-hidden="true"
+                    ></i>
                 </button>
                 <button class="signin-action" type="button">Sign in</button>
             </section>
@@ -125,7 +113,7 @@ const toolbarIcons = [
                 {
                     toolbarIcons.map(([label, icon]) => (
                         <button class="icon-button" type="button" aria-label={label}>
-                            <span class="ph" set:html={icon} />
+                            <i class={icon as string} aria-hidden="true"></i>
                         </button>
                     ))
                 }
@@ -134,23 +122,32 @@ const toolbarIcons = [
             <span class="divider" aria-hidden="true" />
             <button class="select-button" type="button">
                 <span>100%</span>
-                <span class="ph tiny" set:html={icons.caretDown} />
+                <i
+                    class={`${iconClasses.caretDown} tiny`}
+                    aria-hidden="true"
+                ></i>
             </button>
             <span class="divider" aria-hidden="true" />
             <button class="select-button wide" type="button">
                 <span>Normal text</span>
-                <span class="ph tiny" set:html={icons.caretDown} />
+                <i
+                    class={`${iconClasses.caretDown} tiny`}
+                    aria-hidden="true"
+                ></i>
             </button>
             <button class="select-button font" type="button">
                 <span>Merriweather</span>
-                <span class="ph tiny" set:html={icons.caretDown} />
+                <i
+                    class={`${iconClasses.caretDown} tiny`}
+                    aria-hidden="true"
+                ></i>
             </button>
             <button class="icon-button" type="button" aria-label="Decrease font size">
-                <span class="ph" set:html={icons.minus} />
+                <i class={iconClasses.minus} aria-hidden="true"></i>
             </button>
             <span class="font-size" aria-label="Font size">11</span>
             <button class="icon-button" type="button" aria-label="Increase font size">
-                <span class="ph" set:html={icons.plus} />
+                <i class={iconClasses.plus} aria-hidden="true"></i>
             </button>
             <span class="divider" aria-hidden="true" />
             <button class="text-button strong" type="button" aria-label="Bold">
@@ -160,29 +157,32 @@ const toolbarIcons = [
                 I
             </button>
             <button class="icon-button" type="button" aria-label="Underline">
-                <span class="ph" set:html={icons.underline} />
+                <i class={iconClasses.underline} aria-hidden="true"></i>
             </button>
             <button class="text-button color" type="button" aria-label="Text color">
                 A
             </button>
             <span class="divider" aria-hidden="true" />
             <button class="icon-button" type="button" aria-label="Link">
-                <span class="ph" set:html={icons.link} />
+                <i class={iconClasses.link} aria-hidden="true"></i>
             </button>
             <button class="icon-button" type="button" aria-label="Insert image">
-                <span class="ph" set:html={icons.image} />
+                <i class={iconClasses.image} aria-hidden="true"></i>
             </button>
             <button class="icon-button" type="button" aria-label="Alignment">
-                <span class="ph" set:html={icons.textAlignLeft} />
+                <i class={iconClasses.textAlignLeft} aria-hidden="true"></i>
             </button>
             <button class="icon-button" type="button" aria-label="List">
-                <span class="ph" set:html={icons.listBullets} />
+                <i class={iconClasses.listBullets} aria-hidden="true"></i>
             </button>
             <span class="toolbar-spacer" />
             <button class="editing-button" type="button">
-                <span class="ph" set:html={icons.pencil} />
+                <i class={iconClasses.pencil} aria-hidden="true"></i>
                 <span>Editing</span>
-                <span class="ph tiny" set:html={icons.caretDown} />
+                <i
+                    class={`${iconClasses.caretDown} tiny`}
+                    aria-hidden="true"
+                ></i>
             </button>
         </nav>
 
@@ -193,17 +193,17 @@ const toolbarIcons = [
         <div class="docs-workspace">
             <aside class="doc-tabs" aria-label="Document tabs">
                 <a class="back-link" href="/" aria-label="Back to home">
-                    <span class="ph" set:html={icons.arrowLeft} />
+                    <i class={iconClasses.arrowLeft} aria-hidden="true"></i>
                 </a>
                 <div class="tabs-heading">
                     <span>Document tabs</span>
                     <button type="button" aria-label="Add tab">+</button>
                 </div>
                 <div class="tab-pill">
-                    <span class="ph" set:html={icons.tab} />
+                    <i class={iconClasses.tab} aria-hidden="true"></i>
                     <span>Tab 1</span>
                     <button type="button" aria-label="Tab options">
-                        <span class="ph" set:html={icons.dots} />
+                        <i class={iconClasses.dots} aria-hidden="true"></i>
                     </button>
                 </div>
                 <nav class="outline" aria-label="Document outline">
@@ -312,20 +312,18 @@ const toolbarIcons = [
         box-sizing: border-box;
     }
 
+    :global(html) {
+        height: 100%;
+    }
+
     :global(body) {
+        height: 100%;
         min-height: 100%;
-        overflow-x: hidden;
+        overflow: hidden;
         color: #202124;
         background: #f1f3f4;
         font-family:
             "Satoshi", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
-    }
-
-    :global(svg) {
-        display: block;
-        width: 100%;
-        height: 100%;
-        fill: currentColor;
     }
 
     button,
@@ -341,11 +339,17 @@ const toolbarIcons = [
 
     .docs-shell {
         width: 100%;
-        min-height: 100vh;
+        height: 100vh;
+        min-height: 0;
+        display: grid;
+        grid-template-rows: auto auto auto minmax(0, 1fr);
+        overflow: hidden;
         background: #f1f3f4;
     }
 
     .docs-topbar {
+        position: relative;
+        z-index: 30;
         min-height: 72px;
         display: flex;
         align-items: flex-start;
@@ -397,23 +401,31 @@ const toolbarIcons = [
         white-space: nowrap;
     }
 
-    .ph {
+    .ph,
+    .ph-fill {
         width: 18px;
         height: 18px;
         flex: 0 0 auto;
-        display: inline-grid;
-        place-items: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        line-height: 1;
     }
 
-    .ph.subtle {
+    .ph.subtle,
+    .ph-fill.subtle {
         width: 17px;
         height: 17px;
+        font-size: 17px;
         color: #5f6368;
     }
 
-    .ph.tiny {
+    .ph.tiny,
+    .ph-fill.tiny {
         width: 14px;
         height: 14px;
+        font-size: 14px;
     }
 
     .menu-bar {
@@ -540,6 +552,8 @@ const toolbarIcons = [
     }
 
     .toolbar {
+        position: relative;
+        z-index: 20;
         width: calc(100% - 32px);
         min-height: 42px;
         display: flex;
@@ -644,6 +658,8 @@ const toolbarIcons = [
     }
 
     .ruler {
+        position: relative;
+        z-index: 10;
         height: 27px;
         display: flex;
         align-items: end;
@@ -660,14 +676,16 @@ const toolbarIcons = [
     }
 
     .docs-workspace {
-        min-height: calc(100vh - 141px);
+        min-height: 0;
         display: grid;
         grid-template-columns: 300px minmax(0, 1fr);
+        overflow: hidden;
         background: #f1f3f4;
     }
 
     .doc-tabs {
-        min-height: 100%;
+        min-height: 0;
+        overflow-y: auto;
         padding: 24px 18px 42px;
         color: #3c4043;
         background: #f8fbff;
@@ -763,8 +781,10 @@ const toolbarIcons = [
 
     .doc-canvas {
         min-width: 0;
+        min-height: 0;
         padding: 20px 28px 72px 36px;
         overflow: auto;
+        overscroll-behavior: contain;
     }
 
     .doc-page {
@@ -949,7 +969,7 @@ const toolbarIcons = [
 
         .docs-workspace {
             grid-template-columns: 1fr;
-            min-height: calc(100vh - 148px);
+            min-height: 0;
         }
 
         .doc-canvas {
