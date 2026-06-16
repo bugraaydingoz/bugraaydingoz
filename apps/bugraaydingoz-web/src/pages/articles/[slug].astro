@@ -1,0 +1,509 @@
+---
+import { articles } from "../../data/articles";
+import Layout from "../../layouts/Layout.astro";
+
+export function getStaticPaths() {
+    return articles.map((article) => ({
+        params: { slug: article.slug },
+        props: { article },
+    }));
+}
+
+const { article } = Astro.props;
+---
+
+<Layout>
+    <main class="doc-shell" aria-label={`${article.title} article draft`}>
+        <header class="doc-header">
+            <a class="doc-owner" href="/">Buğra Aydıngöz</a>
+
+            <div class="doc-actions" aria-label="Document actions">
+                <span class="collaborators" aria-hidden="true">
+                    <span class="collaborator collaborator-red">B</span>
+                    <span class="collaborator collaborator-purple">A</span>
+                    <span class="collaborator collaborator-blue">D</span>
+                    <span class="collaborator collaborator-cyan">K</span>
+                    <span class="collaborator collaborator-teal">N</span>
+                </span>
+                <a
+                    class="share-button"
+                    href="https://www.linkedin.com/in/bugraaydingoz/"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    <span aria-hidden="true">●</span>
+                    <span>Share</span>
+                </a>
+            </div>
+        </header>
+
+        <nav class="doc-toolbar" aria-label="Article formatting preview">
+            <span>B</span>
+            <span><i>i</i></span>
+            <span>U</span>
+            <span>S</span>
+            <span>A</span>
+            <span>✎</span>
+            <span>☺</span>
+            <span>¶</span>
+            <span>▾</span>
+            <span>≡</span>
+            <span>☷</span>
+            <span>▦</span>
+            <span>▤</span>
+            <span>▧</span>
+            <span>▭</span>
+            <span>⌁</span>
+            <span>◰</span>
+            <span>◌</span>
+            <span class="muted">↶</span>
+            <span class="muted">↷</span>
+        </nav>
+
+        <div class="doc-ruler" aria-hidden="true">
+            <span>1</span>
+            <span>2</span>
+            <span>3</span>
+            <span>4</span>
+            <span>5</span>
+            <span>6</span>
+            <span>7</span>
+            <span>8</span>
+            <span>9</span>
+            <span>10</span>
+            <span>11</span>
+            <span>12</span>
+            <span>13</span>
+            <span>14</span>
+            <span>15</span>
+            <span>16</span>
+            <span>17</span>
+            <span>18</span>
+            <span>19</span>
+            <span>20</span>
+        </div>
+
+        <div class="doc-workspace">
+            <aside class="doc-tabs" aria-label="Document tabs">
+                <a class="back-link" href="/">←</a>
+                <div class="tabs-heading">
+                    <span>Document tabs</span>
+                    <span aria-hidden="true">+</span>
+                </div>
+                <div class="tab-pill">
+                    <span aria-hidden="true">▣</span>
+                    <span>Tab 1</span>
+                    <span class="tab-count">1</span>
+                </div>
+                <nav class="outline" aria-label="Document outline">
+                    <span>{article.title}</span>
+                    <span>Introduction</span>
+                    <span>Working Notes</span>
+                    <span>Details</span>
+                    <span>Next Steps</span>
+                </nav>
+            </aside>
+
+            <section class="doc-canvas">
+                <article class="doc-page">
+                    <p class="doc-kicker">{article.date} · {article.readTime}</p>
+                    <h1>{article.title}</h1>
+                    <p class="lead">{article.excerpt}</p>
+
+                    <p>
+                        This is placeholder article copy for now. The goal is to keep
+                        the page feeling like a quiet document canvas: simple controls,
+                        generous margins, and content that can be replaced when the real
+                        writing is ready.
+                    </p>
+                    <p>
+                        A good article page should disappear while you read it. The
+                        surrounding interface can hint at Google Docs, but the document
+                        itself should stay calm, readable, and easy to scan.
+                    </p>
+                    <h2>Working Notes</h2>
+                    <p>
+                        These mock paragraphs give the page enough shape to test line
+                        length, spacing, typography, and scroll behavior before the
+                        final article content exists.
+                    </p>
+                </article>
+            </section>
+        </div>
+    </main>
+</Layout>
+
+<style>
+    :global(*) {
+        box-sizing: border-box;
+    }
+
+    :global(body) {
+        min-height: 100%;
+        overflow-x: hidden;
+        color: #292b2c;
+        background: #f1f3f4;
+        font-family:
+            "Satoshi", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    .doc-shell {
+        width: 100%;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        background: #f1f3f4;
+    }
+
+    .doc-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        width: 100%;
+        min-height: 86px;
+        margin: 0;
+        padding: 18px 28px 10px;
+        background: #f8fbff;
+    }
+
+    .doc-owner {
+        color: #292b2c;
+        font-size: 24px;
+        line-height: 1;
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    .doc-actions,
+    .collaborators,
+    .share-button {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .doc-actions {
+        gap: 24px;
+    }
+
+    .collaborators {
+        gap: 0;
+    }
+
+    .collaborator {
+        width: 44px;
+        height: 44px;
+        display: inline-grid;
+        place-items: center;
+        margin-left: -8px;
+        color: #fff;
+        border: 3px solid #f8fbff;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .collaborator:first-child {
+        margin-left: 0;
+    }
+
+    .collaborator-red {
+        background: #ff2c5f;
+    }
+
+    .collaborator-purple {
+        background: #bc27d8;
+    }
+
+    .collaborator-blue {
+        background: #5662e8;
+    }
+
+    .collaborator-cyan {
+        background: #058add;
+    }
+
+    .collaborator-teal {
+        background: #0cb9cc;
+    }
+
+    .share-button {
+        gap: 12px;
+        height: 48px;
+        padding: 0 24px;
+        color: #292b2c;
+        background: #c6e7ff;
+        border: 1px solid #b4dcfb;
+        border-radius: 999px;
+        box-shadow: none;
+        font-size: 18px;
+        line-height: 1;
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    .doc-toolbar {
+        width: calc(100% - 40px);
+        height: 54px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 18px;
+        margin: 0 20px;
+        padding: 0 28px;
+        overflow-x: auto;
+        color: #42474c;
+        background: #edf2f8;
+        border: 0;
+        border-radius: 999px;
+        box-shadow: none;
+        font-size: 16px;
+        line-height: 1;
+        white-space: nowrap;
+    }
+
+    .doc-toolbar span {
+        flex: 0 0 auto;
+    }
+
+    .doc-toolbar .muted {
+        color: #c9c9c9;
+    }
+
+    .doc-ruler {
+        height: 34px;
+        display: flex;
+        align-items: end;
+        gap: clamp(20px, 3vw, 48px);
+        padding: 0 28px 4px 400px;
+        overflow: hidden;
+        color: #62676d;
+        background: #f1f3f4;
+        border-bottom: 1px solid #d6d9dc;
+        font-size: 14px;
+        line-height: 1;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .doc-workspace {
+        display: grid;
+        grid-template-columns: 360px minmax(0, 1fr);
+        min-height: calc(100vh - 174px);
+        background: #f1f3f4;
+    }
+
+    .doc-tabs {
+        min-height: 100%;
+        padding: 26px 22px 40px;
+        color: #3f4347;
+        background: #f8fbff;
+        border-right: 1px solid #dfe3e7;
+    }
+
+    .back-link {
+        display: inline-flex;
+        margin-bottom: 40px;
+        color: #4b4f54;
+        font-size: 32px;
+        line-height: 1;
+        text-decoration: none;
+    }
+
+    .tabs-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 22px;
+        font-size: 20px;
+        line-height: 1;
+        font-weight: 700;
+    }
+
+    .tab-pill {
+        height: 54px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 0 14px 0 28px;
+        color: #2653b8;
+        background: #d8e4ff;
+        border-radius: 999px;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .tab-count {
+        display: inline-grid;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        margin-left: auto;
+        color: #5d6470;
+        background: #fff;
+        border-radius: 999px;
+        font-size: 14px;
+    }
+
+    .outline {
+        display: grid;
+        gap: 22px;
+        margin: 16px 0 0 36px;
+        padding: 8px 0 0 28px;
+        color: #4d5157;
+        border-left: 3px solid #dfe3e7;
+        font-size: 18px;
+        line-height: 1.25;
+    }
+
+    .doc-canvas {
+        min-width: 0;
+        padding: 22px 32px 72px;
+        overflow-x: auto;
+    }
+
+    .doc-page {
+        width: 760px;
+        min-height: 1076px;
+        margin: 0;
+        padding: 76px 86px;
+        background: #fffdfd;
+        border: 1px solid #cdd1d5;
+        border-radius: 0;
+        box-shadow: 0 1px 3px rgba(12, 12, 13, 0.1);
+    }
+
+    .doc-kicker {
+        margin: 0 0 18px;
+        color: rgba(41, 43, 44, 0.48);
+        font-size: 13px;
+        line-height: 1.4;
+        font-weight: 500;
+    }
+
+    h1,
+    h2,
+    p {
+        letter-spacing: 0;
+    }
+
+    h1 {
+        margin: 0 0 18px;
+        color: #292b2c;
+        font-size: 38px;
+        line-height: 1.12;
+        font-weight: 500;
+    }
+
+    h2 {
+        margin: 44px 0 14px;
+        color: #292b2c;
+        font-size: 22px;
+        line-height: 1.25;
+        font-weight: 700;
+    }
+
+    p {
+        margin: 0 0 20px;
+        color: rgba(41, 43, 44, 0.82);
+        font-size: 18px;
+        line-height: 1.72;
+        font-weight: 400;
+    }
+
+    .lead {
+        color: rgba(41, 43, 44, 0.72);
+        font-size: 21px;
+        line-height: 1.52;
+        font-weight: 500;
+    }
+
+    @media (max-width: 980px) {
+        .doc-header {
+            padding: 18px clamp(18px, 5vw, 48px) 12px;
+        }
+
+        .doc-toolbar {
+            width: calc(100% - 32px);
+            margin: 0 16px;
+        }
+
+        .doc-ruler {
+            padding-left: 28px;
+        }
+
+        .doc-workspace {
+            grid-template-columns: 1fr;
+        }
+
+        .doc-tabs {
+            display: none;
+        }
+
+        .doc-canvas {
+            padding: 22px clamp(18px, 5vw, 48px) 56px;
+        }
+
+        .doc-page {
+            width: min(100%, 760px);
+            margin: 0 auto;
+        }
+    }
+
+    @media (max-width: 680px) {
+        .doc-header {
+            align-items: flex-start;
+            flex-direction: column;
+            min-height: auto;
+            padding: 22px 18px;
+        }
+
+        .doc-actions {
+            width: 100%;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .collaborator {
+            width: 36px;
+            height: 36px;
+            border-width: 2px;
+        }
+
+        .share-button {
+            height: 44px;
+            padding: 0 18px;
+            font-size: 16px;
+        }
+
+        .doc-toolbar {
+            height: 44px;
+            gap: 16px;
+            width: calc(100% - 24px);
+            margin: 0 12px;
+            padding: 0 16px;
+        }
+
+        .doc-ruler {
+            display: none;
+        }
+
+        .doc-canvas {
+            padding: 18px 14px 40px;
+        }
+
+        .doc-page {
+            min-height: 720px;
+            padding: 42px 28px;
+        }
+
+        h1 {
+            font-size: 30px;
+        }
+
+        p,
+        .lead {
+            font-size: 17px;
+        }
+    }
+</style>
