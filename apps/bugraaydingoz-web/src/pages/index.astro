@@ -50,7 +50,14 @@ import Layout from "../layouts/Layout.astro";
                             >
                                 {
                                     article.pinned && (
-                                        <span class="pinned-star">★</span>
+                                        <span class="pinned-star">
+                                            <svg
+                                                viewBox="0 0 256 256"
+                                                aria-hidden="true"
+                                            >
+                                                <path d="M239.2 97.29a16 16 0 0 0-13.81-11L166 81.17l-23.22-55.36a16 16 0 0 0-29.56 0L90 81.17l-59.4 5.15a16 16 0 0 0-9.13 28.06l45.11 39.42-13.52 58.54a16 16 0 0 0 23.84 17.34L128 198.49l51.1 31.19a16 16 0 0 0 23.84-17.34l-13.52-58.54 45.11-39.42a16 16 0 0 0 4.67-17.09Zm-62.47 45.68a8 8 0 0 0-2.56 7.91L188.3 212 134.17 179a8 8 0 0 0-8.34 0L71.7 212l14.13-61.12a8 8 0 0 0-2.56-7.91L36.5 102.11l61.63-5.34a8 8 0 0 0 6.75-4.88L128 36.73l23.12 55.16a8 8 0 0 0 6.75 4.88l61.63 5.34Z" />
+                                            </svg>
+                                        </span>
                                     )
                                 }
                                 <span class="doc-template">
@@ -272,6 +279,12 @@ import Layout from "../layouts/Layout.astro";
         box-shadow: 0 1px 3px rgba(12, 12, 13, 0.12);
         font-size: 14px;
         line-height: 1;
+    }
+
+    :global(.pinned-star svg) {
+        width: 15px;
+        height: 15px;
+        fill: currentColor;
     }
 
     :global(.doc-template) {

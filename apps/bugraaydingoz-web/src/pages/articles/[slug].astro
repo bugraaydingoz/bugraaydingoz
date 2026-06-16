@@ -10,123 +10,297 @@ export function getStaticPaths() {
 }
 
 const { article } = Astro.props;
+
+const icons = {
+    arrowLeft:
+        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M224 128a8 8 0 0 1-8 8H59.31l58.35 58.34a8 8 0 0 1-11.32 11.32l-72-72a8 8 0 0 1 0-11.32l72-72a8 8 0 0 1 11.32 11.32L59.31 120H216a8 8 0 0 1 8 8Z"/></svg>',
+    caretDown:
+        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M213.66 101.66l-80 80a8 8 0 0 1-11.32 0l-80-80a8 8 0 0 1 11.32-11.32L128 164.69l74.34-74.35a8 8 0 0 1 11.32 11.32Z"/></svg>',
+    cloud:
+        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M160 40a72.08 72.08 0 0 0-67.42 46.75A56 56 0 0 0 96 200h64a64 64 0 0 0 0-128c-1.14 0-2.28 0-3.41.09A72.4 72.4 0 0 0 160 40Zm0 144H96a40 40 0 1 1 4.5-79.75 8 8 0 0 0 8.59-5.66A56 56 0 0 1 216 120a48.05 48.05 0 0 1-48 64Z"/></svg>',
+    doc:
+        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M216 88v128a8 8 0 0 1-8 8H48a8 8 0 0 1-8-8V40a8 8 0 0 1 8-8h112a8 8 0 0 1 5.66 2.34l48 48A8 8 0 0 1 216 88Zm-56-36.69V88h36.69ZM200 104h-48a8 8 0 0 1-8-8V48H56v160h144Zm-112 40a8 8 0 0 1 8-8h64a8 8 0 0 1 0 16H96a8 8 0 0 1-8-8Zm0 32a8 8 0 0 1 8-8h64a8 8 0 0 1 0 16H96a8 8 0 0 1-8-8Z"/></svg>',
+    dots:
+        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M128 104a24 24 0 1 0 24 24 24 24 0 0 0-24-24Zm0-16a24 24 0 1 0-24-24 24 24 0 0 0 24 24Zm0 80a24 24 0 1 0 24 24 24 24 0 0 0-24-24Z"/></svg>',
+    globe:
+        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24Zm87.63 96h-39.7c-1.28-28.56-8.23-53.23-18.36-69.46A88.19 88.19 0 0 1 215.63 120ZM128 40c12.44 0 28.31 30.3 31.93 80H96.07C99.69 70.3 115.56 40 128 40Zm-29.57 10.54C88.3 66.77 81.35 91.44 80.07 120h-39.7a88.19 88.19 0 0 1 58.06-69.46ZM40.37 136h39.7c1.28 28.56 8.23 53.23 18.36 69.46A88.19 88.19 0 0 1 40.37 136ZM128 216c-12.44 0-28.31-30.3-31.93-80h63.86C156.31 185.7 140.44 216 128 216Zm29.57-10.54c10.13-16.23 17.08-40.9 18.36-69.46h39.7a88.19 88.19 0 0 1-58.06 69.46Z"/></svg>',
+    image:
+        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M216 40H40a16 16 0 0 0-16 16v144a16 16 0 0 0 16 16h176a16 16 0 0 0 16-16V56a16 16 0 0 0-16-16Zm0 16v100.69l-26.34-26.35a8 8 0 0 0-11.32 0L152 156.69l-58.34-58.35a8 8 0 0 0-11.32 0L40 140.69V56Zm-176 160v-52.69l48-48 58.34 58.35a8 8 0 0 0 11.32 0L184 147.31l32 32V216Zm112-112a16 16 0 1 1 16 16 16 16 0 0 1-16-16Z"/></svg>',
+    link:
+        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M137.54 186.36a8 8 0 0 1 0 11.31l-9.94 9.94a56 56 0 0 1-79.2-79.21l24.34-24.34a56 56 0 0 1 79.21 0 8 8 0 1 1-11.32 11.31 40 40 0 0 0-56.57 0L59.72 139.72a40 40 0 0 0 56.57 56.57l9.94-9.93a8 8 0 0 1 11.31 0Zm70.06-137.97a56.08 56.08 0 0 0-79.2 0l-9.94 9.94a8 8 0 0 0 11.31 11.31l9.94-9.93a40 40 0 0 1 56.57 56.57l-24.34 24.34a40 40 0 0 1-56.57 0 8 8 0 0 0-11.32 11.31 56 56 0 0 0 79.21 0l24.34-24.34a56.08 56.08 0 0 0 0-79.2Z"/></svg>',
+    listBullets:
+        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M88 64a8 8 0 0 1 8-8h128a8 8 0 0 1 0 16H96a8 8 0 0 1-8-8Zm136 56H96a8 8 0 0 0 0 16h128a8 8 0 0 0 0-16Zm0 64H96a8 8 0 0 0 0 16h128a8 8 0 0 0 0-16ZM56 52a12 12 0 1 0 12 12 12 12 0 0 0-12-12Zm0 64a12 12 0 1 0 12 12 12 12 0 0 0-12-12Zm0 64a12 12 0 1 0 12 12 12 12 0 0 0-12-12Z"/></svg>',
+    minus:
+        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M224 128a8 8 0 0 1-8 8H40a8 8 0 0 1 0-16h176a8 8 0 0 1 8 8Z"/></svg>',
+    paintRoller:
+        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M232 64v48a24 24 0 0 1-24 24h-72v16a24 24 0 0 1-24 24h-8v40a16 16 0 0 1-32 0v-48a8 8 0 0 1 8-8h32a8 8 0 0 0 8-8v-16H64a40 40 0 0 1 0-80h144a24 24 0 0 1 24 24Zm-16 0a8 8 0 0 0-8-8H64a24 24 0 0 0 0 48h152Z"/></svg>',
+    pencil:
+        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M227.31 73.37 182.63 28.69a16 16 0 0 0-22.63 0L36.69 152A15.86 15.86 0 0 0 32 163.31V208a16 16 0 0 0 16 16h44.69A15.86 15.86 0 0 0 104 219.31L227.31 96a16 16 0 0 0 0-22.63ZM92.69 208H48v-44.69l88-88L180.69 120Zm99.31-99.31L147.31 64l24-24L216 84.69Z"/></svg>',
+    plus:
+        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M224 128a8 8 0 0 1-8 8h-80v80a8 8 0 0 1-16 0v-80H40a8 8 0 0 1 0-16h80V40a8 8 0 0 1 16 0v80h80a8 8 0 0 1 8 8Z"/></svg>',
+    printer:
+        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M214.67 72H200V40a8 8 0 0 0-8-8H64a8 8 0 0 0-8 8v32H41.33A25.35 25.35 0 0 0 16 97.33v77.34A25.35 25.35 0 0 0 41.33 200H56v16a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-16h14.67A25.35 25.35 0 0 0 240 174.67V97.33A25.35 25.35 0 0 0 214.67 72ZM72 48h112v24H72Zm112 160H72v-56h112Zm40-33.33a9.34 9.34 0 0 1-9.33 9.33H200v-32h8a8 8 0 0 0 0-16H48a8 8 0 0 0 0 16h8v32H41.33A9.34 9.34 0 0 1 32 174.67V97.33A9.34 9.34 0 0 1 41.33 88h173.34A9.34 9.34 0 0 1 224 97.33Z"/></svg>',
+    redo:
+        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M221.66 90.34a8 8 0 0 0-11.32 0L184 116.69V104a64.07 64.07 0 0 0-64-64H72a8 8 0 0 0 0 16h48a48.05 48.05 0 0 1 48 48v12.69l-26.34-26.35a8 8 0 0 0-11.32 11.32l40 40a8 8 0 0 0 11.32 0l40-40a8 8 0 0 0 0-11.32ZM184 192H80a48.05 48.05 0 0 1-48-48v-16a8 8 0 0 0-16 0v16a64.07 64.07 0 0 0 64 64h104a8 8 0 0 0 0-16Z"/></svg>',
+    search:
+        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M229.66 218.34 179.28 168A88.11 88.11 0 1 0 168 179.28l50.34 50.38a8 8 0 0 0 11.32-11.32ZM40 112a72 72 0 1 1 72 72 72.08 72.08 0 0 1-72-72Z"/></svg>',
+    star:
+        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M239.2 97.29a16 16 0 0 0-13.81-11L166 81.17l-23.22-55.36a16 16 0 0 0-29.56 0L90 81.17l-59.4 5.15a16 16 0 0 0-9.13 28.06l45.11 39.42-13.52 58.54a16 16 0 0 0 23.84 17.34L128 198.49l51.1 31.19a16 16 0 0 0 23.84-17.34l-13.52-58.54 45.11-39.42a16 16 0 0 0 4.67-17.09Zm-62.47 45.68a8 8 0 0 0-2.56 7.91L188.3 212 134.17 179a8 8 0 0 0-8.34 0L71.7 212l14.13-61.12a8 8 0 0 0-2.56-7.91L36.5 102.11l61.63-5.34a8 8 0 0 0 6.75-4.88L128 36.73l23.12 55.16a8 8 0 0 0 6.75 4.88l61.63 5.34Z"/></svg>',
+    tab:
+        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M208 40H48a16 16 0 0 0-16 16v144a16 16 0 0 0 16 16h160a16 16 0 0 0 16-16V56a16 16 0 0 0-16-16ZM48 56h160v32H48Zm160 144H48v-96h160Z"/></svg>',
+    textAlignLeft:
+        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M32 64a8 8 0 0 1 8-8h176a8 8 0 0 1 0 16H40a8 8 0 0 1-8-8Zm8 56h128a8 8 0 0 0 0-16H40a8 8 0 0 0 0 16Zm176 32H40a8 8 0 0 0 0 16h176a8 8 0 0 0 0-16Zm-48 48H40a8 8 0 0 0 0 16h128a8 8 0 0 0 0-16Z"/></svg>',
+    underline:
+        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M200 216a8 8 0 0 1-8 8H64a8 8 0 0 1 0-16h128a8 8 0 0 1 8 8ZM80 112V40a8 8 0 0 0-16 0v72a64 64 0 0 0 128 0V40a8 8 0 0 0-16 0v72a48 48 0 0 1-96 0Z"/></svg>',
+    undo:
+        '<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M224 128v16a64.07 64.07 0 0 1-64 64H56a8 8 0 0 1 0-16h104a48.05 48.05 0 0 0 48-48v-16a48.05 48.05 0 0 0-48-48H88.69l26.65 26.34a8 8 0 0 1-11.25 11.38l-40-39.52a8 8 0 0 1-.06-11.34l40-40a8 8 0 0 1 11.32 11.32L88.69 64H160a64.07 64.07 0 0 1 64 64Z"/></svg>',
+};
+
+const menuGroups = [
+    ["File", ["New", "Open", "Make a copy", "Download"]],
+    ["Edit", ["Undo", "Redo", "Cut", "Paste"]],
+    ["View", ["Print layout", "Show ruler", "Document tabs"]],
+    ["Insert", ["Image", "Table", "Comment", "Link"]],
+    ["Format", ["Text", "Alignment", "Line spacing"]],
+    ["Tools", ["Spelling", "Word count", "Preferences"]],
+    ["Extensions", ["Add-ons", "Apps Script"]],
+    ["Help", ["Docs help", "Keyboard shortcuts"]],
+];
+
+const toolbarIcons = [
+    ["Search menus", icons.search],
+    ["Undo", icons.undo],
+    ["Redo", icons.redo],
+    ["Print", icons.printer],
+    ["Paint format", icons.paintRoller],
+];
 ---
 
 <Layout>
-    <main class="doc-shell" aria-label={`${article.title} article draft`}>
-        <header class="doc-header">
-            <a class="doc-owner" href="/">Buğra Aydıngöz</a>
-
-            <div class="doc-actions" aria-label="Document actions">
-                <span class="collaborators" aria-hidden="true">
-                    <span class="collaborator collaborator-red">B</span>
-                    <span class="collaborator collaborator-purple">A</span>
-                    <span class="collaborator collaborator-blue">D</span>
-                    <span class="collaborator collaborator-cyan">K</span>
-                    <span class="collaborator collaborator-teal">N</span>
-                </span>
-                <a
-                    class="share-button"
-                    href="https://www.linkedin.com/in/bugraaydingoz/"
-                    target="_blank"
-                    rel="noreferrer"
-                >
-                    <span aria-hidden="true">●</span>
-                    <span>Share</span>
+    <main class="docs-shell" aria-label={`${article.title} article draft`}>
+        <header class="docs-topbar">
+            <section class="title-cluster" aria-label="Document title">
+                <a class="docs-logo" href="/" aria-label="Back to home">
+                    <span class="ph" set:html={icons.doc} />
                 </a>
-            </div>
+                <div class="title-stack">
+                    <div class="title-row">
+                        <span class="doc-title">{article.title}</span>
+                        <span class="ph subtle" set:html={icons.star} />
+                        <span class="ph subtle" set:html={icons.cloud} />
+                    </div>
+                    <nav class="menu-bar" aria-label="Mock document menu">
+                        {
+                            menuGroups.map(([label, items]) => (
+                                <details class="menu-item">
+                                    <summary>{label}</summary>
+                                    <div class="menu-panel">
+                                        {(items as string[]).map((item) => (
+                                            <button type="button">{item}</button>
+                                        ))}
+                                    </div>
+                                </details>
+                            ))
+                        }
+                    </nav>
+                </div>
+            </section>
+
+            <section class="top-actions" aria-label="Sharing controls">
+                <button class="request-access" type="button">
+                    Request edit access
+                </button>
+                <span class="avatar" aria-label="Buğra Aydıngöz">B</span>
+                <button class="share-action" type="button">
+                    <span class="ph" set:html={icons.globe} />
+                    <span>Share</span>
+                    <span class="ph tiny" set:html={icons.caretDown} />
+                </button>
+                <button class="signin-action" type="button">Sign in</button>
+            </section>
         </header>
 
-        <nav class="doc-toolbar" aria-label="Article formatting preview">
-            <span>B</span>
-            <span><i>i</i></span>
-            <span>U</span>
-            <span>S</span>
-            <span>A</span>
-            <span>✎</span>
-            <span>☺</span>
-            <span>¶</span>
-            <span>▾</span>
-            <span>≡</span>
-            <span>☷</span>
-            <span>▦</span>
-            <span>▤</span>
-            <span>▧</span>
-            <span>▭</span>
-            <span>⌁</span>
-            <span>◰</span>
-            <span>◌</span>
-            <span class="muted">↶</span>
-            <span class="muted">↷</span>
+        <nav class="toolbar" aria-label="Mock formatting toolbar">
+            <div class="toolbar-group">
+                {
+                    toolbarIcons.map(([label, icon]) => (
+                        <button class="icon-button" type="button" aria-label={label}>
+                            <span class="ph" set:html={icon} />
+                        </button>
+                    ))
+                }
+            </div>
+
+            <span class="divider" aria-hidden="true" />
+            <button class="select-button" type="button">
+                <span>100%</span>
+                <span class="ph tiny" set:html={icons.caretDown} />
+            </button>
+            <span class="divider" aria-hidden="true" />
+            <button class="select-button wide" type="button">
+                <span>Normal text</span>
+                <span class="ph tiny" set:html={icons.caretDown} />
+            </button>
+            <button class="select-button font" type="button">
+                <span>Merriweather</span>
+                <span class="ph tiny" set:html={icons.caretDown} />
+            </button>
+            <button class="icon-button" type="button" aria-label="Decrease font size">
+                <span class="ph" set:html={icons.minus} />
+            </button>
+            <span class="font-size" aria-label="Font size">11</span>
+            <button class="icon-button" type="button" aria-label="Increase font size">
+                <span class="ph" set:html={icons.plus} />
+            </button>
+            <span class="divider" aria-hidden="true" />
+            <button class="text-button strong" type="button" aria-label="Bold">
+                B
+            </button>
+            <button class="text-button italic" type="button" aria-label="Italic">
+                I
+            </button>
+            <button class="icon-button" type="button" aria-label="Underline">
+                <span class="ph" set:html={icons.underline} />
+            </button>
+            <button class="text-button color" type="button" aria-label="Text color">
+                A
+            </button>
+            <span class="divider" aria-hidden="true" />
+            <button class="icon-button" type="button" aria-label="Link">
+                <span class="ph" set:html={icons.link} />
+            </button>
+            <button class="icon-button" type="button" aria-label="Insert image">
+                <span class="ph" set:html={icons.image} />
+            </button>
+            <button class="icon-button" type="button" aria-label="Alignment">
+                <span class="ph" set:html={icons.textAlignLeft} />
+            </button>
+            <button class="icon-button" type="button" aria-label="List">
+                <span class="ph" set:html={icons.listBullets} />
+            </button>
+            <span class="toolbar-spacer" />
+            <button class="editing-button" type="button">
+                <span class="ph" set:html={icons.pencil} />
+                <span>Editing</span>
+                <span class="ph tiny" set:html={icons.caretDown} />
+            </button>
         </nav>
 
-        <div class="doc-ruler" aria-hidden="true">
-            <span>1</span>
-            <span>2</span>
-            <span>3</span>
-            <span>4</span>
-            <span>5</span>
-            <span>6</span>
-            <span>7</span>
-            <span>8</span>
-            <span>9</span>
-            <span>10</span>
-            <span>11</span>
-            <span>12</span>
-            <span>13</span>
-            <span>14</span>
-            <span>15</span>
-            <span>16</span>
-            <span>17</span>
-            <span>18</span>
-            <span>19</span>
-            <span>20</span>
+        <div class="ruler" aria-hidden="true">
+            {Array.from({ length: 22 }, (_, index) => <span>{index + 1}</span>)}
         </div>
 
-        <div class="doc-workspace">
+        <div class="docs-workspace">
             <aside class="doc-tabs" aria-label="Document tabs">
-                <a class="back-link" href="/">←</a>
+                <a class="back-link" href="/" aria-label="Back to home">
+                    <span class="ph" set:html={icons.arrowLeft} />
+                </a>
                 <div class="tabs-heading">
                     <span>Document tabs</span>
-                    <span aria-hidden="true">+</span>
+                    <button type="button" aria-label="Add tab">+</button>
                 </div>
                 <div class="tab-pill">
-                    <span aria-hidden="true">▣</span>
+                    <span class="ph" set:html={icons.tab} />
                     <span>Tab 1</span>
-                    <span class="tab-count">1</span>
+                    <button type="button" aria-label="Tab options">
+                        <span class="ph" set:html={icons.dots} />
+                    </button>
                 </div>
                 <nav class="outline" aria-label="Document outline">
-                    <span>{article.title}</span>
-                    <span>Introduction</span>
-                    <span>Working Notes</span>
-                    <span>Details</span>
-                    <span>Next Steps</span>
+                    <a href="#document-title">{article.title}</a>
+                    <a href="#experience">EXPERIENCE</a>
+                    <a href="#company-one">Company, Location — Jo...</a>
+                    <a href="#company-two">Company, Location — Jo...</a>
+                    <a href="#education">EDUCATION</a>
+                    <a href="#skills">SKILLS</a>
+                    <a href="#awards">AWARDS</a>
+                    <a href="#languages">LANGUAGES</a>
                 </nav>
             </aside>
 
             <section class="doc-canvas">
                 <article class="doc-page">
-                    <p class="doc-kicker">{article.date} · {article.readTime}</p>
-                    <h1>{article.title}</h1>
-                    <p class="lead">{article.excerpt}</p>
+                    <header class="resume-header">
+                        <div>
+                            <span class="cursor" aria-hidden="true" />
+                            <h1 id="document-title">{article.title}</h1>
+                            <p class="subtitle">{article.excerpt}</p>
+                        </div>
+                        <address>
+                            123 Your Street<br />
+                            Your City, ST 12345<br />
+                            <strong>(123) 456-7890</strong><br />
+                            <strong>no_reply@example.com</strong>
+                        </address>
+                    </header>
 
-                    <p>
-                        This is placeholder article copy for now. The goal is to keep
-                        the page feeling like a quiet document canvas: simple controls,
-                        generous margins, and content that can be replaced when the real
-                        writing is ready.
-                    </p>
-                    <p>
-                        A good article page should disappear while you read it. The
-                        surrounding interface can hint at Google Docs, but the document
-                        itself should stay calm, readable, and easy to scan.
-                    </p>
-                    <h2>Working Notes</h2>
-                    <p>
-                        These mock paragraphs give the page enough shape to test line
-                        length, spacing, typography, and scroll behavior before the
-                        final article content exists.
-                    </p>
+                    <div class="resume-grid">
+                        <section class="main-column" aria-labelledby="experience">
+                            <h2 id="experience">EXPERIENCE</h2>
+                            <section id="company-one" class="entry">
+                                <h3>Company, Location — <em>Job Title</em></h3>
+                                <p class="eyebrow">MONTH 20XX - PRESENT</p>
+                                <p>
+                                    Lorem ipsum dolor sit amet, consectetuer adipiscing
+                                    elit, sed diam nonummy nibh.
+                                </p>
+                            </section>
+                            <section id="company-two" class="entry">
+                                <h3>Company, Location — <em>Job Title</em></h3>
+                                <p class="eyebrow">MONTH 20XX - MONTH 20XX</p>
+                                <p>
+                                    Lorem ipsum dolor sit amet, consectetuer adipiscing
+                                    elit, sed diam nonummy nibh.
+                                </p>
+                            </section>
+                            <section class="entry">
+                                <h3>Company, Location — <em>Job Title</em></h3>
+                                <p class="eyebrow">MONTH 20XX - MONTH 20XX</p>
+                                <p>
+                                    Lorem ipsum dolor sit amet, consectetuer adipiscing
+                                    elit, sed diam nonummy nibh.
+                                </p>
+                            </section>
+
+                            <h2 id="education">EDUCATION</h2>
+                            <section class="entry">
+                                <h3>School Name, Location — <em>Degree</em></h3>
+                                <p class="eyebrow">MONTH 20XX - MONTH 20XX</p>
+                                <p>
+                                    Lorem ipsum dolor sit amet, consectetuer adipiscing
+                                    elit, sed diam nonummy nibh euismod tincidunt ut
+                                    laoreet dolore.
+                                </p>
+                            </section>
+                            <section class="entry">
+                                <h3>School Name, Location — <em>Degree</em></h3>
+                                <p class="eyebrow">MONTH 20XX - MONTH 20XX</p>
+                            </section>
+                        </section>
+
+                        <aside class="side-column">
+                            <h2 id="skills">SKILLS</h2>
+                            <p>
+                                Lorem ipsum dolor sit amet. Consectetuer adipiscing
+                                elit. Sed diam nonummy nibh euismod tincidunt.
+                            </p>
+
+                            <h2 id="awards">AWARDS</h2>
+                            <p>
+                                <strong>Lorem ipsum dolor sit amet</strong><br />
+                                Consectetuer adipiscing elit, sed diam nonummy.
+                            </p>
+                            <p>
+                                <strong>Nibh euismod tincidunt ut</strong><br />
+                                Laoreet dolore magna aliquam erat volutpat.
+                            </p>
+
+                            <h2 id="languages">LANGUAGES</h2>
+                            <p>
+                                Lorem ipsum, dolor sit amet, consectetuer.
+                            </p>
+                        </aside>
+                    </div>
                 </article>
             </section>
         </div>
@@ -141,368 +315,684 @@ const { article } = Astro.props;
     :global(body) {
         min-height: 100%;
         overflow-x: hidden;
-        color: #292b2c;
+        color: #202124;
         background: #f1f3f4;
         font-family:
             "Satoshi", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
-    .doc-shell {
+    :global(svg) {
+        display: block;
+        width: 100%;
+        height: 100%;
+        fill: currentColor;
+    }
+
+    button,
+    summary,
+    a {
+        font: inherit;
+    }
+
+    button {
+        border: 0;
+        cursor: pointer;
+    }
+
+    .docs-shell {
         width: 100%;
         min-height: 100vh;
-        margin: 0;
-        padding: 0;
         background: #f1f3f4;
     }
 
-    .doc-header {
+    .docs-topbar {
+        min-height: 72px;
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
-        gap: 24px;
-        width: 100%;
-        min-height: 86px;
-        margin: 0;
-        padding: 18px 28px 10px;
+        gap: 16px;
+        padding: 13px 20px 6px 26px;
+        color: #202124;
         background: #f8fbff;
     }
 
-    .doc-owner {
-        color: #292b2c;
-        font-size: 24px;
-        line-height: 1;
-        font-weight: 500;
+    .title-cluster {
+        min-width: 0;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .docs-logo {
+        width: 28px;
+        height: 38px;
+        flex: 0 0 auto;
+        display: grid;
+        place-items: center;
+        color: #4285f4;
         text-decoration: none;
     }
 
-    .doc-actions,
-    .collaborators,
-    .share-button {
-        display: inline-flex;
+    .title-stack {
+        min-width: 0;
+        display: grid;
+        gap: 6px;
+    }
+
+    .title-row {
+        display: flex;
         align-items: center;
+        gap: 9px;
+        min-width: 0;
     }
 
-    .doc-actions {
-        gap: 24px;
+    .doc-title {
+        max-width: min(360px, 28vw);
+        overflow: hidden;
+        color: #202124;
+        font-size: 18px;
+        line-height: 1;
+        font-weight: 500;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
-    .collaborators {
-        gap: 0;
-    }
-
-    .collaborator {
-        width: 44px;
-        height: 44px;
+    .ph {
+        width: 18px;
+        height: 18px;
+        flex: 0 0 auto;
         display: inline-grid;
         place-items: center;
-        margin-left: -8px;
+    }
+
+    .ph.subtle {
+        width: 17px;
+        height: 17px;
+        color: #5f6368;
+    }
+
+    .ph.tiny {
+        width: 14px;
+        height: 14px;
+    }
+
+    .menu-bar {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        color: #202124;
+        font-size: 14px;
+        line-height: 1;
+        white-space: nowrap;
+    }
+
+    .menu-item {
+        position: relative;
+    }
+
+    .menu-item summary {
+        list-style: none;
+        padding: 5px 7px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .menu-item summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .menu-item summary:hover,
+    .menu-item[open] summary {
+        background: #e8f0fe;
+    }
+
+    .menu-panel {
+        position: absolute;
+        top: calc(100% + 5px);
+        left: 0;
+        z-index: 20;
+        width: 190px;
+        padding: 6px 0;
+        background: #fff;
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        box-shadow: 0 8px 18px rgba(60, 64, 67, 0.24);
+    }
+
+    .menu-panel button {
+        width: 100%;
+        display: block;
+        padding: 8px 14px;
+        color: #202124;
+        background: transparent;
+        text-align: left;
+        font-size: 13px;
+        line-height: 1.25;
+    }
+
+    .menu-panel button:hover,
+    .menu-panel button:focus-visible {
+        background: #f1f3f4;
+        outline: none;
+    }
+
+    .top-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+        padding-top: 0;
+        white-space: nowrap;
+    }
+
+    .request-access,
+    .signin-action {
+        height: 40px;
+        border-radius: 999px;
+        font-size: 14px;
+        line-height: 1;
+        font-weight: 700;
+    }
+
+    .request-access {
+        padding: 0 20px;
+        color: #2b5bd7;
+        background: #fff;
+        border: 1px solid #5f6368;
+    }
+
+    .avatar {
+        width: 38px;
+        height: 38px;
+        display: inline-grid;
+        place-items: center;
         color: #fff;
-        border: 3px solid #f8fbff;
+        background: #40507a;
+        border: 2px solid #d02c86;
         border-radius: 999px;
         font-size: 14px;
         font-weight: 700;
     }
 
-    .collaborator:first-child {
-        margin-left: 0;
-    }
-
-    .collaborator-red {
-        background: #ff2c5f;
-    }
-
-    .collaborator-purple {
-        background: #bc27d8;
-    }
-
-    .collaborator-blue {
-        background: #5662e8;
-    }
-
-    .collaborator-cyan {
-        background: #058add;
-    }
-
-    .collaborator-teal {
-        background: #0cb9cc;
-    }
-
-    .share-button {
-        gap: 12px;
-        height: 48px;
-        padding: 0 24px;
-        color: #292b2c;
-        background: #c6e7ff;
-        border: 1px solid #b4dcfb;
-        border-radius: 999px;
-        box-shadow: none;
-        font-size: 18px;
-        line-height: 1;
-        font-weight: 500;
-        text-decoration: none;
-    }
-
-    .doc-toolbar {
-        width: calc(100% - 40px);
-        height: 54px;
-        display: flex;
+    .share-action {
+        height: 40px;
+        display: inline-flex;
         align-items: center;
-        justify-content: flex-start;
-        gap: 18px;
-        margin: 0 20px;
-        padding: 0 28px;
-        overflow-x: auto;
-        color: #42474c;
-        background: #edf2f8;
-        border: 0;
+        gap: 8px;
+        padding: 0 18px;
+        color: #5f6368;
+        background: #eef0f3;
         border-radius: 999px;
-        box-shadow: none;
-        font-size: 16px;
-        line-height: 1;
-        white-space: nowrap;
-    }
-
-    .doc-toolbar span {
-        flex: 0 0 auto;
-    }
-
-    .doc-toolbar .muted {
-        color: #c9c9c9;
-    }
-
-    .doc-ruler {
-        height: 34px;
-        display: flex;
-        align-items: end;
-        gap: clamp(20px, 3vw, 48px);
-        padding: 0 28px 4px 400px;
-        overflow: hidden;
-        color: #62676d;
-        background: #f1f3f4;
-        border-bottom: 1px solid #d6d9dc;
         font-size: 14px;
         line-height: 1;
-        font-weight: 500;
+        font-weight: 700;
+    }
+
+    .share-action .ph:first-child {
+        width: 18px;
+        height: 18px;
+    }
+
+    .signin-action {
+        padding: 0 20px;
+        color: #fff;
+        background: #2f5bd3;
+    }
+
+    .toolbar {
+        width: calc(100% - 32px);
+        min-height: 42px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin: 0 16px;
+        padding: 5px 12px;
+        overflow-x: auto;
+        color: #3c4043;
+        background: #edf2f8;
+        border-radius: 999px;
+        font-size: 14px;
+        line-height: 1;
         white-space: nowrap;
     }
 
-    .doc-workspace {
+    .toolbar-group {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+    }
+
+    .icon-button,
+    .text-button {
+        width: 28px;
+        height: 28px;
+        display: inline-grid;
+        place-items: center;
+        color: #3c4043;
+        background: transparent;
+        border-radius: 4px;
+        font-size: 14px;
+        line-height: 1;
+        font-weight: 700;
+    }
+
+    .icon-button:hover,
+    .text-button:hover,
+    .select-button:hover,
+    .editing-button:hover {
+        background: rgba(60, 64, 67, 0.1);
+    }
+
+    .text-button.italic {
+        font-style: italic;
+    }
+
+    .text-button.color {
+        border-bottom: 2px solid #5f6368;
+    }
+
+    .select-button,
+    .editing-button {
+        height: 28px;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 0 8px;
+        color: #3c4043;
+        background: transparent;
+        border-radius: 4px;
+        font-size: 14px;
+        line-height: 1;
+    }
+
+    .select-button.wide {
+        min-width: 120px;
+        justify-content: space-between;
+    }
+
+    .select-button.font {
+        min-width: 118px;
+        justify-content: space-between;
+    }
+
+    .divider {
+        width: 1px;
+        height: 28px;
+        flex: 0 0 auto;
+        background: #c8cdd3;
+    }
+
+    .font-size {
+        min-width: 34px;
+        height: 28px;
+        display: inline-grid;
+        place-items: center;
+        color: #202124;
+        background: #fff;
+        border: 1px solid #9aa0a6;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .toolbar-spacer {
+        flex: 1 0 20px;
+    }
+
+    .editing-button {
+        padding: 0 10px;
+        font-weight: 700;
+    }
+
+    .ruler {
+        height: 27px;
+        display: flex;
+        align-items: end;
+        gap: 39px;
+        padding: 0 0 4px 338px;
+        overflow: hidden;
+        color: #5f6368;
+        background: #f1f3f4;
+        border-bottom: 1px solid #cdd1d5;
+        font-size: 12px;
+        line-height: 1;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .docs-workspace {
+        min-height: calc(100vh - 141px);
         display: grid;
-        grid-template-columns: 360px minmax(0, 1fr);
-        min-height: calc(100vh - 174px);
+        grid-template-columns: 300px minmax(0, 1fr);
         background: #f1f3f4;
     }
 
     .doc-tabs {
         min-height: 100%;
-        padding: 26px 22px 40px;
-        color: #3f4347;
+        padding: 24px 18px 42px;
+        color: #3c4043;
         background: #f8fbff;
         border-right: 1px solid #dfe3e7;
     }
 
     .back-link {
-        display: inline-flex;
+        width: 34px;
+        height: 34px;
+        display: grid;
+        place-items: center;
         margin-bottom: 40px;
-        color: #4b4f54;
-        font-size: 32px;
-        line-height: 1;
+        color: #3c4043;
         text-decoration: none;
+    }
+
+    .back-link .ph {
+        width: 25px;
+        height: 25px;
     }
 
     .tabs-heading {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 22px;
-        font-size: 20px;
+        margin: 0 0 18px 12px;
+        font-size: 16px;
         line-height: 1;
         font-weight: 700;
     }
 
+    .tabs-heading button {
+        width: 26px;
+        height: 26px;
+        color: #3c4043;
+        background: transparent;
+        border-radius: 999px;
+        font-size: 22px;
+        line-height: 1;
+    }
+
     .tab-pill {
-        height: 54px;
+        height: 46px;
         display: flex;
         align-items: center;
-        gap: 14px;
-        padding: 0 14px 0 28px;
-        color: #2653b8;
-        background: #d8e4ff;
+        gap: 11px;
+        padding: 0 16px 0 22px;
+        color: #2250b8;
+        background: #d6e2ff;
         border-radius: 999px;
-        font-size: 18px;
+        font-size: 15px;
+        line-height: 1;
         font-weight: 700;
     }
 
-    .tab-count {
-        display: inline-grid;
+    .tab-pill .ph {
+        width: 18px;
+        height: 18px;
+    }
+
+    .tab-pill button {
+        width: 27px;
+        height: 27px;
+        display: grid;
         place-items: center;
-        width: 28px;
-        height: 28px;
         margin-left: auto;
-        color: #5d6470;
-        background: #fff;
+        color: #3c4043;
+        background: transparent;
         border-radius: 999px;
-        font-size: 14px;
     }
 
     .outline {
         display: grid;
-        gap: 22px;
-        margin: 16px 0 0 36px;
-        padding: 8px 0 0 28px;
-        color: #4d5157;
-        border-left: 3px solid #dfe3e7;
-        font-size: 18px;
-        line-height: 1.25;
+        gap: 18px;
+        margin: 14px 0 0 30px;
+        padding: 7px 0 0 22px;
+        border-left: 2px solid #dfe3e7;
+        font-size: 14px;
+        line-height: 1.18;
+    }
+
+    .outline a {
+        overflow: hidden;
+        color: #3c4043;
+        text-decoration: none;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .outline a:first-child {
+        color: #2f5bd3;
     }
 
     .doc-canvas {
         min-width: 0;
-        padding: 22px 32px 72px;
-        overflow-x: auto;
+        padding: 20px 28px 72px 36px;
+        overflow: auto;
     }
 
     .doc-page {
-        width: 760px;
-        min-height: 1076px;
+        width: 820px;
+        min-height: 1160px;
         margin: 0;
-        padding: 76px 86px;
-        background: #fffdfd;
-        border: 1px solid #cdd1d5;
-        border-radius: 0;
-        box-shadow: 0 1px 3px rgba(12, 12, 13, 0.1);
+        padding: 64px 76px;
+        color: #111;
+        background: #fff;
+        border: 1px solid #c4c7ca;
+        box-shadow: 0 1px 2px rgba(60, 64, 67, 0.14);
+        font-family: Merriweather, Georgia, "Times New Roman", serif;
     }
 
-    .doc-kicker {
-        margin: 0 0 18px;
-        color: rgba(41, 43, 44, 0.48);
-        font-size: 13px;
-        line-height: 1.4;
-        font-weight: 500;
+    .resume-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 212px;
+        gap: 54px;
+        align-items: start;
+        margin-bottom: 70px;
+    }
+
+    .cursor {
+        width: 4px;
+        height: 15px;
+        display: block;
+        margin: -14px 0 18px 2px;
+        background: #b3288a;
     }
 
     h1,
     h2,
-    p {
+    h3,
+    p,
+    address {
+        margin: 0;
         letter-spacing: 0;
     }
 
     h1 {
-        margin: 0 0 18px;
-        color: #292b2c;
-        font-size: 38px;
-        line-height: 1.12;
+        margin-bottom: 14px;
+        color: #000;
+        font-size: 52px;
+        line-height: 0.95;
+        font-weight: 900;
+    }
+
+    .subtitle {
+        color: #111;
+        font-family:
+            "Satoshi", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 14px;
+        line-height: 1.35;
         font-weight: 500;
+    }
+
+    address {
+        color: #111;
+        font-family:
+            "Satoshi", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 13px;
+        line-height: 1.45;
+        font-style: normal;
+        font-weight: 500;
+    }
+
+    .resume-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 220px;
+        gap: 68px;
     }
 
     h2 {
-        margin: 44px 0 14px;
-        color: #292b2c;
-        font-size: 22px;
-        line-height: 1.25;
-        font-weight: 700;
+        margin: 0 0 25px;
+        color: #3f7eca;
+        font-family:
+            "Satoshi", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 13px;
+        line-height: 1;
+        font-weight: 800;
     }
 
-    p {
-        margin: 0 0 20px;
-        color: rgba(41, 43, 44, 0.82);
+    h2:not(:first-child) {
+        margin-top: 54px;
+    }
+
+    .entry {
+        margin-bottom: 31px;
+    }
+
+    h3 {
+        margin-bottom: 8px;
+        color: #000;
         font-size: 18px;
-        line-height: 1.72;
-        font-weight: 400;
+        line-height: 1.2;
+        font-weight: 900;
     }
 
-    .lead {
-        color: rgba(41, 43, 44, 0.72);
-        font-size: 21px;
-        line-height: 1.52;
+    h3 em {
+        font-style: italic;
         font-weight: 500;
     }
 
+    .eyebrow {
+        margin-bottom: 8px;
+        color: #6f6f6f;
+        font-family:
+            "Satoshi", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 12px;
+        line-height: 1;
+        font-weight: 700;
+    }
+
+    .doc-page p {
+        color: #6a6a6a;
+        font-size: 13px;
+        line-height: 1.44;
+        font-weight: 700;
+    }
+
+    .side-column p {
+        margin-bottom: 23px;
+    }
+
+    @media (max-width: 1280px) {
+        .top-actions {
+            gap: 8px;
+        }
+
+        .request-access {
+            display: none;
+        }
+
+        .docs-workspace {
+            grid-template-columns: 280px minmax(0, 1fr);
+        }
+
+        .ruler {
+            padding-left: 316px;
+        }
+
+        .doc-tabs {
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+
+        .doc-page {
+            width: 760px;
+            min-height: 1075px;
+            padding: 58px 68px;
+        }
+    }
+
     @media (max-width: 980px) {
-        .doc-header {
-            padding: 18px clamp(18px, 5vw, 48px) 12px;
+        .docs-topbar {
+            min-height: auto;
+            flex-direction: column;
+            padding: 18px;
         }
 
-        .doc-toolbar {
-            width: calc(100% - 32px);
-            margin: 0 16px;
+        .menu-bar {
+            max-width: calc(100vw - 36px);
+            overflow-x: auto;
+            font-size: 14px;
         }
 
-        .doc-ruler {
-            padding-left: 28px;
+        .top-actions {
+            width: 100%;
+            justify-content: flex-start;
+            overflow-x: auto;
         }
 
-        .doc-workspace {
-            grid-template-columns: 1fr;
+        .toolbar {
+            width: calc(100% - 24px);
+            margin: 0 12px;
         }
 
+        .ruler,
         .doc-tabs {
             display: none;
         }
 
+        .docs-workspace {
+            grid-template-columns: 1fr;
+            min-height: calc(100vh - 148px);
+        }
+
         .doc-canvas {
-            padding: 22px clamp(18px, 5vw, 48px) 56px;
+            padding: 20px clamp(16px, 4vw, 34px) 64px;
         }
 
         .doc-page {
-            width: min(100%, 760px);
-            margin: 0 auto;
-        }
-    }
-
-    @media (max-width: 680px) {
-        .doc-header {
-            align-items: flex-start;
-            flex-direction: column;
+            width: min(100%, 720px);
             min-height: auto;
-            padding: 22px 18px;
+            margin: 0 auto;
+            padding: 48px clamp(28px, 8vw, 64px);
         }
 
-        .doc-actions {
-            width: 100%;
-            justify-content: space-between;
-            gap: 16px;
-        }
-
-        .collaborator {
-            width: 36px;
-            height: 36px;
-            border-width: 2px;
-        }
-
-        .share-button {
-            height: 44px;
-            padding: 0 18px;
-            font-size: 16px;
-        }
-
-        .doc-toolbar {
-            height: 44px;
-            gap: 16px;
-            width: calc(100% - 24px);
-            margin: 0 12px;
-            padding: 0 16px;
-        }
-
-        .doc-ruler {
-            display: none;
-        }
-
-        .doc-canvas {
-            padding: 18px 14px 40px;
-        }
-
-        .doc-page {
-            min-height: 720px;
-            padding: 42px 28px;
+        .resume-header,
+        .resume-grid {
+            grid-template-columns: 1fr;
+            gap: 38px;
         }
 
         h1 {
-            font-size: 30px;
+            font-size: clamp(36px, 8vw, 48px);
+        }
+    }
+
+    @media (max-width: 640px) {
+        .doc-title {
+            max-width: calc(100vw - 128px);
+            font-size: 18px;
         }
 
-        p,
-        .lead {
+        .share-action {
+            padding: 0 16px;
+        }
+
+        .signin-action {
+            padding: 0 18px;
+        }
+
+        .doc-page {
+            padding: 40px 26px;
+        }
+
+        h3 {
             font-size: 17px;
         }
     }
