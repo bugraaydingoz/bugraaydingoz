@@ -1,4 +1,5 @@
 ---
+import { articles } from "../data/articles";
 import Layout from "../layouts/Layout.astro";
 ---
 
@@ -33,70 +34,55 @@ import Layout from "../layouts/Layout.astro";
             </p>
         </section>
 
-        <a
-            class="company-chips"
-            href="https://www.linkedin.com/in/bugraaydingoz/"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="View Buğra Aydıngöz on LinkedIn"
-        >
-            <span class="company-chip">
-                <img
-                    class="company-logo"
-                    src="/company-logos/scalable-capital.svg"
-                    alt=""
-                    loading="lazy"
-                />
-                <span>Scalable Capital</span>
-            </span>
-            <span class="company-chip">
-                <img
-                    class="company-logo"
-                    src="/company-logos/needle.svg"
-                    alt=""
-                    loading="lazy"
-                />
-                <span>Needle</span>
-            </span>
-            <span class="company-chip">
-                <img
-                    class="company-logo"
-                    src="/company-logos/digital-turbine.svg"
-                    alt=""
-                    loading="lazy"
-                />
-                <span>Digital Turbine</span>
-            </span>
-            <span class="company-chip">
-                <span class="company-logo ki-logo" aria-hidden="true">
-                    <img
-                        class="ki-path ki-path-1"
-                        src="/company-logos/ki-group-path-1.svg"
-                        alt=""
-                        loading="lazy"
-                    />
-                    <img
-                        class="ki-path ki-path-2"
-                        src="/company-logos/ki-group-path-2.svg"
-                        alt=""
-                        loading="lazy"
-                    />
-                    <img
-                        class="ki-path ki-path-3"
-                        src="/company-logos/ki-group-path-3.svg"
-                        alt=""
-                        loading="lazy"
-                    />
-                    <img
-                        class="ki-path ki-path-4"
-                        src="/company-logos/ki-group-path-4.svg"
-                        alt=""
-                        loading="lazy"
-                    />
-                </span>
-                <span>KI Group</span>
-            </span>
-        </a>
+        <section class="recent-articles" aria-labelledby="recent-articles">
+            <h2 id="recent-articles">Recent articles</h2>
+            <div class="article-grid">
+                {
+                    articles.map((article, index) => (
+                        <a
+                            class="article-card"
+                            href={`/articles/${article.slug}`}
+                            aria-label={`Open ${article.title}`}
+                        >
+                            <span
+                                class={`article-preview template-${index % 6}`}
+                                aria-hidden="true"
+                            >
+                                {
+                                    article.pinned && (
+                                        <span class="pinned-star">★</span>
+                                    )
+                                }
+                                <span class="doc-template">
+                                    <span class="doc-template-heading">
+                                        {article.title}
+                                    </span>
+                                    <span class="doc-template-meta">
+                                        {article.date} · {article.readTime}
+                                    </span>
+                                    <span class="doc-template-accent" />
+                                    <span class="doc-template-image" />
+                                    <span class="doc-template-body">
+                                        <span>{article.excerpt}</span>
+                                        <span>
+                                            Mock content sits here as a miniature
+                                            document preview, similar to a Google
+                                            Docs template thumbnail.
+                                        </span>
+                                    </span>
+                                    <span class="doc-template-side">
+                                        <span>Notes</span>
+                                        <span>Draft outline</span>
+                                        <span>Product detail</span>
+                                    </span>
+                                    <span class="doc-template-footer" />
+                                </span>
+                            </span>
+                        </a>
+                    ))
+                }
+            </div>
+        </section>
     </main>
 </Layout>
 
@@ -119,7 +105,7 @@ import Layout from "../layouts/Layout.astro";
         min-height: 100vh;
         margin: 0 auto;
         display: grid;
-        grid-template-rows: auto minmax(0, 1fr) auto;
+        grid-template-rows: auto minmax(0, 1fr) auto auto;
         gap: clamp(28px, 4.8vh, 64px);
         padding: clamp(28px, 4.6vw, 64px) 0 clamp(34px, 5.8vw, 104px);
     }
@@ -174,7 +160,7 @@ import Layout from "../layouts/Layout.astro";
             "title spacer"
             "title intro";
         align-items: end;
-        grid-template-columns: minmax(0, 1fr) 300px;
+        grid-template-columns: minmax(0, 1fr) 307px;
         grid-template-rows: auto 1fr auto;
         column-gap: clamp(42px, 7vw, 116px);
         padding-top: clamp(18px, 5vh, 56px);
@@ -222,6 +208,7 @@ import Layout from "../layouts/Layout.astro";
         grid-area: intro;
         justify-self: end;
         align-self: end;
+        width: 307px;
         max-width: 100%;
         color: #0c0d0e;
         font-size: 24px;
@@ -230,85 +217,342 @@ import Layout from "../layouts/Layout.astro";
         text-align: right;
     }
 
-    .company-chips {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: center;
-        gap: 20px;
-        width: 100%;
-        margin-top: 170px;
+    :global(.recent-articles) {
+        margin-top: clamp(96px, 12vw, 170px);
+        padding: 0 0 20px;
+    }
+
+    :global(.recent-articles h2) {
+        margin: 0 0 64px;
+        color: #292b2c;
+        font-size: 24px;
+        line-height: 1.25;
+        font-weight: 500;
+        letter-spacing: 0;
+    }
+
+    :global(.article-grid) {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 32px;
+    }
+
+    :global(.article-card) {
+        min-width: 0;
+        display: block;
         color: inherit;
         text-decoration: none;
     }
 
-    .company-chip {
-        min-width: 0;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 14px;
-        padding: 12px 24px;
-        color: #292b2c;
-        background: rgba(249, 246, 245, 0.5);
-        border: 2px solid #e9e5e3;
-        border-radius: 999px;
-        box-shadow: 0 1px 4px rgba(12, 12, 13, 0.05);
-        font-size: clamp(1.2rem, 1.65vw, 1.5rem);
-        line-height: 1;
-        font-weight: 700;
-        white-space: nowrap;
-    }
-
-    .company-chips:focus-visible {
-        outline: 2px solid currentColor;
-        outline-offset: 4px;
-        border-radius: 999px;
-    }
-
-    .company-logo {
-        width: 32px;
-        height: 32px;
-        flex: 0 0 32px;
-        object-fit: contain;
-    }
-
-    .ki-logo {
+    :global(.article-preview) {
         position: relative;
         display: block;
+        aspect-ratio: 595 / 842;
+        padding: 0;
+        overflow: visible;
+        background: #fffdfd;
+        border: 1px solid #e8e4e2;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(12, 12, 13, 0.08);
     }
 
-    .ki-path {
+    :global(.pinned-star) {
         position: absolute;
+        top: 14px;
+        right: 14px;
+        z-index: 1;
+        display: grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        color: #9f6b00;
+        background: #f6c343;
+        border: 1px solid rgba(159, 107, 0, 0.28);
+        border-radius: 999px;
+        box-shadow: 0 1px 3px rgba(12, 12, 13, 0.12);
+        font-size: 14px;
+        line-height: 1;
+    }
+
+    :global(.doc-template) {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 100%;
+        padding: 28px 26px;
+        overflow: hidden;
+    }
+
+    :global(.doc-template-heading),
+    :global(.doc-template-meta),
+    :global(.doc-template-accent),
+    :global(.doc-template-image),
+    :global(.doc-template-body),
+    :global(.doc-template-body span),
+    :global(.doc-template-side),
+    :global(.doc-template-side span),
+    :global(.doc-template-footer) {
         display: block;
     }
 
-    .ki-path-1 {
-        top: 16.74%;
-        left: -0.47%;
-        width: 44.5%;
-        height: 66.51%;
+    :global(.doc-template-heading) {
+        max-width: 74%;
+        color: #292b2c;
+        font-size: 14px;
+        line-height: 1.12;
+        font-weight: 700;
     }
 
-    .ki-path-2 {
-        top: 16.74%;
-        left: 44.04%;
-        width: 22.25%;
-        height: 22.15%;
+    :global(.doc-template-meta) {
+        margin-top: 7px;
+        color: rgba(41, 43, 44, 0.42);
+        font-size: 7px;
+        line-height: 1.4;
     }
 
-    .ki-path-3 {
-        top: 61.08%;
-        left: 44.04%;
-        width: 22.25%;
-        height: 22.19%;
+    :global(.doc-template-accent) {
+        width: 100%;
+        height: 2px;
+        margin-top: 14px;
+        background: #e4a55f;
     }
 
-    .ki-path-4 {
-        top: 16.74%;
-        left: 78.23%;
-        width: 22.24%;
-        height: 66.52%;
+    :global(.doc-template-image) {
+        width: 100%;
+        height: 84px;
+        margin-top: 10px;
+        background:
+            linear-gradient(135deg, rgba(22, 124, 122, 0.2), transparent 46%),
+            linear-gradient(45deg, #d8cfb1 0 34%, #80d8c8 34% 72%, #f36d35 72%);
+    }
+
+    :global(.doc-template-body) {
+        margin-top: 12px;
+        color: rgba(41, 43, 44, 0.68);
+        font-size: 6.5px;
+        line-height: 1.45;
+    }
+
+    :global(.doc-template-body span + span) {
+        margin-top: 8px;
+    }
+
+    :global(.doc-template-side) {
+        position: absolute;
+        top: 54px;
+        right: 24px;
+        width: 52px;
+        color: rgba(41, 43, 44, 0.52);
+        font-size: 5.5px;
+        line-height: 1.4;
+    }
+
+    :global(.doc-template-side span:first-child) {
+        color: #4f62e8;
+        font-size: 7px;
+        font-weight: 700;
+    }
+
+    :global(.doc-template-side span + span) {
+        margin-top: 8px;
+    }
+
+    :global(.doc-template-footer) {
+        position: absolute;
+        right: 26px;
+        bottom: 24px;
+        left: 26px;
+        height: 2px;
+        background: rgba(228, 165, 95, 0.72);
+    }
+
+    :global(.template-0 .doc-template) {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        column-gap: 18px;
+        padding: 28px 24px;
+    }
+
+    :global(.template-0 .doc-template-heading) {
+        grid-column: 1 / -1;
+        font-size: 18px;
+    }
+
+    :global(.template-0 .doc-template-meta),
+    :global(.template-0 .doc-template-accent),
+    :global(.template-0 .doc-template-image),
+    :global(.template-0 .doc-template-footer) {
+        display: none;
+    }
+
+    :global(.template-0 .doc-template-body) {
+        margin-top: 18px;
+        font-size: 5.8px;
+    }
+
+    :global(.template-0 .doc-template-side) {
+        position: static;
+        width: auto;
+        margin-top: 18px;
+        font-size: 5.8px;
+    }
+
+    :global(.template-1 .doc-template-heading) {
+        max-width: 46%;
+        color: #ff4d5a;
+        font-size: 8px;
+    }
+
+    :global(.template-1 .doc-template-accent),
+    :global(.template-1 .doc-template-image),
+    :global(.template-1 .doc-template-footer) {
+        display: none;
+    }
+
+    :global(.template-1 .doc-template-body) {
+        width: 78%;
+        margin-top: 20px;
+        margin-left: 28px;
+        font-size: 5.8px;
+    }
+
+    :global(.template-1 .doc-template-side) {
+        top: 76px;
+        left: 28px;
+        right: auto;
+        width: 70px;
+    }
+
+    :global(.template-2 .doc-template-heading) {
+        max-width: 100%;
+        font-size: 14px;
+        text-transform: uppercase;
+    }
+
+    :global(.template-2 .doc-template-image) {
+        height: 110px;
+        background:
+            radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 0.4), transparent 24%),
+            linear-gradient(135deg, #e3e7eb, #b7c0c8);
+    }
+
+    :global(.template-2 .doc-template-side) {
+        display: none;
+    }
+
+    :global(.template-3 .doc-template-accent) {
+        height: 4px;
+        background: #55c987;
+    }
+
+    :global(.template-3 .doc-template-image),
+    :global(.template-3 .doc-template-footer) {
+        display: none;
+    }
+
+    :global(.template-3 .doc-template-heading) {
+        margin-top: 44px;
+        font-size: 8px;
+        color: #55c987;
+    }
+
+    :global(.template-3 .doc-template-body) {
+        width: 74%;
+        margin-top: 22px;
+    }
+
+    :global(.template-3 .doc-template-side) {
+        top: 66px;
+        left: 26px;
+        right: auto;
+        width: 86px;
+    }
+
+    :global(.template-4 .doc-template-accent) {
+        height: 4px;
+        background: linear-gradient(90deg, #d6c78d, #75dcd2, #ff6a3d, #7f765d);
+    }
+
+    :global(.template-4 .doc-template-heading) {
+        margin-top: 12px;
+        color: #776247;
+        font-size: 18px;
+    }
+
+    :global(.template-4 .doc-template-meta) {
+        color: #9b876b;
+    }
+
+    :global(.template-4 .doc-template-image) {
+        height: 106px;
+    }
+
+    :global(.template-4 .doc-template-body) {
+        display: none;
+    }
+
+    :global(.template-4 .doc-template-side) {
+        top: auto;
+        right: auto;
+        bottom: 32px;
+        left: 26px;
+        width: 80px;
+        color: #59a99f;
+    }
+
+    :global(.template-4 .doc-template-footer) {
+        display: none;
+    }
+
+    :global(.template-5 .doc-template-heading) {
+        color: #5662e8;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    :global(.template-5 .doc-template-image) {
+        position: absolute;
+        top: 114px;
+        left: 26px;
+        width: 74px;
+        height: 86px;
+        margin: 0;
+        background: linear-gradient(135deg, #f13c78, #d0185c);
+        border-radius: 6px;
+    }
+
+    :global(.template-5 .doc-template-body) {
+        width: calc(100% - 92px);
+        margin-top: 28px;
+        margin-left: 92px;
+    }
+
+    :global(.template-5 .doc-template-side) {
+        top: 88px;
+        right: 28px;
+        width: 80px;
+    }
+
+    :global(.template-5 .doc-template-footer) {
+        right: 0;
+        bottom: 0;
+        left: auto;
+        width: 74px;
+        height: 44px;
+        background: linear-gradient(135deg, #f23c7a, #d0185c);
+        clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    }
+
+    :global(.article-card:hover .article-preview),
+    :global(.article-card:focus-visible .article-preview) {
+        border-color: #d8d1ce;
+        box-shadow: 0 3px 10px rgba(12, 12, 13, 0.1);
+    }
+
+    :global(.article-card:focus-visible) {
+        outline: 2px solid currentColor;
+        outline-offset: 8px;
+        border-radius: 10px;
     }
 
     @media (min-width: 981px) {
@@ -360,8 +604,12 @@ import Layout from "../layouts/Layout.astro";
             text-align: left;
         }
 
-        .company-chips {
-            justify-content: flex-start;
+        :global(.recent-articles) {
+            margin-top: 72px;
+        }
+
+        :global(.article-grid) {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
         }
     }
 
@@ -386,22 +634,17 @@ import Layout from "../layouts/Layout.astro";
             font-size: clamp(4.58rem, 22vw, 6.1rem);
         }
 
-        .company-chips {
-            gap: 12px;
-            margin-top: 40px;
+        :global(.recent-articles) {
+            margin-top: 56px;
         }
 
-        .company-chip {
-            gap: 10px;
-            max-width: 100%;
-            padding: 10px 16px;
-            font-size: clamp(0.98rem, 4.8vw, 1.12rem);
+        :global(.recent-articles h2) {
+            margin-bottom: 28px;
         }
 
-        .company-logo {
-            width: 28px;
-            height: 28px;
-            flex-basis: 28px;
+        :global(.article-grid) {
+            grid-template-columns: 1fr;
+            gap: 22px;
         }
     }
 </style>
