@@ -99,8 +99,8 @@ import Layout from "../layouts/Layout.astro";
     :global(body) {
         min-height: 100%;
         overflow-x: hidden;
-        color: #282a2c;
-        background: #f7f7f7;
+        color: var(--foreground);
+        background: var(--background);
         font-family:
             "Satoshi", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
     }
@@ -124,7 +124,7 @@ import Layout from "../layouts/Layout.astro";
 
     .brand,
     .header-links a {
-        color: #282a2c;
+        color: var(--foreground);
         text-decoration: none;
         font-size: clamp(1.18rem, 1.7vw, 1.75rem);
         line-height: 1;
@@ -153,7 +153,7 @@ import Layout from "../layouts/Layout.astro";
 
     .header-links a:hover,
     .header-links a:focus-visible {
-        color: #4b8d8a;
+        color: var(--primary);
     }
 
     .hero {
@@ -175,7 +175,7 @@ import Layout from "../layouts/Layout.astro";
         margin: 0;
         grid-area: title;
         align-self: end;
-        color: #282a2c;
+        color: var(--foreground);
         font-size: clamp(6.2rem, 10.5vw, 10rem);
         line-height: 1.0625;
         font-weight: 400;
@@ -195,9 +195,9 @@ import Layout from "../layouts/Layout.astro";
         grid-area: portrait;
         justify-self: end;
         align-self: start;
-        border-radius: 14px;
+        border-radius: var(--radius);
         overflow: hidden;
-        box-shadow: 0 18px 44px rgba(17, 24, 39, 0.12);
+        box-shadow: 0 18px 44px color-mix(in oklch, var(--foreground) 12%, transparent);
     }
 
     .portrait img {
@@ -215,7 +215,7 @@ import Layout from "../layouts/Layout.astro";
         align-self: end;
         width: 307px;
         max-width: 100%;
-        color: #0c0d0e;
+        color: var(--foreground);
         font-size: 24px;
         line-height: 1.35;
         font-weight: 500;
@@ -229,7 +229,7 @@ import Layout from "../layouts/Layout.astro";
 
     :global(.recent-articles h2) {
         margin: 0 0 64px;
-        color: #292b2c;
+        color: var(--foreground);
         font-size: 24px;
         line-height: 1.25;
         font-weight: 500;
@@ -255,10 +255,10 @@ import Layout from "../layouts/Layout.astro";
         aspect-ratio: 595 / 842;
         padding: 0;
         overflow: visible;
-        background: #fffdfd;
-        border: 1px solid #e8e4e2;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(12, 12, 13, 0.08);
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: 0 1px 3px color-mix(in oklch, var(--foreground) 8%, transparent);
     }
 
     :global(.pinned-star) {
@@ -270,11 +270,11 @@ import Layout from "../layouts/Layout.astro";
         place-items: center;
         width: 26px;
         height: 26px;
-        color: #9f6b00;
-        background: #f6c343;
-        border: 1px solid rgba(159, 107, 0, 0.28);
+        color: var(--primary-foreground);
+        background: var(--primary);
+        border: 1px solid color-mix(in oklch, var(--primary) 34%, var(--border));
         border-radius: 999px;
-        box-shadow: 0 1px 3px rgba(12, 12, 13, 0.12);
+        box-shadow: 0 1px 3px color-mix(in oklch, var(--foreground) 12%, transparent);
         font-size: 14px;
         line-height: 1;
     }
@@ -307,7 +307,7 @@ import Layout from "../layouts/Layout.astro";
 
     :global(.doc-template-heading) {
         max-width: 74%;
-        color: #292b2c;
+        color: var(--card-foreground);
         font-size: 14px;
         line-height: 1.12;
         font-weight: 700;
@@ -315,7 +315,7 @@ import Layout from "../layouts/Layout.astro";
 
     :global(.doc-template-meta) {
         margin-top: 7px;
-        color: rgba(41, 43, 44, 0.42);
+        color: var(--muted-foreground);
         font-size: 7px;
         line-height: 1.4;
     }
@@ -324,7 +324,7 @@ import Layout from "../layouts/Layout.astro";
         width: 100%;
         height: 2px;
         margin-top: 14px;
-        background: #e4a55f;
+        background: var(--primary);
     }
 
     :global(.doc-template-image) {
@@ -332,13 +332,13 @@ import Layout from "../layouts/Layout.astro";
         height: 84px;
         margin-top: 10px;
         background:
-            linear-gradient(135deg, rgba(22, 124, 122, 0.2), transparent 46%),
-            linear-gradient(45deg, #d8cfb1 0 34%, #80d8c8 34% 72%, #f36d35 72%);
+            linear-gradient(135deg, color-mix(in oklch, var(--primary) 20%, transparent), transparent 46%),
+            linear-gradient(45deg, var(--chart-1) 0 34%, var(--primary) 34% 72%, var(--chart-4) 72%);
     }
 
     :global(.doc-template-body) {
         margin-top: 12px;
-        color: rgba(41, 43, 44, 0.68);
+        color: var(--muted-foreground);
         font-size: 6.5px;
         line-height: 1.45;
     }
@@ -352,13 +352,13 @@ import Layout from "../layouts/Layout.astro";
         top: 54px;
         right: 24px;
         width: 52px;
-        color: rgba(41, 43, 44, 0.52);
+        color: var(--muted-foreground);
         font-size: 5.5px;
         line-height: 1.4;
     }
 
     :global(.doc-template-side span:first-child) {
-        color: #4f62e8;
+        color: var(--primary);
         font-size: 7px;
         font-weight: 700;
     }
@@ -373,7 +373,7 @@ import Layout from "../layouts/Layout.astro";
         bottom: 24px;
         left: 26px;
         height: 2px;
-        background: rgba(228, 165, 95, 0.72);
+        background: color-mix(in oklch, var(--primary) 72%, var(--card));
     }
 
     :global(.template-0 .doc-template) {
@@ -409,7 +409,7 @@ import Layout from "../layouts/Layout.astro";
 
     :global(.template-1 .doc-template-heading) {
         max-width: 46%;
-        color: #ff4d5a;
+        color: var(--destructive);
         font-size: 8px;
     }
 
@@ -442,8 +442,8 @@ import Layout from "../layouts/Layout.astro";
     :global(.template-2 .doc-template-image) {
         height: 110px;
         background:
-            radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 0.4), transparent 24%),
-            linear-gradient(135deg, #e3e7eb, #b7c0c8);
+            radial-gradient(circle at 50% 35%, color-mix(in oklch, var(--card) 40%, transparent), transparent 24%),
+            linear-gradient(135deg, var(--muted), var(--chart-1));
     }
 
     :global(.template-2 .doc-template-side) {
@@ -452,7 +452,7 @@ import Layout from "../layouts/Layout.astro";
 
     :global(.template-3 .doc-template-accent) {
         height: 4px;
-        background: #55c987;
+        background: var(--primary);
     }
 
     :global(.template-3 .doc-template-image),
@@ -463,7 +463,7 @@ import Layout from "../layouts/Layout.astro";
     :global(.template-3 .doc-template-heading) {
         margin-top: 44px;
         font-size: 8px;
-        color: #55c987;
+        color: var(--primary);
     }
 
     :global(.template-3 .doc-template-body) {
@@ -480,17 +480,17 @@ import Layout from "../layouts/Layout.astro";
 
     :global(.template-4 .doc-template-accent) {
         height: 4px;
-        background: linear-gradient(90deg, #d6c78d, #75dcd2, #ff6a3d, #7f765d);
+        background: linear-gradient(90deg, var(--chart-1), var(--chart-2), var(--primary), var(--chart-4));
     }
 
     :global(.template-4 .doc-template-heading) {
         margin-top: 12px;
-        color: #776247;
+        color: var(--accent-foreground);
         font-size: 18px;
     }
 
     :global(.template-4 .doc-template-meta) {
-        color: #9b876b;
+        color: var(--muted-foreground);
     }
 
     :global(.template-4 .doc-template-image) {
@@ -507,7 +507,7 @@ import Layout from "../layouts/Layout.astro";
         bottom: 32px;
         left: 26px;
         width: 80px;
-        color: #59a99f;
+        color: var(--primary);
     }
 
     :global(.template-4 .doc-template-footer) {
@@ -515,7 +515,7 @@ import Layout from "../layouts/Layout.astro";
     }
 
     :global(.template-5 .doc-template-heading) {
-        color: #5662e8;
+        color: var(--primary);
         font-size: 14px;
         font-weight: 500;
     }
@@ -527,8 +527,8 @@ import Layout from "../layouts/Layout.astro";
         width: 74px;
         height: 86px;
         margin: 0;
-        background: linear-gradient(135deg, #f13c78, #d0185c);
-        border-radius: 6px;
+        background: linear-gradient(135deg, var(--primary), var(--sidebar-primary));
+        border-radius: var(--radius);
     }
 
     :global(.template-5 .doc-template-body) {
@@ -549,20 +549,20 @@ import Layout from "../layouts/Layout.astro";
         left: auto;
         width: 74px;
         height: 44px;
-        background: linear-gradient(135deg, #f23c7a, #d0185c);
+        background: linear-gradient(135deg, var(--primary), var(--sidebar-primary));
         clip-path: polygon(100% 0, 100% 100%, 0 100%);
     }
 
     :global(.article-card:hover .article-preview),
     :global(.article-card:focus-visible .article-preview) {
-        border-color: #d8d1ce;
-        box-shadow: 0 3px 10px rgba(12, 12, 13, 0.1);
+        border-color: var(--ring);
+        box-shadow: 0 3px 10px color-mix(in oklch, var(--foreground) 10%, transparent);
     }
 
     :global(.article-card:focus-visible) {
         outline: 2px solid currentColor;
         outline-offset: 8px;
-        border-radius: 10px;
+        border-radius: var(--radius);
     }
 
     @media (min-width: 981px) {

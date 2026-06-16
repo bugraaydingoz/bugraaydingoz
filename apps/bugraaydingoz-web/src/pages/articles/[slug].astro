@@ -320,8 +320,8 @@ const toolbarIcons = [
         height: 100%;
         min-height: 100%;
         overflow: hidden;
-        color: #202124;
-        background: #f1f3f4;
+        color: var(--foreground);
+        background: var(--muted);
         font-family:
             "Satoshi", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
     }
@@ -344,7 +344,7 @@ const toolbarIcons = [
         display: grid;
         grid-template-rows: auto auto auto minmax(0, 1fr);
         overflow: hidden;
-        background: #f1f3f4;
+        background: var(--muted);
     }
 
     .docs-topbar {
@@ -356,8 +356,8 @@ const toolbarIcons = [
         justify-content: space-between;
         gap: 16px;
         padding: 13px 20px 6px 26px;
-        color: #202124;
-        background: #f8fbff;
+        color: var(--foreground);
+        background: var(--background);
     }
 
     .title-cluster {
@@ -373,7 +373,7 @@ const toolbarIcons = [
         flex: 0 0 auto;
         display: grid;
         place-items: center;
-        color: #4285f4;
+        color: var(--primary);
         text-decoration: none;
     }
 
@@ -393,7 +393,7 @@ const toolbarIcons = [
     .doc-title {
         max-width: min(360px, 28vw);
         overflow: hidden;
-        color: #202124;
+        color: var(--foreground);
         font-size: 18px;
         line-height: 1;
         font-weight: 500;
@@ -418,7 +418,7 @@ const toolbarIcons = [
         width: 17px;
         height: 17px;
         font-size: 17px;
-        color: #5f6368;
+        color: var(--muted-foreground);
     }
 
     .ph.tiny,
@@ -432,7 +432,7 @@ const toolbarIcons = [
         display: flex;
         align-items: center;
         gap: 2px;
-        color: #202124;
+        color: var(--foreground);
         font-size: 14px;
         line-height: 1;
         white-space: nowrap;
@@ -445,7 +445,7 @@ const toolbarIcons = [
     .menu-item summary {
         list-style: none;
         padding: 5px 7px;
-        border-radius: 4px;
+        border-radius: var(--radius);
         cursor: pointer;
     }
 
@@ -455,7 +455,7 @@ const toolbarIcons = [
 
     .menu-item summary:hover,
     .menu-item[open] summary {
-        background: #e8f0fe;
+        background: var(--accent);
     }
 
     .menu-panel {
@@ -465,17 +465,17 @@ const toolbarIcons = [
         z-index: 20;
         width: 190px;
         padding: 6px 0;
-        background: #fff;
-        border: 1px solid #dadce0;
-        border-radius: 4px;
-        box-shadow: 0 8px 18px rgba(60, 64, 67, 0.24);
+        background: var(--popover);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: 0 8px 18px color-mix(in oklch, var(--foreground) 18%, transparent);
     }
 
     .menu-panel button {
         width: 100%;
         display: block;
         padding: 8px 14px;
-        color: #202124;
+        color: var(--popover-foreground);
         background: transparent;
         text-align: left;
         font-size: 13px;
@@ -484,7 +484,7 @@ const toolbarIcons = [
 
     .menu-panel button:hover,
     .menu-panel button:focus-visible {
-        background: #f1f3f4;
+        background: var(--accent);
         outline: none;
     }
 
@@ -508,9 +508,9 @@ const toolbarIcons = [
 
     .request-access {
         padding: 0 20px;
-        color: #2b5bd7;
-        background: #fff;
-        border: 1px solid #5f6368;
+        color: var(--primary);
+        background: var(--background);
+        border: 1px solid var(--ring);
     }
 
     .avatar {
@@ -518,9 +518,9 @@ const toolbarIcons = [
         height: 38px;
         display: inline-grid;
         place-items: center;
-        color: #fff;
-        background: #40507a;
-        border: 2px solid #d02c86;
+        color: var(--primary-foreground);
+        background: var(--sidebar-primary);
+        border: 2px solid var(--primary);
         border-radius: 999px;
         font-size: 14px;
         font-weight: 700;
@@ -532,8 +532,8 @@ const toolbarIcons = [
         align-items: center;
         gap: 8px;
         padding: 0 18px;
-        color: #5f6368;
-        background: #eef0f3;
+        color: var(--secondary-foreground);
+        background: var(--secondary);
         border-radius: 999px;
         font-size: 14px;
         line-height: 1;
@@ -547,8 +547,8 @@ const toolbarIcons = [
 
     .signin-action {
         padding: 0 20px;
-        color: #fff;
-        background: #2f5bd3;
+        color: var(--primary-foreground);
+        background: var(--primary);
     }
 
     .toolbar {
@@ -562,8 +562,8 @@ const toolbarIcons = [
         margin: 0 16px;
         padding: 5px 12px;
         overflow-x: auto;
-        color: #3c4043;
-        background: #edf2f8;
+        color: var(--accent-foreground);
+        background: var(--accent);
         border-radius: 999px;
         font-size: 14px;
         line-height: 1;
@@ -582,9 +582,9 @@ const toolbarIcons = [
         height: 28px;
         display: inline-grid;
         place-items: center;
-        color: #3c4043;
+        color: var(--accent-foreground);
         background: transparent;
-        border-radius: 4px;
+        border-radius: var(--radius);
         font-size: 14px;
         line-height: 1;
         font-weight: 700;
@@ -594,7 +594,7 @@ const toolbarIcons = [
     .text-button:hover,
     .select-button:hover,
     .editing-button:hover {
-        background: rgba(60, 64, 67, 0.1);
+        background: color-mix(in oklch, var(--foreground) 10%, transparent);
     }
 
     .text-button.italic {
@@ -602,7 +602,7 @@ const toolbarIcons = [
     }
 
     .text-button.color {
-        border-bottom: 2px solid #5f6368;
+        border-bottom: 2px solid var(--muted-foreground);
     }
 
     .select-button,
@@ -612,9 +612,9 @@ const toolbarIcons = [
         align-items: center;
         gap: 7px;
         padding: 0 8px;
-        color: #3c4043;
+        color: var(--accent-foreground);
         background: transparent;
-        border-radius: 4px;
+        border-radius: var(--radius);
         font-size: 14px;
         line-height: 1;
     }
@@ -633,7 +633,7 @@ const toolbarIcons = [
         width: 1px;
         height: 28px;
         flex: 0 0 auto;
-        background: #c8cdd3;
+        background: var(--border);
     }
 
     .font-size {
@@ -641,10 +641,10 @@ const toolbarIcons = [
         height: 28px;
         display: inline-grid;
         place-items: center;
-        color: #202124;
-        background: #fff;
-        border: 1px solid #9aa0a6;
-        border-radius: 5px;
+        color: var(--foreground);
+        background: var(--background);
+        border: 1px solid var(--input);
+        border-radius: var(--radius);
         font-size: 14px;
     }
 
@@ -666,9 +666,9 @@ const toolbarIcons = [
         gap: 39px;
         padding: 0 0 4px 338px;
         overflow: hidden;
-        color: #5f6368;
-        background: #f1f3f4;
-        border-bottom: 1px solid #cdd1d5;
+        color: var(--muted-foreground);
+        background: var(--muted);
+        border-bottom: 1px solid var(--border);
         font-size: 12px;
         line-height: 1;
         font-weight: 700;
@@ -680,16 +680,16 @@ const toolbarIcons = [
         display: grid;
         grid-template-columns: 300px minmax(0, 1fr);
         overflow: hidden;
-        background: #f1f3f4;
+        background: var(--muted);
     }
 
     .doc-tabs {
         min-height: 0;
         overflow-y: auto;
         padding: 24px 18px 42px;
-        color: #3c4043;
-        background: #f8fbff;
-        border-right: 1px solid #dfe3e7;
+        color: var(--sidebar-foreground);
+        background: var(--sidebar);
+        border-right: 1px solid var(--sidebar-border);
     }
 
     .back-link {
@@ -698,7 +698,7 @@ const toolbarIcons = [
         display: grid;
         place-items: center;
         margin-bottom: 40px;
-        color: #3c4043;
+        color: var(--sidebar-foreground);
         text-decoration: none;
     }
 
@@ -720,7 +720,7 @@ const toolbarIcons = [
     .tabs-heading button {
         width: 26px;
         height: 26px;
-        color: #3c4043;
+        color: var(--sidebar-foreground);
         background: transparent;
         border-radius: 999px;
         font-size: 22px;
@@ -733,8 +733,8 @@ const toolbarIcons = [
         align-items: center;
         gap: 11px;
         padding: 0 16px 0 22px;
-        color: #2250b8;
-        background: #d6e2ff;
+        color: var(--sidebar-primary);
+        background: var(--sidebar-accent);
         border-radius: 999px;
         font-size: 15px;
         line-height: 1;
@@ -752,7 +752,7 @@ const toolbarIcons = [
         display: grid;
         place-items: center;
         margin-left: auto;
-        color: #3c4043;
+        color: var(--sidebar-foreground);
         background: transparent;
         border-radius: 999px;
     }
@@ -762,21 +762,21 @@ const toolbarIcons = [
         gap: 18px;
         margin: 14px 0 0 30px;
         padding: 7px 0 0 22px;
-        border-left: 2px solid #dfe3e7;
+        border-left: 2px solid var(--sidebar-border);
         font-size: 14px;
         line-height: 1.18;
     }
 
     .outline a {
         overflow: hidden;
-        color: #3c4043;
+        color: var(--sidebar-foreground);
         text-decoration: none;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
     .outline a:first-child {
-        color: #2f5bd3;
+        color: var(--sidebar-primary);
     }
 
     .doc-canvas {
@@ -792,10 +792,10 @@ const toolbarIcons = [
         min-height: 1160px;
         margin: 0;
         padding: 64px 76px;
-        color: #111;
-        background: #fff;
-        border: 1px solid #c4c7ca;
-        box-shadow: 0 1px 2px rgba(60, 64, 67, 0.14);
+        color: var(--card-foreground);
+        background: var(--card);
+        border: 1px solid var(--border);
+        box-shadow: 0 1px 2px color-mix(in oklch, var(--foreground) 12%, transparent);
         font-family: Merriweather, Georgia, "Times New Roman", serif;
     }
 
@@ -812,7 +812,7 @@ const toolbarIcons = [
         height: 15px;
         display: block;
         margin: -14px 0 18px 2px;
-        background: #b3288a;
+        background: var(--primary);
     }
 
     h1,
@@ -826,14 +826,14 @@ const toolbarIcons = [
 
     h1 {
         margin-bottom: 14px;
-        color: #000;
+        color: var(--card-foreground);
         font-size: 52px;
         line-height: 0.95;
         font-weight: 900;
     }
 
     .subtitle {
-        color: #111;
+        color: var(--card-foreground);
         font-family:
             "Satoshi", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
         font-size: 14px;
@@ -842,7 +842,7 @@ const toolbarIcons = [
     }
 
     address {
-        color: #111;
+        color: var(--card-foreground);
         font-family:
             "Satoshi", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
         font-size: 13px;
@@ -859,7 +859,7 @@ const toolbarIcons = [
 
     h2 {
         margin: 0 0 25px;
-        color: #3f7eca;
+        color: var(--primary);
         font-family:
             "Satoshi", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
         font-size: 13px;
@@ -877,7 +877,7 @@ const toolbarIcons = [
 
     h3 {
         margin-bottom: 8px;
-        color: #000;
+        color: var(--card-foreground);
         font-size: 18px;
         line-height: 1.2;
         font-weight: 900;
@@ -890,7 +890,7 @@ const toolbarIcons = [
 
     .eyebrow {
         margin-bottom: 8px;
-        color: #6f6f6f;
+        color: var(--muted-foreground);
         font-family:
             "Satoshi", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
         font-size: 12px;
@@ -899,7 +899,7 @@ const toolbarIcons = [
     }
 
     .doc-page p {
-        color: #6a6a6a;
+        color: var(--muted-foreground);
         font-size: 13px;
         line-height: 1.44;
         font-weight: 700;
