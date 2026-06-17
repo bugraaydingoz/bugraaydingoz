@@ -11,10 +11,22 @@
             height="236"
             alt="Buğra Aydıngöz portrait"
         />
-        <span class="figma-portrait__corner figma-portrait__corner--tl"></span>
-        <span class="figma-portrait__corner figma-portrait__corner--tr"></span>
-        <span class="figma-portrait__corner figma-portrait__corner--br"></span>
-        <span class="figma-portrait__corner figma-portrait__corner--bl"></span>
+        <span
+            class="figma-portrait__corner figma-portrait__corner--tl"
+            data-resize-handle="tl"
+        ></span>
+        <span
+            class="figma-portrait__corner figma-portrait__corner--tr"
+            data-resize-handle="tr"
+        ></span>
+        <span
+            class="figma-portrait__corner figma-portrait__corner--br"
+            data-resize-handle="br"
+        ></span>
+        <span
+            class="figma-portrait__corner figma-portrait__corner--bl"
+            data-resize-handle="bl"
+        ></span>
         <span class="figma-portrait__radius figma-portrait__radius--tl"></span>
         <span class="figma-portrait__radius figma-portrait__radius--tr"></span>
         <span class="figma-portrait__radius figma-portrait__radius--br"></span>
@@ -27,20 +39,67 @@
     const portraits = document.querySelectorAll<HTMLElement>(
         "[data-figma-portrait]",
     );
+    const minSize = 60;
+
+    type FrameState = {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    };
+
+    type PointerState = {
+        pointerId: number;
+        startX: number;
+        startY: number;
+    };
+
+    type DragState = PointerState & {
+        originX: number;
+        originY: number;
+    };
+
+    type ResizeState = PointerState &
+        FrameState & {
+            handle: string;
+            aspectRatio: number;
+    };
 
     portraits.forEach((portrait) => {
         const frame = portrait.querySelector<HTMLElement>(
             ".figma-portrait__frame",
         );
-        let dragState:
-            | {
-                  pointerId: number;
-                  startX: number;
-                  startY: number;
-                  originX: number;
-                  originY: number;
-              }
-            | undefined;
+        const sizeLabel = portrait.querySelector<HTMLElement>(
+            ".figma-portrait__size",
+        );
+        const resizeHandles =
+            portrait.querySelectorAll<HTMLElement>("[data-resize-handle]");
+        let dragState: DragState | undefined;
+        let resizeState: ResizeState | undefined;
+
+        const getFrameState = (): FrameState => ({
+            x: Number(portrait.dataset.x ?? 0),
+            y: Number(portrait.dataset.y ?? 0),
+            width: Number(portrait.dataset.width ?? frame?.offsetWidth ?? 0),
+            height: Number(portrait.dataset.height ?? frame?.offsetHeight ?? 0),
+        });
+
+        const setFrameState = ({ x, y, width, height }: FrameState) => {
+            portrait.dataset.x = String(x);
+            portrait.dataset.y = String(y);
+            portrait.dataset.width = String(width);
+            portrait.dataset.height = String(height);
+            portrait.style.setProperty("--portrait-x", `${x}px`);
+            portrait.style.setProperty("--portrait-y", `${y}px`);
+            portrait.style.setProperty("--portrait-width", `${width}px`);
+            portrait.style.setProperty("--portrait-height", `${height}px`);
+
+            if (sizeLabel) {
+                sizeLabel.textContent = `${Math.round(width)} × ${Math.round(
+                    height,
+                )}`;
+            }
+        };
 
         const selectPortrait = () => {
             portraits.forEach((item) => {
@@ -49,8 +108,51 @@
             portrait.focus();
         };
 
+        const resizeFrame = (event: PointerEvent) => {
+            if (!resizeState || event.pointerId !== resizeState.pointerId) {
+                return;
+            }
+
+            const deltaX = event.clientX - resizeState.startX;
+            const deltaY = event.clientY - resizeState.startY;
+            const affectsLeft = resizeState.handle.includes("l");
+            const affectsTop = resizeState.handle.includes("t");
+            let width = resizeState.width + (affectsLeft ? -deltaX : deltaX);
+            let height = resizeState.height + (affectsTop ? -deltaY : deltaY);
+
+            width = Math.max(minSize, width);
+            height = Math.max(minSize, height);
+
+            if (event.shiftKey) {
+                const widthFromHeight = height * resizeState.aspectRatio;
+                const heightFromWidth = width / resizeState.aspectRatio;
+                const movedMoreHorizontally =
+                    Math.abs(width - resizeState.width) >
+                    Math.abs(height - resizeState.height);
+
+                if (movedMoreHorizontally) {
+                    height = Math.max(minSize, heightFromWidth);
+                } else {
+                    width = Math.max(minSize, widthFromHeight);
+                }
+            }
+
+            const x = affectsLeft
+                ? resizeState.x + resizeState.width - width
+                : resizeState.x;
+            const y = affectsTop
+                ? resizeState.y + resizeState.height - height
+                : resizeState.y;
+
+            setFrameState({ x, y, width, height });
+        };
+
         frame?.addEventListener("pointerdown", (event) => {
             if (event.button !== 0) {
+                return;
+            }
+
+            if ((event.target as HTMLElement).closest("[data-resize-handle]")) {
                 return;
             }
 
@@ -58,12 +160,13 @@
             event.stopPropagation();
             selectPortrait();
 
+            const frameState = getFrameState();
             dragState = {
                 pointerId: event.pointerId,
                 startX: event.clientX,
                 startY: event.clientY,
-                originX: Number(portrait.dataset.x ?? 0),
-                originY: Number(portrait.dataset.y ?? 0),
+                originX: frameState.x,
+                originY: frameState.y,
             };
 
             frame.setPointerCapture(event.pointerId);
@@ -75,13 +178,12 @@
                 return;
             }
 
-            const nextX = dragState.originX + event.clientX - dragState.startX;
-            const nextY = dragState.originY + event.clientY - dragState.startY;
-
-            portrait.dataset.x = String(nextX);
-            portrait.dataset.y = String(nextY);
-            portrait.style.setProperty("--portrait-x", `${nextX}px`);
-            portrait.style.setProperty("--portrait-y", `${nextY}px`);
+            const frameState = getFrameState();
+            setFrameState({
+                ...frameState,
+                x: dragState.originX + event.clientX - dragState.startX,
+                y: dragState.originY + event.clientY - dragState.startY,
+            });
         });
 
         const endDrag = (event: PointerEvent) => {
@@ -99,6 +201,52 @@
 
         frame?.addEventListener("pointerup", endDrag);
         frame?.addEventListener("pointercancel", endDrag);
+
+        resizeHandles.forEach((handle) => {
+            handle.addEventListener("pointerdown", (event) => {
+                if (event.button !== 0) {
+                    return;
+                }
+
+                event.preventDefault();
+                event.stopPropagation();
+                selectPortrait();
+
+                const frameState = getFrameState();
+                resizeState = {
+                    ...frameState,
+                    pointerId: event.pointerId,
+                    startX: event.clientX,
+                    startY: event.clientY,
+                    handle: handle.dataset.resizeHandle ?? "br",
+                    aspectRatio: frameState.width / frameState.height,
+                };
+
+                handle.setPointerCapture(event.pointerId);
+                portrait.dataset.resizing = "true";
+            });
+
+            handle.addEventListener("pointermove", resizeFrame);
+
+            const endResize = (event: PointerEvent) => {
+                if (
+                    !resizeState ||
+                    event.pointerId !== resizeState.pointerId
+                ) {
+                    return;
+                }
+
+                if (handle.hasPointerCapture(event.pointerId)) {
+                    handle.releasePointerCapture(event.pointerId);
+                }
+
+                delete portrait.dataset.resizing;
+                resizeState = undefined;
+            };
+
+            handle.addEventListener("pointerup", endResize);
+            handle.addEventListener("pointercancel", endResize);
+        });
 
         portrait.addEventListener("click", (event) => {
             event.stopPropagation();
@@ -130,6 +278,8 @@
         touch-action: none;
         --portrait-x: 0px;
         --portrait-y: 0px;
+        --portrait-width: 100%;
+        --portrait-height: 100%;
         --selection-color: #0d99ff;
     }
 
@@ -139,8 +289,8 @@
 
     .figma-portrait__frame {
         position: relative;
-        width: 100%;
-        height: 100%;
+        width: var(--portrait-width);
+        height: var(--portrait-height);
         border-radius: var(--radius);
         background: var(--card);
         transform: translate3d(var(--portrait-x), var(--portrait-y), 0);
