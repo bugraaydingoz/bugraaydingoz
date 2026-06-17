@@ -59,9 +59,9 @@ const work = [
         <section class="section" aria-labelledby="about-title">
             <figure class="portrait">
                 <img
-                    src="/bugra-aydingoz.jpeg"
-                    width="230"
-                    height="282"
+                    src="/bugra-aydingoz-portrait.jpeg"
+                    width="236"
+                    height="236"
                     alt="Buğra Aydıngöz portrait"
                 />
             </figure>
@@ -79,13 +79,15 @@ const work = [
             <div class="row-list work-list">
                 {
                     work.map(([period, title, location, href]) => (
-                        <a class="info-row work-link" href={href}>
+                        <a
+                            class="info-row work-link"
+                            href={href}
+                            target="_blank"
+                            rel="noreferrer"
+                        >
                             <span class="row-label">{period}</span>
                             <span class="row-content">
-                                <span class="row-title">
-                                    {title}
-                                    <span aria-hidden="true"> ↗</span>
-                                </span>
+                                <span class="row-title">{title}</span>
                                 <span class="row-subtitle">{location}</span>
                             </span>
                         </a>
@@ -94,7 +96,7 @@ const work = [
             </div>
         </section>
 
-        <section class="section" aria-labelledby="writing-title">
+        <!-- <section class="section" aria-labelledby="writing-title">
             <h2 id="writing-title">Writing</h2>
             <div class="row-list writing-list">
                 {
@@ -115,7 +117,7 @@ const work = [
                     ))
                 }
             </div>
-        </section>
+        </section> -->
 
         <section
             class="section contact-section"
@@ -126,13 +128,15 @@ const work = [
             <div class="row-list">
                 {
                     contacts.map(([label, value, href]) => (
-                        <a class="info-row contact-link" href={href}>
+                        <a
+                            class="info-row contact-link"
+                            href={href}
+                            target="_blank"
+                            rel="noreferrer"
+                        >
                             <span class="row-label">{label}</span>
                             <span class="row-content">
-                                <span class="row-title">
-                                    {value}
-                                    <span aria-hidden="true">↗</span>
-                                </span>
+                                <span class="row-title">{value}</span>
                             </span>
                         </a>
                     ))
@@ -175,12 +179,6 @@ const work = [
     .work-link *,
     .contact-link * {
         text-decoration: none;
-    }
-
-    h2 {
-        font-family:
-            "Satoshi", Inter, "Inter Variable", Roboto, "Helvetica Neue", Arial,
-            sans-serif;
     }
 
     .portrait-section {
@@ -230,17 +228,15 @@ const work = [
     }
 
     h2 {
-        color: var(--muted-foreground);
+        color: var(--foreground);
         font-size: 16px;
         line-height: 1.35;
-        font-weight: 500;
     }
 
     .row-label {
         color: var(--muted-foreground);
         font-size: 14px;
         line-height: 1.35;
-        font-weight: 500;
     }
 
     .section > p {
