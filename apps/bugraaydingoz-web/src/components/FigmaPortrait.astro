@@ -29,12 +29,80 @@
     );
 
     portraits.forEach((portrait) => {
-        portrait.addEventListener("click", (event) => {
-            event.stopPropagation();
+        const frame = portrait.querySelector<HTMLElement>(
+            ".figma-portrait__frame",
+        );
+        let dragState:
+            | {
+                  pointerId: number;
+                  startX: number;
+                  startY: number;
+                  originX: number;
+                  originY: number;
+              }
+            | undefined;
+
+        const selectPortrait = () => {
             portraits.forEach((item) => {
                 item.dataset.selected = String(item === portrait);
             });
             portrait.focus();
+        };
+
+        frame?.addEventListener("pointerdown", (event) => {
+            if (event.button !== 0) {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+            selectPortrait();
+
+            dragState = {
+                pointerId: event.pointerId,
+                startX: event.clientX,
+                startY: event.clientY,
+                originX: Number(portrait.dataset.x ?? 0),
+                originY: Number(portrait.dataset.y ?? 0),
+            };
+
+            frame.setPointerCapture(event.pointerId);
+            portrait.dataset.dragging = "true";
+        });
+
+        frame?.addEventListener("pointermove", (event) => {
+            if (!dragState || event.pointerId !== dragState.pointerId) {
+                return;
+            }
+
+            const nextX = dragState.originX + event.clientX - dragState.startX;
+            const nextY = dragState.originY + event.clientY - dragState.startY;
+
+            portrait.dataset.x = String(nextX);
+            portrait.dataset.y = String(nextY);
+            portrait.style.setProperty("--portrait-x", `${nextX}px`);
+            portrait.style.setProperty("--portrait-y", `${nextY}px`);
+        });
+
+        const endDrag = (event: PointerEvent) => {
+            if (!dragState || event.pointerId !== dragState.pointerId) {
+                return;
+            }
+
+            if (frame?.hasPointerCapture(event.pointerId)) {
+                frame.releasePointerCapture(event.pointerId);
+            }
+
+            delete portrait.dataset.dragging;
+            dragState = undefined;
+        };
+
+        frame?.addEventListener("pointerup", endDrag);
+        frame?.addEventListener("pointercancel", endDrag);
+
+        portrait.addEventListener("click", (event) => {
+            event.stopPropagation();
+            selectPortrait();
         });
 
         portrait.addEventListener("keydown", (event) => {
@@ -59,6 +127,9 @@
         margin: 0 0 8px;
         overflow: visible;
         cursor: default;
+        touch-action: none;
+        --portrait-x: 0px;
+        --portrait-y: 0px;
         --selection-color: #0d99ff;
     }
 
@@ -72,6 +143,9 @@
         height: 100%;
         border-radius: var(--radius);
         background: var(--card);
+        transform: translate3d(var(--portrait-x), var(--portrait-y), 0);
+        will-change: transform;
+        user-select: none;
     }
 
     .figma-portrait__frame::before {
@@ -180,6 +254,13 @@
     .figma-portrait[data-selected="true"] .figma-portrait__radius,
     .figma-portrait[data-selected="true"] .figma-portrait__size {
         opacity: 1;
+    }
+
+    .figma-portrait[data-dragging="true"] .figma-portrait__frame::before,
+    .figma-portrait[data-dragging="true"] .figma-portrait__corner,
+    .figma-portrait[data-dragging="true"] .figma-portrait__radius,
+    .figma-portrait[data-dragging="true"] .figma-portrait__size {
+        opacity: 0;
     }
 
     @media (max-width: 720px) {
