@@ -13,7 +13,11 @@ export function getStaticPaths() {
 const { article } = Astro.props;
 ---
 
-<Layout>
+<Layout
+    title={`${article.title} · Buğra Aydıngöz`}
+    description={article.excerpt}
+    type="article"
+>
     <main class="article-shell" aria-label={`${article.title} article`}>
         <SiteHeader />
 
