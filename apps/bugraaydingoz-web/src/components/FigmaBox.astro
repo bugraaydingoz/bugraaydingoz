@@ -1,17 +1,4 @@
----
-interface Props {
-    label?: string;
-}
-
-const { label = "Frame" } = Astro.props;
----
-
-<figure
-    class="box"
-    data-figma-box
-    tabindex="0"
-    aria-label={`${label} frame`}
->
+<figure class="box" data-figma-box tabindex="0" aria-label={`Figma frame`}>
     <div class="frame">
         <div class="content">
             <slot />
@@ -20,6 +7,10 @@ const { label = "Frame" } = Astro.props;
         <span class="corner corner--tr" data-resize-handle="tr"></span>
         <span class="corner corner--br" data-resize-handle="br"></span>
         <span class="corner corner--bl" data-resize-handle="bl"></span>
+        <span class="edge edge--top" data-resize-handle="t"></span>
+        <span class="edge edge--right" data-resize-handle="r"></span>
+        <span class="edge edge--bottom" data-resize-handle="b"></span>
+        <span class="edge edge--left" data-resize-handle="l"></span>
         <span class="radius radius--tl" data-radius-handle="tl"></span>
         <span class="radius radius--tr" data-radius-handle="tr"></span>
         <span class="radius radius--br" data-radius-handle="br"></span>
@@ -136,8 +127,10 @@ const { label = "Frame" } = Astro.props;
         const deltaY = event.clientY - radiusState.startY;
         const affectsLeft = radiusState.handle.includes("l");
         const affectsTop = radiusState.handle.includes("t");
-        const xRadius = radiusState.originRadius + (affectsLeft ? deltaX : -deltaX);
-        const yRadius = radiusState.originRadius + (affectsTop ? deltaY : -deltaY);
+        const xRadius =
+            radiusState.originRadius + (affectsLeft ? deltaX : -deltaX);
+        const yRadius =
+            radiusState.originRadius + (affectsTop ? deltaY : -deltaY);
 
         setRadius(Math.max(xRadius, yRadius));
     };
@@ -151,13 +144,21 @@ const { label = "Frame" } = Astro.props;
         const deltaY = event.clientY - resizeState.startY;
         const affectsLeft = resizeState.handle.includes("l");
         const affectsTop = resizeState.handle.includes("t");
-        let width = resizeState.width + (affectsLeft ? -deltaX : deltaX);
-        let height = resizeState.height + (affectsTop ? -deltaY : deltaY);
+        const affectsRight = resizeState.handle.includes("r");
+        const affectsBottom = resizeState.handle.includes("b");
+        const affectsWidth = affectsLeft || affectsRight;
+        const affectsHeight = affectsTop || affectsBottom;
+        let width = affectsWidth
+            ? resizeState.width + (affectsLeft ? -deltaX : deltaX)
+            : resizeState.width;
+        let height = affectsHeight
+            ? resizeState.height + (affectsTop ? -deltaY : deltaY)
+            : resizeState.height;
 
         width = Math.max(minSize, width);
         height = Math.max(minSize, height);
 
-        if (event.shiftKey) {
+        if (event.shiftKey && affectsWidth && affectsHeight) {
             const widthFromHeight = height * resizeState.aspectRatio;
             const heightFromWidth = width / resizeState.aspectRatio;
             const movedMoreHorizontally =
@@ -169,6 +170,10 @@ const { label = "Frame" } = Astro.props;
             } else {
                 width = Math.max(minSize, widthFromHeight);
             }
+        } else if (event.shiftKey && affectsWidth) {
+            height = Math.max(minSize, width / resizeState.aspectRatio);
+        } else if (event.shiftKey && affectsHeight) {
+            width = Math.max(minSize, height * resizeState.aspectRatio);
         }
 
         const x = affectsLeft
@@ -415,10 +420,51 @@ const { label = "Frame" } = Astro.props;
         border-radius: var(--box-radius);
     }
 
+    .edge,
     .corner,
     .radius {
         position: absolute;
         z-index: 3;
+    }
+
+    .edge {
+        opacity: 0;
+    }
+
+    .edge--top,
+    .edge--bottom {
+        left: 9px;
+        width: calc(100% - 18px);
+        height: 12px;
+        transform: translateY(-50%);
+    }
+
+    .edge--top {
+        top: 0;
+    }
+
+    .edge--bottom {
+        top: 100%;
+    }
+
+    .edge--right,
+    .edge--left {
+        top: 9px;
+        width: 12px;
+        height: calc(100% - 18px);
+        transform: translateX(-50%);
+    }
+
+    .edge--right {
+        left: 100%;
+    }
+
+    .edge--left {
+        left: 0;
+    }
+
+    .corner,
+    .radius {
         width: 9px;
         height: 9px;
         border: 2px solid var(--selection-color);
