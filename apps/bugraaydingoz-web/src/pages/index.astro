@@ -68,12 +68,12 @@ const work = [
                     work.map(([period, title, location, href]) => (
                         <a class="info-row work-link" href={href}>
                             <span class="row-label">{period}</span>
-                            <span class="row-value">
-                                <span>
+                            <span class="row-content">
+                                <span class="row-title">
                                     {title}
                                     <span aria-hidden="true"> ↗</span>
                                 </span>
-                                <span class="work-location">{location}</span>
+                                <span class="row-subtitle">{location}</span>
                             </span>
                         </a>
                     ))
@@ -87,13 +87,16 @@ const work = [
                 {
                     articles.map((article) => (
                         <a
-                            class="writing-link"
+                            class="info-row writing-link"
                             href={`/articles/${article.slug}`}
                             aria-label={`Read ${article.title}`}
                         >
-                            <span class="writing-title">{article.title}</span>
-                            <span class="writing-excerpt">
-                                {article.excerpt}
+                            <span class="row-label">May 2026</span>
+                            <span class="row-content">
+                                <span class="row-title">{article.title}</span>
+                                <span class="row-subtitle">
+                                    {article.excerpt}
+                                </span>
                             </span>
                         </a>
                     ))
@@ -112,9 +115,11 @@ const work = [
                     contacts.map(([label, value, href]) => (
                         <a class="info-row contact-link" href={href}>
                             <span class="row-label">{label}</span>
-                            <span class="row-value">
-                                {value}
-                                <span aria-hidden="true">↗</span>
+                            <span class="row-content">
+                                <span class="row-title">
+                                    {value}
+                                    <span aria-hidden="true">↗</span>
+                                </span>
                             </span>
                         </a>
                     ))
@@ -135,7 +140,8 @@ const work = [
         color: var(--foreground);
         background: var(--background);
         font-family:
-            Inter, "Inter Variable", Roboto, "Helvetica Neue", Arial, sans-serif;
+            "Satoshi", Inter, "Inter Variable", Roboto, "Helvetica Neue", Arial,
+            sans-serif;
     }
 
     .site-shell {
@@ -185,12 +191,12 @@ const work = [
         object-fit: cover;
     }
 
-    .writing-link:hover .writing-title,
-    .writing-link:focus-visible .writing-title,
-    .work-link:hover .row-value,
-    .work-link:focus-visible .row-value,
-    .contact-link:hover .row-value,
-    .contact-link:focus-visible .row-value {
+    .writing-link:hover .row-title,
+    .writing-link:focus-visible .row-title,
+    .work-link:hover .row-title,
+    .work-link:focus-visible .row-title,
+    .contact-link:hover .row-title,
+    .contact-link:focus-visible .row-title {
         color: var(--primary);
     }
 
@@ -202,7 +208,7 @@ const work = [
 
     .section {
         display: grid;
-        gap: 18px;
+        gap: 26px;
         padding: 0;
     }
 
@@ -210,10 +216,16 @@ const work = [
         margin-top: 64px;
     }
 
-    h2,
-    .row-label {
+    h2 {
         color: var(--muted-foreground);
         font-size: 16px;
+        line-height: 1.35;
+        font-weight: 500;
+    }
+
+    .row-label {
+        color: var(--muted-foreground);
+        font-size: 14px;
         line-height: 1.35;
         font-weight: 500;
     }
@@ -236,11 +248,17 @@ const work = [
         align-items: baseline;
     }
 
-    .row-value {
+    .row-content {
         min-width: 0;
+        display: grid;
+        gap: 7px;
         color: var(--foreground);
         font-size: 16px;
         line-height: 1.35;
+    }
+
+    .row-title {
+        color: var(--foreground);
         transition: color 160ms ease;
     }
 
@@ -251,28 +269,7 @@ const work = [
         outline-offset: 8px;
     }
 
-    .work-link .row-value {
-        display: grid;
-        gap: 7px;
-    }
-
-    .work-location {
-        color: var(--muted-foreground);
-    }
-
-    .writing-link {
-        display: grid;
-        gap: 6px;
-    }
-
-    .writing-title {
-        color: var(--foreground);
-        font-size: 16px;
-        line-height: 1.35;
-        transition: color 160ms ease;
-    }
-
-    .writing-excerpt {
+    .row-subtitle {
         color: var(--muted-foreground);
         font-size: 14px;
         line-height: 1.45;
@@ -307,10 +304,13 @@ const work = [
         }
 
         h2,
-        .row-label,
-        .row-value,
+        .row-content,
         .section > p {
             font-size: 16px;
+        }
+
+        .row-label {
+            font-size: 14px;
         }
 
         .row-list {
