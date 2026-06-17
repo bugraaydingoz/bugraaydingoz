@@ -1,0 +1,195 @@
+<figure
+    class="figma-portrait"
+    data-figma-portrait
+    tabindex="0"
+    aria-label="Portrait frame"
+>
+    <div class="figma-portrait__frame">
+        <img
+            src="/bugra-aydingoz-portrait.jpeg"
+            width="236"
+            height="236"
+            alt="Buğra Aydıngöz portrait"
+        />
+        <span class="figma-portrait__corner figma-portrait__corner--tl"></span>
+        <span class="figma-portrait__corner figma-portrait__corner--tr"></span>
+        <span class="figma-portrait__corner figma-portrait__corner--br"></span>
+        <span class="figma-portrait__corner figma-portrait__corner--bl"></span>
+        <span class="figma-portrait__radius figma-portrait__radius--tl"></span>
+        <span class="figma-portrait__radius figma-portrait__radius--tr"></span>
+        <span class="figma-portrait__radius figma-portrait__radius--br"></span>
+        <span class="figma-portrait__radius figma-portrait__radius--bl"></span>
+        <span class="figma-portrait__size" aria-hidden="true">118 × 145</span>
+    </div>
+</figure>
+
+<script>
+    const portraits = document.querySelectorAll<HTMLElement>(
+        "[data-figma-portrait]",
+    );
+
+    portraits.forEach((portrait) => {
+        portrait.addEventListener("click", (event) => {
+            event.stopPropagation();
+            portraits.forEach((item) => {
+                item.dataset.selected = String(item === portrait);
+            });
+            portrait.focus();
+        });
+
+        portrait.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") {
+                delete portrait.dataset.selected;
+                portrait.blur();
+            }
+        });
+    });
+
+    document.addEventListener("click", () => {
+        portraits.forEach((portrait) => {
+            delete portrait.dataset.selected;
+        });
+    });
+</script>
+
+<style>
+    .figma-portrait {
+        width: 118px;
+        height: 145px;
+        margin: 0 0 8px;
+        overflow: visible;
+        cursor: default;
+        --selection-color: #0d99ff;
+    }
+
+    .figma-portrait:focus {
+        outline: none;
+    }
+
+    .figma-portrait__frame {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border-radius: var(--radius);
+        background: var(--card);
+    }
+
+    .figma-portrait__frame::before {
+        position: absolute;
+        inset: -1px;
+        z-index: 2;
+        pointer-events: none;
+        content: "";
+        border: 1px solid var(--selection-color);
+        border-radius: 0;
+        opacity: 0;
+    }
+
+    .figma-portrait img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: var(--radius);
+    }
+
+    .figma-portrait__corner {
+        position: absolute;
+        z-index: 3;
+        width: 9px;
+        height: 9px;
+        border: 2px solid var(--selection-color);
+        background: #fff;
+        opacity: 0;
+        transform: translate(-50%, -50%);
+    }
+
+    .figma-portrait__radius {
+        position: absolute;
+        z-index: 3;
+        width: 9px;
+        height: 9px;
+        border: 2px solid var(--selection-color);
+        border-radius: 999px;
+        background: #fff;
+        opacity: 0;
+        transform: translate(-50%, -50%);
+    }
+
+    .figma-portrait__corner--tl {
+        top: 0;
+        left: 0;
+    }
+
+    .figma-portrait__corner--tr {
+        top: 0;
+        left: 100%;
+    }
+
+    .figma-portrait__corner--br {
+        top: 100%;
+        left: 100%;
+    }
+
+    .figma-portrait__corner--bl {
+        top: 100%;
+        left: 0;
+    }
+
+    .figma-portrait__radius--tl {
+        top: 17px;
+        left: 17px;
+    }
+
+    .figma-portrait__radius--tr {
+        top: 17px;
+        left: calc(100% - 17px);
+    }
+
+    .figma-portrait__radius--br {
+        top: calc(100% - 17px);
+        left: calc(100% - 17px);
+    }
+
+    .figma-portrait__radius--bl {
+        top: calc(100% - 17px);
+        left: 17px;
+    }
+
+    .figma-portrait__size {
+        position: absolute;
+        top: calc(100% + 13px);
+        left: 50%;
+        z-index: 4;
+        padding: 1px 6px 2px;
+        border-radius: 3px;
+        color: #fff;
+        background: var(--selection-color);
+        font-size: 10px;
+        line-height: 1.2;
+        font-weight: 700;
+        white-space: nowrap;
+        transform: translateX(-50%);
+        user-select: none;
+        opacity: 0;
+    }
+
+    .figma-portrait:hover .figma-portrait__frame::before,
+    .figma-portrait[data-selected="true"] .figma-portrait__frame::before,
+    .figma-portrait[data-selected="true"] .figma-portrait__corner,
+    .figma-portrait[data-selected="true"] .figma-portrait__radius,
+    .figma-portrait[data-selected="true"] .figma-portrait__size {
+        opacity: 1;
+    }
+
+    @media (max-width: 720px) {
+        .figma-portrait {
+            width: 96px;
+            height: 118px;
+        }
+
+        .figma-portrait__size {
+            font-size: 10px;
+        }
+    }
+</style>
