@@ -47,6 +47,135 @@ test("FigmaBox can be selected, dragged, resized, and rounded", async ({ page })
     expect(frameAfterDrag.y).toBeGreaterThan(frameBeforeDrag.y + 12);
     expect(textAfterDrag.y).toBeCloseTo(textBefore.y, 1);
 
+    const snapMove = await page.evaluate(() => {
+        const frameElement = document.querySelector(".frame");
+        const targetElement = document.querySelector(".section > p");
+
+        if (!frameElement || !targetElement) {
+            throw new Error("Expected frame and snap target to exist");
+        }
+
+        const frameRect = frameElement.getBoundingClientRect();
+        const targetRect = targetElement.getBoundingClientRect();
+
+        return {
+            startX: frameRect.left + frameRect.width / 2,
+            startY: frameRect.top + frameRect.height / 2,
+            endX:
+                frameRect.left +
+                frameRect.width / 2 +
+                targetRect.left -
+                frameRect.left +
+                4,
+            endY: targetRect.top + targetRect.height / 2,
+            targetLeft: targetRect.left,
+        };
+    });
+
+    await page.mouse.move(snapMove.startX, snapMove.startY);
+    await page.mouse.down();
+    await page.mouse.move(snapMove.endX, snapMove.endY);
+
+    const verticalGuide = page.locator('[data-snap-guide="vertical"]');
+    await expect(verticalGuide).toHaveAttribute("data-visible", "true");
+
+    const frameDuringSnap = await frame.boundingBox();
+    if (!frameDuringSnap) {
+        throw new Error("Expected snapped FigmaBox to have a layout box");
+    }
+    expect(frameDuringSnap.x).toBeCloseTo(snapMove.targetLeft, 1);
+
+    await page.mouse.up();
+    await expect(verticalGuide).not.toHaveAttribute("data-visible", "true");
+
+    const verticalLineSnapMove = await page.evaluate(() => {
+        const frameElement = document.querySelector(".frame");
+        const targetElement = document.querySelector(".site-header");
+
+        if (!frameElement || !targetElement) {
+            throw new Error("Expected frame and header snap target to exist");
+        }
+
+        const frameRect = frameElement.getBoundingClientRect();
+        const targetRect = targetElement.getBoundingClientRect();
+
+        return {
+            startX: frameRect.left + frameRect.width / 2,
+            startY: frameRect.top + frameRect.height / 2,
+            endX:
+                frameRect.left +
+                frameRect.width / 2 +
+                targetRect.left -
+                frameRect.left +
+                4,
+            endY: targetRect.bottom + 48,
+            targetLeft: targetRect.left,
+        };
+    });
+
+    await page.mouse.move(
+        verticalLineSnapMove.startX,
+        verticalLineSnapMove.startY,
+    );
+    await page.mouse.down();
+    await page.mouse.move(verticalLineSnapMove.endX, verticalLineSnapMove.endY);
+
+    await expect(verticalGuide).toHaveAttribute("data-visible", "true");
+
+    const frameDuringVerticalLineSnap = await frame.boundingBox();
+    if (!frameDuringVerticalLineSnap) {
+        throw new Error("Expected edge-snapped FigmaBox to have a layout box");
+    }
+    expect(
+        Math.abs(frameDuringVerticalLineSnap.x - verticalLineSnapMove.targetLeft),
+    ).toBeLessThanOrEqual(1);
+
+    await page.mouse.up();
+    await expect(verticalGuide).not.toHaveAttribute("data-visible", "true");
+
+    const verticalSnapMove = await page.evaluate(() => {
+        const frameElement = document.querySelector(".frame");
+        const targetElement = document.querySelector(".section > p");
+
+        if (!frameElement || !targetElement) {
+            throw new Error("Expected frame and vertical snap target to exist");
+        }
+
+        const frameRect = frameElement.getBoundingClientRect();
+        const targetRect = targetElement.getBoundingClientRect();
+
+        return {
+            startX: frameRect.left + frameRect.width / 2,
+            startY: frameRect.top + frameRect.height / 2,
+            endX: frameRect.left + frameRect.width / 2,
+            endY:
+                frameRect.top +
+                frameRect.height / 2 +
+                targetRect.top -
+                frameRect.top +
+                4,
+            targetTop: targetRect.top,
+        };
+    });
+
+    await page.mouse.move(verticalSnapMove.startX, verticalSnapMove.startY);
+    await page.mouse.down();
+    await page.mouse.move(verticalSnapMove.endX, verticalSnapMove.endY);
+
+    const horizontalGuide = page.locator('[data-snap-guide="horizontal"]');
+    await expect(horizontalGuide).toHaveAttribute("data-visible", "true");
+
+    const frameDuringVerticalSnap = await frame.boundingBox();
+    if (!frameDuringVerticalSnap) {
+        throw new Error("Expected vertically snapped FigmaBox to have a layout box");
+    }
+    expect(
+        Math.abs(frameDuringVerticalSnap.y - verticalSnapMove.targetTop),
+    ).toBeLessThanOrEqual(1);
+
+    await page.mouse.up();
+    await expect(horizontalGuide).not.toHaveAttribute("data-visible", "true");
+
     const rightEdge = page.locator('[data-resize-handle="r"]');
     const rightEdgeBox = await rightEdge.boundingBox();
     if (!rightEdgeBox) {

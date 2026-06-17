@@ -25,17 +25,32 @@ const { label = "Figma" } = Astro.props;
         <span class="radius radius--bl" data-radius-handle="bl"></span>
         <span class="size" aria-hidden="true">118 × 145</span>
     </div>
+    <span
+        class="snap-guide snap-guide--vertical"
+        data-snap-guide="vertical"
+        aria-hidden="true"></span>
+    <span
+        class="snap-guide snap-guide--horizontal"
+        data-snap-guide="horizontal"
+        aria-hidden="true"></span>
 </figure>
 
 <script>
     const box = document.querySelector<HTMLElement>("[data-figma-box]");
     const frame = box?.querySelector<HTMLElement>(".frame");
     const sizeLabel = box?.querySelector<HTMLElement>(".size");
+    const verticalGuide = box?.querySelector<HTMLElement>(
+        '[data-snap-guide="vertical"]',
+    );
+    const horizontalGuide = box?.querySelector<HTMLElement>(
+        '[data-snap-guide="horizontal"]',
+    );
     const resizeHandles =
         box?.querySelectorAll<HTMLElement>("[data-resize-handle]") ?? [];
     const radiusHandles =
         box?.querySelectorAll<HTMLElement>("[data-radius-handle]") ?? [];
     const minSize = 60;
+    const snapThreshold = 6;
 
     type FrameState = {
         x: number;
@@ -64,6 +79,20 @@ const { label = "Figma" } = Astro.props;
     type RadiusState = PointerState & {
         handle: string;
         originRadius: number;
+    };
+
+    type SnapLine = {
+        axis: "x" | "y";
+        position: number;
+        start: number;
+        end: number;
+    };
+
+    type SnapResult = {
+        x: number;
+        y: number;
+        vertical?: SnapLine;
+        horizontal?: SnapLine;
     };
 
     let dragState: DragState | undefined;
@@ -124,6 +153,152 @@ const { label = "Figma" } = Astro.props;
 
         box.dataset.selected = "true";
         box.focus();
+    };
+
+    const rangesOverlap = (
+        firstStart: number,
+        firstEnd: number,
+        secondStart: number,
+        secondEnd: number,
+    ) => firstStart <= secondEnd && secondStart <= firstEnd;
+
+    const rangesTouch = (
+        firstStart: number,
+        firstEnd: number,
+        secondStart: number,
+        secondEnd: number,
+    ) => Math.max(firstStart, secondStart) <= Math.min(firstEnd, secondEnd) + 80;
+
+    const getSnapTargets = () => {
+        if (!box) {
+            return [];
+        }
+
+        const selectors = [
+            ".site-header",
+            ".section > h2",
+            ".section > p",
+            ".info-row",
+        ].join(",");
+
+        return Array.from(document.querySelectorAll<HTMLElement>(selectors))
+            .filter((element) => !element.closest("[data-figma-box]"))
+            .map((element) => element.getBoundingClientRect())
+            .filter((rect) => rect.width > 0 && rect.height > 0);
+    };
+
+    const hideSnapGuides = () => {
+        verticalGuide?.removeAttribute("data-visible");
+        horizontalGuide?.removeAttribute("data-visible");
+    };
+
+    const showSnapGuide = (guide: HTMLElement | undefined, line: SnapLine) => {
+        if (!guide) {
+            return;
+        }
+
+        guide.dataset.visible = "true";
+
+        if (line.axis === "x") {
+            guide.style.left = `${line.position}px`;
+            guide.style.top = `${line.start}px`;
+            guide.style.width = "1px";
+            guide.style.height = `${line.end - line.start}px`;
+        } else {
+            guide.style.left = `${line.start}px`;
+            guide.style.top = `${line.position}px`;
+            guide.style.width = `${line.end - line.start}px`;
+            guide.style.height = "1px";
+        }
+    };
+
+    const updateSnapGuides = (result: SnapResult) => {
+        if (result.vertical) {
+            showSnapGuide(verticalGuide, result.vertical);
+        } else {
+            verticalGuide?.removeAttribute("data-visible");
+        }
+
+        if (result.horizontal) {
+            showSnapGuide(horizontalGuide, result.horizontal);
+        } else {
+            horizontalGuide?.removeAttribute("data-visible");
+        }
+    };
+
+    const snapFrame = (nextState: FrameState): SnapResult => {
+        if (!box) {
+            return nextState;
+        }
+
+        const baseRect = box.getBoundingClientRect();
+        const targets = getSnapTargets();
+        const result: SnapResult = { x: nextState.x, y: nextState.y };
+
+        let left = baseRect.left + result.x;
+        let top = baseRect.top + result.y;
+        let right = left + nextState.width;
+        let bottom = top + nextState.height;
+        let closestVerticalDelta = snapThreshold + 1;
+        let closestHorizontalDelta = snapThreshold + 1;
+
+        targets.forEach((target) => {
+            if (rangesTouch(top, bottom, target.top, target.bottom)) {
+                [target.left, target.right].forEach((targetX) => {
+                    [
+                        { edge: left, offset: 0 },
+                        { edge: right, offset: nextState.width },
+                    ].forEach(({ edge, offset }) => {
+                        const delta = targetX - edge;
+
+                        if (
+                            Math.abs(delta) <= snapThreshold &&
+                            Math.abs(delta) < Math.abs(closestVerticalDelta)
+                        ) {
+                            closestVerticalDelta = delta;
+                            result.x = targetX - baseRect.left - offset;
+                            left = baseRect.left + result.x;
+                            right = left + nextState.width;
+                            result.vertical = {
+                                axis: "x",
+                                position: targetX,
+                                start: Math.min(top, target.top),
+                                end: Math.max(bottom, target.bottom),
+                            };
+                        }
+                    });
+                });
+            }
+
+            if (rangesTouch(left, right, target.left, target.right)) {
+                [target.top, target.bottom].forEach((targetY) => {
+                    [
+                        { edge: top, offset: 0 },
+                        { edge: bottom, offset: nextState.height },
+                    ].forEach(({ edge, offset }) => {
+                        const delta = targetY - edge;
+
+                        if (
+                            Math.abs(delta) <= snapThreshold &&
+                            Math.abs(delta) < Math.abs(closestHorizontalDelta)
+                        ) {
+                            closestHorizontalDelta = delta;
+                            result.y = targetY - baseRect.top - offset;
+                            top = baseRect.top + result.y;
+                            bottom = top + nextState.height;
+                            result.horizontal = {
+                                axis: "y",
+                                position: targetY,
+                                start: Math.min(left, target.left),
+                                end: Math.max(right, target.right),
+                            };
+                        }
+                    });
+                });
+            }
+        });
+
+        return result;
     };
 
     const resizeRadius = (event: PointerEvent) => {
@@ -240,11 +415,19 @@ const { label = "Figma" } = Astro.props;
         }
 
         const frameState = getFrameState();
-        setFrameState({
+        const nextState = {
             ...frameState,
             x: dragState.originX + event.clientX - dragState.startX,
             y: dragState.originY + event.clientY - dragState.startY,
+        };
+        const snappedState = snapFrame(nextState);
+
+        setFrameState({
+            ...frameState,
+            x: snappedState.x,
+            y: snappedState.y,
         });
+        updateSnapGuides(snappedState);
     });
 
     const endDrag = (event: PointerEvent) => {
@@ -257,6 +440,7 @@ const { label = "Figma" } = Astro.props;
         }
 
         box?.removeAttribute("data-dragging");
+        hideSnapGuides();
         dragState = undefined;
     };
 
@@ -361,6 +545,7 @@ const { label = "Figma" } = Astro.props;
 
     document.addEventListener("click", () => {
         box?.removeAttribute("data-selected");
+        hideSnapGuides();
     });
 
     if (document.readyState === "loading") {
@@ -545,6 +730,18 @@ const { label = "Figma" } = Astro.props;
         top: calc(100% + 13px);
         left: 50%;
         transform: translateX(-50%);
+    }
+
+    .snap-guide {
+        position: fixed;
+        z-index: 999;
+        pointer-events: none;
+        background: #ff3366;
+        opacity: 0;
+    }
+
+    .snap-guide[data-visible="true"] {
+        opacity: 1;
     }
 
     .box:hover .frame::before,
