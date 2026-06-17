@@ -1,6 +1,5 @@
 ---
-import { articles } from "../data/articles";
-import FigmaPortrait from "../components/FigmaPortrait.astro";
+import FigmaBox from "../components/FigmaBox.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import Layout from "../layouts/Layout.astro";
 
@@ -58,7 +57,14 @@ const work = [
         <section class="portrait-section" aria-label="Portrait"></section>
 
         <section class="section" aria-labelledby="about-title">
-            <FigmaPortrait />
+            <FigmaBox>
+                <img
+                    src="/bugra-aydingoz-portrait.jpeg"
+                    width="236"
+                    height="236"
+                    alt="Buğra Aydıngöz portrait"
+                />
+            </FigmaBox>
             <p>
                 I am a Product Engineer with 8+ years of experience creating
                 intuitive, user-focused applications. I have strong expertise in

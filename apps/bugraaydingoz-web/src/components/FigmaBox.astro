@@ -1,32 +1,25 @@
+---
+interface Props {
+    label?: string;
+}
+
+const { label = "Frame" } = Astro.props;
+---
+
 <figure
-    class="portrait"
-    data-figma-portrait
+    class="box"
+    data-figma-box
     tabindex="0"
-    aria-label="Portrait frame"
+    aria-label={`${label} frame`}
 >
     <div class="frame">
-        <img
-            src="/bugra-aydingoz-portrait.jpeg"
-            width="236"
-            height="236"
-            alt="Buğra Aydıngöz portrait"
-        />
-        <span
-            class="corner corner--tl"
-            data-resize-handle="tl"
-        ></span>
-        <span
-            class="corner corner--tr"
-            data-resize-handle="tr"
-        ></span>
-        <span
-            class="corner corner--br"
-            data-resize-handle="br"
-        ></span>
-        <span
-            class="corner corner--bl"
-            data-resize-handle="bl"
-        ></span>
+        <div class="content">
+            <slot />
+        </div>
+        <span class="corner corner--tl" data-resize-handle="tl"></span>
+        <span class="corner corner--tr" data-resize-handle="tr"></span>
+        <span class="corner corner--br" data-resize-handle="br"></span>
+        <span class="corner corner--bl" data-resize-handle="bl"></span>
         <span class="radius radius--tl"></span>
         <span class="radius radius--tr"></span>
         <span class="radius radius--br"></span>
@@ -36,15 +29,11 @@
 </figure>
 
 <script>
-    const portrait = document.querySelector<HTMLElement>(
-        "[data-figma-portrait]",
-    );
-    const frame = portrait?.querySelector<HTMLElement>(
-        ".frame",
-    );
-    const sizeLabel = portrait?.querySelector<HTMLElement>(".size");
+    const box = document.querySelector<HTMLElement>("[data-figma-box]");
+    const frame = box?.querySelector<HTMLElement>(".frame");
+    const sizeLabel = box?.querySelector<HTMLElement>(".size");
     const resizeHandles =
-        portrait?.querySelectorAll<HTMLElement>("[data-resize-handle]") ?? [];
+        box?.querySelectorAll<HTMLElement>("[data-resize-handle]") ?? [];
     const minSize = 60;
 
     type FrameState = {
@@ -75,25 +64,25 @@
     let resizeState: ResizeState | undefined;
 
     const getFrameState = (): FrameState => ({
-        x: Number(portrait?.dataset.x ?? 0),
-        y: Number(portrait?.dataset.y ?? 0),
-        width: Number(portrait?.dataset.width ?? frame?.offsetWidth ?? 0),
-        height: Number(portrait?.dataset.height ?? frame?.offsetHeight ?? 0),
+        x: Number(box?.dataset.x ?? 0),
+        y: Number(box?.dataset.y ?? 0),
+        width: Number(box?.dataset.width ?? frame?.offsetWidth ?? 0),
+        height: Number(box?.dataset.height ?? frame?.offsetHeight ?? 0),
     });
 
     const setFrameState = ({ x, y, width, height }: FrameState) => {
-        if (!portrait) {
+        if (!box) {
             return;
         }
 
-        portrait.dataset.x = String(x);
-        portrait.dataset.y = String(y);
-        portrait.dataset.width = String(width);
-        portrait.dataset.height = String(height);
-        portrait.style.setProperty("--portrait-x", `${x}px`);
-        portrait.style.setProperty("--portrait-y", `${y}px`);
-        portrait.style.setProperty("--portrait-width", `${width}px`);
-        portrait.style.setProperty("--portrait-height", `${height}px`);
+        box.dataset.x = String(x);
+        box.dataset.y = String(y);
+        box.dataset.width = String(width);
+        box.dataset.height = String(height);
+        box.style.setProperty("--box-x", `${x}px`);
+        box.style.setProperty("--box-y", `${y}px`);
+        box.style.setProperty("--box-width", `${width}px`);
+        box.style.setProperty("--box-height", `${height}px`);
 
         if (sizeLabel) {
             sizeLabel.textContent = `${Math.round(width)} × ${Math.round(
@@ -102,13 +91,13 @@
         }
     };
 
-    const selectPortrait = () => {
-        if (!portrait) {
+    const selectBox = () => {
+        if (!box) {
             return;
         }
 
-        portrait.dataset.selected = "true";
-        portrait.focus();
+        box.dataset.selected = "true";
+        box.focus();
     };
 
     const resizeFrame = (event: PointerEvent) => {
@@ -150,6 +139,11 @@
         setFrameState({ x, y, width, height });
     };
 
+    const initializeSize = () => {
+        const frameState = getFrameState();
+        setFrameState(frameState);
+    };
+
     frame?.addEventListener("pointerdown", (event) => {
         if (event.button !== 0) {
             return;
@@ -161,7 +155,7 @@
 
         event.preventDefault();
         event.stopPropagation();
-        selectPortrait();
+        selectBox();
 
         const frameState = getFrameState();
         dragState = {
@@ -173,7 +167,7 @@
         };
 
         frame.setPointerCapture(event.pointerId);
-        portrait?.setAttribute("data-dragging", "true");
+        box?.setAttribute("data-dragging", "true");
     });
 
     frame?.addEventListener("pointermove", (event) => {
@@ -198,7 +192,7 @@
             frame.releasePointerCapture(event.pointerId);
         }
 
-        portrait?.removeAttribute("data-dragging");
+        box?.removeAttribute("data-dragging");
         dragState = undefined;
     };
 
@@ -213,7 +207,7 @@
 
             event.preventDefault();
             event.stopPropagation();
-            selectPortrait();
+            selectBox();
 
             const frameState = getFrameState();
             resizeState = {
@@ -226,7 +220,7 @@
             };
 
             handle.setPointerCapture(event.pointerId);
-            portrait?.setAttribute("data-resizing", "true");
+            box?.setAttribute("data-resizing", "true");
         });
 
         handle.addEventListener("pointermove", resizeFrame);
@@ -240,7 +234,7 @@
                 handle.releasePointerCapture(event.pointerId);
             }
 
-            portrait?.removeAttribute("data-resizing");
+            box?.removeAttribute("data-resizing");
             resizeState = undefined;
         };
 
@@ -248,49 +242,57 @@
         handle.addEventListener("pointercancel", endResize);
     });
 
-    portrait?.addEventListener("click", (event) => {
+    box?.addEventListener("click", (event) => {
         event.stopPropagation();
-        selectPortrait();
+        selectBox();
     });
 
-    portrait?.addEventListener("keydown", (event) => {
+    box?.addEventListener("keydown", (event) => {
         if (event.key === "Escape") {
-            portrait.removeAttribute("data-selected");
-            portrait.blur();
+            box.removeAttribute("data-selected");
+            box.blur();
         }
     });
 
     document.addEventListener("click", () => {
-        portrait?.removeAttribute("data-selected");
+        box?.removeAttribute("data-selected");
     });
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initializeSize, {
+            once: true,
+        });
+    } else {
+        initializeSize();
+    }
 </script>
 
 <style>
-    .portrait {
-        width: 118px;
-        height: 145px;
+    .box {
+        width: var(--figma-box-width, 118px);
+        height: var(--figma-box-height, 145px);
         margin: 0 0 8px;
         overflow: visible;
         cursor: default;
         touch-action: none;
-        --portrait-x: 0px;
-        --portrait-y: 0px;
-        --portrait-width: 100%;
-        --portrait-height: 100%;
+        --box-x: 0px;
+        --box-y: 0px;
+        --box-width: 100%;
+        --box-height: 100%;
         --selection-color: #0d99ff;
     }
 
-    .portrait:focus {
+    .box:focus {
         outline: none;
     }
 
     .frame {
         position: relative;
-        width: var(--portrait-width);
-        height: var(--portrait-height);
+        width: var(--box-width);
+        height: var(--box-height);
         border-radius: var(--radius);
         background: var(--card);
-        transform: translate3d(var(--portrait-x), var(--portrait-y), 0);
+        transform: translate3d(var(--box-x), var(--box-y), 0);
         will-change: transform;
         user-select: none;
     }
@@ -306,7 +308,12 @@
         opacity: 0;
     }
 
-    .portrait img {
+    .content {
+        width: 100%;
+        height: 100%;
+    }
+
+    .content > :global(*) {
         display: block;
         width: 100%;
         height: 100%;
@@ -314,7 +321,8 @@
         border-radius: var(--radius);
     }
 
-    .corner {
+    .corner,
+    .radius {
         position: absolute;
         z-index: 3;
         width: 9px;
@@ -326,15 +334,7 @@
     }
 
     .radius {
-        position: absolute;
-        z-index: 3;
-        width: 9px;
-        height: 9px;
-        border: 2px solid var(--selection-color);
         border-radius: 999px;
-        background: #fff;
-        opacity: 0;
-        transform: translate(-50%, -50%);
     }
 
     .corner--tl {
@@ -379,8 +379,6 @@
 
     .size {
         position: absolute;
-        top: calc(100% + 13px);
-        left: 50%;
         z-index: 4;
         padding: 1px 6px 2px;
         border-radius: 3px;
@@ -395,25 +393,31 @@
         opacity: 0;
     }
 
-    .portrait:hover .frame::before,
-    .portrait[data-selected="true"] .frame::before,
-    .portrait[data-selected="true"] .corner,
-    .portrait[data-selected="true"] .radius,
-    .portrait[data-selected="true"] .size {
+    .size {
+        top: calc(100% + 13px);
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .box:hover .frame::before,
+    .box[data-selected="true"] .frame::before,
+    .box[data-selected="true"] .corner,
+    .box[data-selected="true"] .radius,
+    .box[data-selected="true"] .size {
         opacity: 1;
     }
 
-    .portrait[data-dragging="true"] .frame::before,
-    .portrait[data-dragging="true"] .corner,
-    .portrait[data-dragging="true"] .radius,
-    .portrait[data-dragging="true"] .size {
+    .box[data-dragging="true"] .frame::before,
+    .box[data-dragging="true"] .corner,
+    .box[data-dragging="true"] .radius,
+    .box[data-dragging="true"] .size {
         opacity: 0;
     }
 
     @media (max-width: 720px) {
-        .portrait {
-            width: 96px;
-            height: 118px;
+        .box {
+            width: var(--figma-box-mobile-width, 96px);
+            height: var(--figma-box-mobile-height, 118px);
         }
 
         .size {
