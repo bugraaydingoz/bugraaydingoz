@@ -20,10 +20,10 @@ const { label = "Frame" } = Astro.props;
         <span class="corner corner--tr" data-resize-handle="tr"></span>
         <span class="corner corner--br" data-resize-handle="br"></span>
         <span class="corner corner--bl" data-resize-handle="bl"></span>
-        <span class="radius radius--tl"></span>
-        <span class="radius radius--tr"></span>
-        <span class="radius radius--br"></span>
-        <span class="radius radius--bl"></span>
+        <span class="radius radius--tl" data-radius-handle="tl"></span>
+        <span class="radius radius--tr" data-radius-handle="tr"></span>
+        <span class="radius radius--br" data-radius-handle="br"></span>
+        <span class="radius radius--bl" data-radius-handle="bl"></span>
         <span class="size" aria-hidden="true">118 × 145</span>
     </div>
 </figure>
@@ -34,6 +34,8 @@ const { label = "Frame" } = Astro.props;
     const sizeLabel = box?.querySelector<HTMLElement>(".size");
     const resizeHandles =
         box?.querySelectorAll<HTMLElement>("[data-resize-handle]") ?? [];
+    const radiusHandles =
+        box?.querySelectorAll<HTMLElement>("[data-radius-handle]") ?? [];
     const minSize = 60;
 
     type FrameState = {
@@ -60,8 +62,14 @@ const { label = "Frame" } = Astro.props;
             aspectRatio: number;
         };
 
+    type RadiusState = PointerState & {
+        handle: string;
+        originRadius: number;
+    };
+
     let dragState: DragState | undefined;
     let resizeState: ResizeState | undefined;
+    let radiusState: RadiusState | undefined;
 
     const getFrameState = (): FrameState => ({
         x: Number(box?.dataset.x ?? 0),
@@ -89,6 +97,25 @@ const { label = "Frame" } = Astro.props;
                 height,
             )}`;
         }
+
+        if (box.dataset.radius) {
+            setRadius(getRadius());
+        }
+    };
+
+    const getRadius = () => Number(box?.dataset.radius ?? 0);
+
+    const setRadius = (radius: number) => {
+        if (!box) {
+            return;
+        }
+
+        const frameState = getFrameState();
+        const maxRadius = Math.min(frameState.width, frameState.height) / 2;
+        const nextRadius = Math.max(0, Math.min(maxRadius, radius));
+
+        box.dataset.radius = String(nextRadius);
+        box.style.setProperty("--box-radius", `${nextRadius}px`);
     };
 
     const selectBox = () => {
@@ -98,6 +125,21 @@ const { label = "Frame" } = Astro.props;
 
         box.dataset.selected = "true";
         box.focus();
+    };
+
+    const resizeRadius = (event: PointerEvent) => {
+        if (!radiusState || event.pointerId !== radiusState.pointerId) {
+            return;
+        }
+
+        const deltaX = event.clientX - radiusState.startX;
+        const deltaY = event.clientY - radiusState.startY;
+        const affectsLeft = radiusState.handle.includes("l");
+        const affectsTop = radiusState.handle.includes("t");
+        const xRadius = radiusState.originRadius + (affectsLeft ? deltaX : -deltaX);
+        const yRadius = radiusState.originRadius + (affectsTop ? deltaY : -deltaY);
+
+        setRadius(Math.max(xRadius, yRadius));
     };
 
     const resizeFrame = (event: PointerEvent) => {
@@ -142,6 +184,11 @@ const { label = "Frame" } = Astro.props;
     const initializeSize = () => {
         const frameState = getFrameState();
         setFrameState(frameState);
+
+        const initialRadius = frame
+            ? Number.parseFloat(getComputedStyle(frame).borderTopLeftRadius)
+            : 0;
+        setRadius(initialRadius);
     };
 
     frame?.addEventListener("pointerdown", (event) => {
@@ -150,6 +197,10 @@ const { label = "Frame" } = Astro.props;
         }
 
         if ((event.target as HTMLElement).closest("[data-resize-handle]")) {
+            return;
+        }
+
+        if ((event.target as HTMLElement).closest("[data-radius-handle]")) {
             return;
         }
 
@@ -242,6 +293,47 @@ const { label = "Frame" } = Astro.props;
         handle.addEventListener("pointercancel", endResize);
     });
 
+    radiusHandles.forEach((handle) => {
+        handle.addEventListener("pointerdown", (event) => {
+            if (event.button !== 0) {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+            selectBox();
+
+            radiusState = {
+                pointerId: event.pointerId,
+                startX: event.clientX,
+                startY: event.clientY,
+                handle: handle.dataset.radiusHandle ?? "tl",
+                originRadius: getRadius(),
+            };
+
+            handle.setPointerCapture(event.pointerId);
+            box?.setAttribute("data-rounding", "true");
+        });
+
+        handle.addEventListener("pointermove", resizeRadius);
+
+        const endRadius = (event: PointerEvent) => {
+            if (!radiusState || event.pointerId !== radiusState.pointerId) {
+                return;
+            }
+
+            if (handle.hasPointerCapture(event.pointerId)) {
+                handle.releasePointerCapture(event.pointerId);
+            }
+
+            box?.removeAttribute("data-rounding");
+            radiusState = undefined;
+        };
+
+        handle.addEventListener("pointerup", endRadius);
+        handle.addEventListener("pointercancel", endRadius);
+    });
+
     box?.addEventListener("click", (event) => {
         event.stopPropagation();
         selectBox();
@@ -279,6 +371,8 @@ const { label = "Frame" } = Astro.props;
         --box-y: 0px;
         --box-width: 100%;
         --box-height: 100%;
+        --box-radius: var(--radius);
+        --radius-handle-offset: max(17px, var(--box-radius));
         --selection-color: #0d99ff;
     }
 
@@ -290,7 +384,7 @@ const { label = "Frame" } = Astro.props;
         position: relative;
         width: var(--box-width);
         height: var(--box-height);
-        border-radius: var(--radius);
+        border-radius: var(--box-radius);
         background: var(--card);
         transform: translate3d(var(--box-x), var(--box-y), 0);
         will-change: transform;
@@ -318,7 +412,7 @@ const { label = "Frame" } = Astro.props;
         width: 100%;
         height: 100%;
         object-fit: cover;
-        border-radius: var(--radius);
+        border-radius: var(--box-radius);
     }
 
     .corner,
@@ -358,23 +452,23 @@ const { label = "Frame" } = Astro.props;
     }
 
     .radius--tl {
-        top: 17px;
-        left: 17px;
+        top: var(--radius-handle-offset);
+        left: var(--radius-handle-offset);
     }
 
     .radius--tr {
-        top: 17px;
-        left: calc(100% - 17px);
+        top: var(--radius-handle-offset);
+        left: calc(100% - var(--radius-handle-offset));
     }
 
     .radius--br {
-        top: calc(100% - 17px);
-        left: calc(100% - 17px);
+        top: calc(100% - var(--radius-handle-offset));
+        left: calc(100% - var(--radius-handle-offset));
     }
 
     .radius--bl {
-        top: calc(100% - 17px);
-        left: 17px;
+        top: calc(100% - var(--radius-handle-offset));
+        left: var(--radius-handle-offset);
     }
 
     .size {
