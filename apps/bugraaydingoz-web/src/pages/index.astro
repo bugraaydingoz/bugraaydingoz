@@ -11,6 +11,22 @@ import Layout from "../layouts/Layout.astro";
                 <a href="mailto:hello@bugraaydingoz.com"
                     >hello@bugraaydingoz.com</a
                 >
+                <button
+                    class="theme-toggle"
+                    type="button"
+                    data-theme-toggle
+                    aria-label="Switch to dark mode"
+                    aria-pressed="false"
+                >
+                    <i
+                        class="ph ph-moon theme-toggle-moon"
+                        aria-hidden="true"
+                    ></i>
+                    <i
+                        class="ph ph-sun theme-toggle-sun"
+                        aria-hidden="true"
+                    ></i>
+                </button>
             </nav>
         </header>
 
@@ -134,6 +150,7 @@ import Layout from "../layouts/Layout.astro";
     .header-links {
         display: flex;
         align-items: center;
+        gap: 14px;
         justify-content: flex-end;
     }
 
