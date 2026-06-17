@@ -1,4 +1,12 @@
-<figure class="box" data-figma-box tabindex="0" aria-label={`Figma frame`}>
+---
+type Props = {
+    label?: string;
+};
+
+const { label = "Figma" } = Astro.props;
+---
+
+<figure class="box" data-figma-box tabindex="0" aria-label={`${label} frame`}>
     <div class="frame">
         <div class="content">
             <slot />

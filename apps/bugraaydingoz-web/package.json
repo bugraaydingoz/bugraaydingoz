@@ -7,6 +7,10 @@
     "build": "astro build",
     "generate:og": "node scripts/generate-og-images.mjs",
     "preview": "astro preview",
+    "test": "pnpm test:unit && pnpm test:lighthouse && pnpm test:e2e",
+    "test:e2e": "playwright install && playwright test",
+    "test:lighthouse": "pnpm build && lhci autorun --config=./lighthouserc.cjs",
+    "test:unit": "vitest --run",
     "astro": "astro"
   },
   "dependencies": {
@@ -14,5 +18,10 @@
   },
   "engines": {
     "node": ">=24"
+  },
+  "devDependencies": {
+    "@lhci/cli": "^0.15.1",
+    "@playwright/test": "^1.60.0",
+    "vitest": "^4.1.8"
   }
 }
