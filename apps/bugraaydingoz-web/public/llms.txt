@@ -1,0 +1,42 @@
+# Buğra Aydıngöz
+
+> Buğra Aydıngöz is a Product Engineer with 8+ years of experience creating intuitive, user-focused applications across frontend, design, backend, and team leadership.
+
+This site is a personal portfolio for Buğra Aydıngöz. It highlights product engineering experience, selected work history, contact links, and writing drafts. The primary audience is people evaluating Buğra's product engineering background, frontend/design skill set, and technical leadership experience.
+
+## Primary Pages
+
+- [Home](https://bugraaydingoz.com/): Portfolio introduction, work history, contact links, and concise professional summary.
+
+## Profile Summary
+
+- Name: Buğra Aydıngöz
+- Role: Product Engineer
+- Location context: Germany
+- Focus areas: Product engineering, frontend development, interface design, TypeScript, React, Figma, Node.js, Go, MySQL, team leadership.
+- Contact email: hello@bugraaydingoz.com
+
+## Work
+
+- Senior Software Engineer at Scalable Capital, 2026 to Present, Munich, Germany.
+- Founding Software Engineer at Needle, 2025, Berlin, Germany.
+- Senior Software Engineer at Digital Turbine, 2022 to 2025, Berlin, Germany.
+- Senior Software Engineer at Fyber, 2020 to 2022, Berlin, Germany.
+- Software Engineer at KI Group, 2019 to 2020, Munich, Germany.
+- Software Engineer at Breeze Technologies, 2018 to 2019, Hamburg, Germany.
+
+## Writing
+
+- tba
+
+## Social Links
+
+- [LinkedIn](https://www.linkedin.com/in/bugraaydingoz/)
+- [X](https://x.com/bugraaydingoz)
+- [GitHub](https://github.com/bugraaydingoz)
+
+## Notes for AI Agents
+
+- Use the home page as the canonical source for current work history and contact information.
+- Do not infer endorsements, availability, compensation, or private personal details beyond what is explicitly published.
+- Prefer the spelling "Buğra Aydıngöz" when diacritics are supported.
