@@ -1,5 +1,12 @@
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -12,9 +19,76 @@ const chromePath =
 const defaultIntro =
   "Product Engineer with 8+ years of experience creating intuitive, user-focused applications. Frontend, design, backend, and team leadership.";
 
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
 function assetData(path, mimeType) {
   const data = readFileSync(path).toString("base64");
   return `data:${mimeType};base64,${data}`;
+}
+
+function parseFrontmatter(markdown) {
+  const match = markdown.match(/^---\n([\s\S]*?)\n---/);
+
+  if (!match) {
+    return {};
+  }
+
+  const frontmatter = {};
+  const lines = match[1].split("\n");
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    const keyValue = line.match(/^([A-Za-z][\w-]*):\s*(.*)$/);
+
+    if (!keyValue) {
+      continue;
+    }
+
+    const [, key, rawValue] = keyValue;
+
+    if (rawValue === "") {
+      const list = [];
+
+      while (lines[index + 1]?.trimStart().startsWith("- ")) {
+        index += 1;
+        list.push(lines[index].trimStart().slice(2).trim());
+      }
+
+      frontmatter[key] = list;
+      continue;
+    }
+
+    frontmatter[key] = rawValue.replace(/^["']|["']$/g, "");
+  }
+
+  return frontmatter;
+}
+
+function getArticleCards() {
+  const articlesRoot = join(appRoot, "src/content/articles");
+
+  return readdirSync(articlesRoot)
+    .filter((fileName) => fileName.endsWith(".md"))
+    .map((fileName) => {
+      const slug = fileName.replace(".md", "");
+      const frontmatter = parseFrontmatter(
+        readFileSync(join(articlesRoot, fileName), "utf8"),
+      );
+
+      return {
+        eyebrow: frontmatter.date ?? "Article",
+        intro: frontmatter.description ?? defaultIntro,
+        output: `og/articles/${slug}.png`,
+        slug,
+        title: frontmatter.title ?? slug,
+      };
+    });
 }
 
 function createOgImageHtml({
@@ -26,6 +100,9 @@ function createOgImageHtml({
   const photo = assetData(imagePath, "image/jpeg");
   const satoshiRegular = assetData(join(publicRoot, "fonts/satoshi-regular.woff2"), "font/woff2");
   const satoshiMedium = assetData(join(publicRoot, "fonts/satoshi-medium.woff2"), "font/woff2");
+  const safeEyebrow = escapeHtml(eyebrow);
+  const safeIntro = escapeHtml(intro);
+  const safeTitle = escapeHtml(title);
 
   return `<!doctype html>
 <html>
@@ -114,9 +191,9 @@ function createOgImageHtml({
         <main class="card">
             <img class="portrait" src="${photo}" alt="" />
             <section>
-                <p class="eyebrow">${eyebrow}</p>
-                <h1 class="title">${title}</h1>
-                <p class="intro">${intro}</p>
+                <p class="eyebrow">${safeEyebrow}</p>
+                <h1 class="title">${safeTitle}</h1>
+                <p class="intro">${safeIntro}</p>
             </section>
         </main>
     </body>
@@ -128,6 +205,7 @@ function renderOgImage(card) {
   const htmlPath = join(tempDir, `${card.slug}.html`);
   const outputPath = join(publicRoot, card.output);
 
+  mkdirSync(dirname(outputPath), { recursive: true });
   writeFileSync(htmlPath, createOgImageHtml(card));
 
   try {
@@ -156,6 +234,7 @@ function generateOgImages() {
       output: "og-image.png",
       slug: "home",
     },
+    ...getArticleCards(),
   ];
 
   for (const card of cards) {

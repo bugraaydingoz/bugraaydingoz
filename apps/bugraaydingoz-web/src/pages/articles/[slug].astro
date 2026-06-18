@@ -3,9 +3,12 @@ import SiteHeader from "../../components/SiteHeader.astro";
 import Layout from "../../layouts/Layout.astro";
 
 type ArticleFrontmatter = {
-    date: string;
-    excerpt: string;
+    date: Date | string;
+    description: string;
+    ogImage?: string;
+    tags?: string[];
     title: string;
+    updated?: Date | string;
 };
 
 type ArticleMarkdown = {
@@ -40,8 +43,13 @@ const { article, Content } = Astro.props;
 
 <Layout
     title={`${article.title} · Buğra Aydıngöz`}
-    description={article.excerpt}
+    description={article.description}
+    headline={article.title}
+    image={article.ogImage}
+    publishedDate={article.date}
+    tags={article.tags}
     type="article"
+    updatedDate={article.updated}
 >
     <main class="article-shell" aria-label={`${article.title} article`}>
         <SiteHeader />
@@ -49,7 +57,7 @@ const { article, Content } = Astro.props;
         <article class="article">
             <header class="article-header">
                 <h1>{article.title}</h1>
-                <p class="dek">{article.excerpt}</p>
+                <p class="dek">{article.description}</p>
             </header>
 
             <div class="article-body">

@@ -1,7 +1,13 @@
 ---
 title: About Me
-date: May 2026
-excerpt: A short personal note about how I think, build, and work with product teams.
+description: A short personal note about how I think, build, and work with product teams.
+date: "2026-05-01"
+updated: "2026-05-01"
+tags:
+  - product engineering
+  - frontend
+  - design
+ogImage: /og/articles/about-me.png
 ---
 
 This is placeholder article copy for now. The shape of the page is intentionally simple: a quiet column, generous line height, and just enough hierarchy to make reading feel easy.
