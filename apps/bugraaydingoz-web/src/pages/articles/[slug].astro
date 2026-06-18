@@ -1,16 +1,41 @@
 ---
-import { articles } from "../../data/articles";
 import SiteHeader from "../../components/SiteHeader.astro";
 import Layout from "../../layouts/Layout.astro";
 
+type ArticleFrontmatter = {
+    date: string;
+    excerpt: string;
+    title: string;
+};
+
+type ArticleMarkdown = {
+    Content: unknown;
+    frontmatter: ArticleFrontmatter;
+};
+
 export function getStaticPaths() {
-    return articles.map((article) => ({
-        params: { slug: article.slug },
-        props: { article },
-    }));
+    const contentModules = import.meta.glob<ArticleMarkdown>(
+        "../../content/articles/*.md",
+        { eager: true },
+    );
+
+    return Object.entries(contentModules).map(([path, module]) => {
+        const slug = path.split("/").at(-1)?.replace(".md", "");
+
+        return {
+            params: { slug },
+            props: {
+                article: {
+                    slug,
+                    ...module.frontmatter,
+                },
+                Content: module.Content,
+            },
+        };
+    });
 }
 
-const { article } = Astro.props;
+const { article, Content } = Astro.props;
 ---
 
 <Layout
@@ -22,45 +47,22 @@ const { article } = Astro.props;
         <SiteHeader />
 
         <article class="article">
-            <a class="back-link" href="/">Back to writing</a>
-
             <header class="article-header">
-                <p class="article-meta">
-                    {article.date} · {article.readTime}
-                </p>
                 <h1>{article.title}</h1>
                 <p class="dek">{article.excerpt}</p>
             </header>
 
             <div class="article-body">
-                <p>
-                    This is placeholder article copy for now. The shape of the
-                    page is intentionally simple: a quiet column, generous line
-                    height, and just enough hierarchy to make reading feel easy.
-                </p>
-                <p>
-                    I care about software that feels calm under repeated use.
-                    That usually comes from small decisions: useful defaults,
-                    honest loading states, predictable layout, and controls that
-                    do not ask for more attention than they deserve.
-                </p>
-                <h2>Working Notes</h2>
-                <p>
-                    Product engineering sits in a useful middle. It asks you to
-                    understand the material of the interface, the tradeoffs in
-                    the system, and the human rhythm around the product.
-                </p>
-                <p>
-                    The best work often feels almost plain once it is finished.
-                    It is not empty; it is edited. The unnecessary decisions have
-                    been removed so the useful ones can stay visible.
-                </p>
-                <h2>Draft Direction</h2>
-                <p>
-                    When the real article is ready, this page can hold it without
-                    needing a new design language. The point is to keep the page
-                    out of the way and let the writing carry the weight.
-                </p>
+                {
+                    Content ? (
+                        <Content />
+                    ) : (
+                        <p>
+                            This is placeholder article copy for now. The page
+                            is ready for a Markdown draft.
+                        </p>
+                    )
+                }
             </div>
         </article>
     </main>
@@ -85,58 +87,31 @@ const { article } = Astro.props;
         padding: 42px 0 84px;
     }
 
-    .back-link {
-        color: var(--foreground);
-        text-decoration: none;
-    }
-
-    .back-link,
-    .article-meta {
-        color: var(--muted-foreground);
-        font-size: 14px;
-        line-height: 1.45;
-    }
-
-    .back-link:hover,
-    .back-link:focus-visible {
-        color: var(--primary);
-    }
-
     .article {
         max-width: 620px;
     }
 
-    .back-link {
-        display: inline-flex;
-        margin-bottom: 44px;
-    }
-
     .article-header {
-        margin-bottom: 42px;
+        margin-bottom: 34px;
     }
 
     h1,
-    h2,
     p {
         margin: 0;
         letter-spacing: 0;
     }
 
-    .article-meta {
-        margin-bottom: 14px;
-    }
-
     h1 {
         max-width: 560px;
         color: var(--foreground);
-        font-size: clamp(2.35rem, 7vw, 4.4rem);
-        line-height: 1.02;
+        font-size: 28px;
+        line-height: 1.2;
         font-weight: 500;
     }
 
     .dek {
         max-width: 540px;
-        margin-top: 20px;
+        margin-top: 14px;
         color: var(--muted-foreground);
         font-size: 16px;
         line-height: 1.65;
@@ -144,18 +119,55 @@ const { article } = Astro.props;
 
     .article-body {
         display: grid;
-        gap: 22px;
+        gap: 20px;
         color: var(--foreground);
         font-size: 16px;
-        line-height: 1.78;
+        line-height: 1.72;
     }
 
-    h2 {
-        margin-top: 22px;
+    .article-body :global(h2) {
+        margin: 18px 0 0;
         color: var(--foreground);
-        font-size: 20px;
+        font-size: 16px;
         line-height: 1.35;
-        font-weight: 600;
+        font-weight: 700;
+    }
+
+    .article-body :global(p),
+    .article-body :global(pre),
+    .article-body :global(ul),
+    .article-body :global(ol),
+    .article-body :global(blockquote) {
+        margin: 0;
+    }
+
+    .article-body :global(code) {
+        color: var(--foreground);
+        background: var(--accent);
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.08em 0.32em;
+        font-family:
+            ui-monospace, SFMono-Regular, "SF Mono", Consolas,
+            "Liberation Mono", monospace;
+        font-size: 0.88em;
+    }
+
+    .article-body :global(pre) {
+        overflow-x: auto;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--accent);
+        padding: 16px;
+        line-height: 1.6;
+    }
+
+    .article-body :global(pre code) {
+        display: block;
+        border: 0;
+        background: transparent;
+        padding: 0;
+        font-size: 13px;
     }
 
     @media (max-width: 720px) {
