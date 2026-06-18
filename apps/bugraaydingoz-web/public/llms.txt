@@ -20,8 +20,7 @@ This site is a personal portfolio for Buğra Aydıngöz. It highlights product e
 
 - Senior Software Engineer at Scalable Capital, 2026 to Present, Munich, Germany.
 - Founding Software Engineer at Needle, 2025, Berlin, Germany.
-- Senior Software Engineer at Digital Turbine, 2022 to 2025, Berlin, Germany.
-- Senior Software Engineer at Fyber, 2020 to 2022, Berlin, Germany.
+- Senior Software Engineer at Digital Turbine, 2020 to 2025, Berlin, Germany.
 - Software Engineer at KI Group, 2019 to 2020, Munich, Germany.
 - Software Engineer at Breeze Technologies, 2018 to 2019, Hamburg, Germany.
 
