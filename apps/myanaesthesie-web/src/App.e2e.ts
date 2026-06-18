@@ -44,11 +44,15 @@ test("calculates concentration dilution both ways", async ({ page }) => {
   await expect(page.getByLabel("Medikament Menge in Milliliter")).toHaveValue("10");
   await expect(page.getByLabel("NaCl Menge in Milliliter")).toHaveValue("10");
   await expect(page.getByLabel("Zielkonzentration in Prozent")).toHaveValue("0,25");
-  await expect(page.getByLabel("Zielkonzentration in Milligramm pro Milliliter")).toHaveValue("2,5");
+  await expect(page.getByLabel("Zielkonzentration in Milligramm pro Milliliter")).toHaveValue(
+    "2,5",
+  );
 
   await page.getByLabel("NaCl Menge in Milliliter").fill("30");
   await expect(page.getByLabel("Zielkonzentration in Prozent")).toHaveValue("0,125");
-  await expect(page.getByLabel("Zielkonzentration in Milligramm pro Milliliter")).toHaveValue("1,25");
+  await expect(page.getByLabel("Zielkonzentration in Milligramm pro Milliliter")).toHaveValue(
+    "1,25",
+  );
 
   await page.getByLabel("Zielkonzentration in Prozent").fill("0,1");
   await expect(page.getByLabel("NaCl Menge in Milliliter")).toHaveValue("40");

@@ -7,34 +7,27 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const appRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const publicRoot = join(appRoot, "public");
 const chromePath =
-    process.env.CHROME_PATH ??
-    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+  process.env.CHROME_PATH ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
 const defaultIntro =
-    "Product Engineer with 8+ years of experience creating intuitive, user-focused applications. Frontend, design, backend, and team leadership.";
+  "Product Engineer with 8+ years of experience creating intuitive, user-focused applications. Frontend, design, backend, and team leadership.";
 
 function assetData(path, mimeType) {
-    const data = readFileSync(path).toString("base64");
-    return `data:${mimeType};base64,${data}`;
+  const data = readFileSync(path).toString("base64");
+  return `data:${mimeType};base64,${data}`;
 }
 
 function createOgImageHtml({
-    eyebrow = "Product Engineer",
-    imagePath = join(publicRoot, "bugra-aydingoz-portrait.jpeg"),
-    intro = defaultIntro,
-    title = "Buğra Aydıngöz",
+  eyebrow = "Product Engineer",
+  imagePath = join(publicRoot, "bugra-aydingoz-portrait.jpeg"),
+  intro = defaultIntro,
+  title = "Buğra Aydıngöz",
 } = {}) {
-    const photo = assetData(imagePath, "image/jpeg");
-    const satoshiRegular = assetData(
-        join(publicRoot, "fonts/satoshi-regular.woff2"),
-        "font/woff2",
-    );
-    const satoshiMedium = assetData(
-        join(publicRoot, "fonts/satoshi-medium.woff2"),
-        "font/woff2",
-    );
+  const photo = assetData(imagePath, "image/jpeg");
+  const satoshiRegular = assetData(join(publicRoot, "fonts/satoshi-regular.woff2"), "font/woff2");
+  const satoshiMedium = assetData(join(publicRoot, "fonts/satoshi-medium.woff2"), "font/woff2");
 
-    return `<!doctype html>
+  return `<!doctype html>
 <html>
     <head>
         <meta charset="utf-8" />
@@ -131,47 +124,47 @@ function createOgImageHtml({
 }
 
 function renderOgImage(card) {
-    const tempDir = mkdtempSync(join(tmpdir(), "bugra-og-"));
-    const htmlPath = join(tempDir, `${card.slug}.html`);
-    const outputPath = join(publicRoot, card.output);
+  const tempDir = mkdtempSync(join(tmpdir(), "bugra-og-"));
+  const htmlPath = join(tempDir, `${card.slug}.html`);
+  const outputPath = join(publicRoot, card.output);
 
-    writeFileSync(htmlPath, createOgImageHtml(card));
+  writeFileSync(htmlPath, createOgImageHtml(card));
 
-    try {
-        execFileSync(
-            chromePath,
-            [
-                "--headless=new",
-                "--disable-gpu",
-                "--no-sandbox",
-                `--screenshot=${outputPath}`,
-                "--window-size=1200,630",
-                `file://${htmlPath}`,
-            ],
-            { stdio: "inherit" },
-        );
-    } finally {
-        rmSync(tempDir, { force: true, recursive: true });
-    }
+  try {
+    execFileSync(
+      chromePath,
+      [
+        "--headless=new",
+        "--disable-gpu",
+        "--no-sandbox",
+        `--screenshot=${outputPath}`,
+        "--window-size=1200,630",
+        `file://${htmlPath}`,
+      ],
+      { stdio: "inherit" },
+    );
+  } finally {
+    rmSync(tempDir, { force: true, recursive: true });
+  }
 }
 
 export { createOgImageHtml, renderOgImage };
 
 function generateOgImages() {
-    const cards = [
-        {
-            output: "og-image.png",
-            slug: "home",
-        },
-    ];
+  const cards = [
+    {
+      output: "og-image.png",
+      slug: "home",
+    },
+  ];
 
-    for (const card of cards) {
-        renderOgImage(card);
-    }
+  for (const card of cards) {
+    renderOgImage(card);
+  }
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-    generateOgImages();
+  generateOgImages();
 }
 
 export { generateOgImages };
