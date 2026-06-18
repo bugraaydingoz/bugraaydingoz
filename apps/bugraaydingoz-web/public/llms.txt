@@ -2,11 +2,12 @@
 
 > Buğra Aydıngöz is a Product Engineer with 8+ years of experience creating intuitive, user-focused applications across frontend, design, backend, and team leadership.
 
-This site is a personal portfolio for Buğra Aydıngöz. It highlights product engineering experience, selected work history, contact links, and writing drafts. The primary audience is people evaluating Buğra's product engineering background, frontend/design skill set, and technical leadership experience.
+This site is a personal portfolio for Buğra Aydıngöz. It highlights product engineering experience, selected work history, contact links, and writing. The primary audience is people evaluating Buğra's product engineering background, frontend/design skill set, and technical leadership experience.
 
 ## Primary Pages
 
 - [Home](https://bugraaydingoz.com/): Portfolio introduction, work history, contact links, and concise professional summary.
+- [About this website](https://bugraaydingoz.com/articles/about-this-website/): Notes on the monorepo, Astro app, Docker Compose setup, Caddy, SEO, Lighthouse, and interactive details behind this portfolio.
 
 ## Profile Summary
 
@@ -26,7 +27,7 @@ This site is a personal portfolio for Buğra Aydıngöz. It highlights product e
 
 ## Writing
 
-- tba
+- [About this website](https://bugraaydingoz.com/articles/about-this-website/): Infrastructure notes for the portfolio, including the monorepo, Astro app, Docker Compose, Caddy, SEO, Lighthouse, and future analytics plans.
 
 ## Social Links
 

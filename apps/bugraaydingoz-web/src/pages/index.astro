@@ -3,6 +3,16 @@ import FigmaBox from "../components/FigmaBox.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import Layout from "../layouts/Layout.astro";
 
+type ArticleFrontmatter = {
+    date: Date | string;
+    description: string;
+    title: string;
+};
+
+type ArticleMarkdown = {
+    frontmatter: ArticleFrontmatter;
+};
+
 const contacts = [
     ["Email", "hello@bugraaydingoz.com", "mailto:hello@bugraaydingoz.com"],
     ["LinkedIn", "bugraaydingoz", "https://www.linkedin.com/in/bugraaydingoz/"],
@@ -42,6 +52,33 @@ const work = [
         "https://www.breeze-technologies.de/",
     ],
 ];
+
+const articleModules = import.meta.glob<ArticleMarkdown>(
+    "../content/articles/*.md",
+    { eager: true },
+);
+
+const writing = Object.entries(articleModules)
+    .map(([path, module]) => {
+        const slug = path.split("/").at(-1)?.replace(".md", "");
+        const date =
+            module.frontmatter.date instanceof Date
+                ? module.frontmatter.date
+                : new Date(module.frontmatter.date);
+
+        return {
+            date,
+            description: module.frontmatter.description,
+            href: `/articles/${slug}`,
+            title: module.frontmatter.title,
+        };
+    })
+    .sort((a, b) => b.date.getTime() - a.date.getTime());
+
+const dateFormatter = new Intl.DateTimeFormat("en", {
+    month: "short",
+    year: "numeric",
+});
 ---
 
 <Layout>
@@ -66,6 +103,27 @@ const work = [
                 complemented by backend skills (Node.js, Go, and MySQL) and
                 leading teams.
             </p>
+        </section>
+
+        <section class="section" aria-labelledby="writing-title">
+            <h2 id="writing-title">Writing</h2>
+            <div class="row-list">
+                {
+                    writing.map((article) => (
+                        <a class="info-row writing-link" href={article.href}>
+                            <span class="row-label">
+                                {dateFormatter.format(article.date)}
+                            </span>
+                            <span class="row-content">
+                                <span class="row-title">{article.title}</span>
+                                <span class="row-subtitle">
+                                    {article.description}
+                                </span>
+                            </span>
+                        </a>
+                    ))
+                }
+            </div>
         </section>
 
         <section class="section" aria-labelledby="work-title">

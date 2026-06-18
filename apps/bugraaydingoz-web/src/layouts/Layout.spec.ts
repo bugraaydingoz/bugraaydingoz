@@ -26,12 +26,12 @@ describe("Layout", () => {
     const container = await AstroContainer.create();
     const html = await container.renderToString(Layout, {
       props: {
-        description: "A note about product engineering.",
-        headline: "About Me",
-        image: "/og/articles/about-me.png",
+        description: "A note about the website setup.",
+        headline: "About this website",
+        image: "/og/articles/about-this-website.png",
         publishedDate: "2026-05-01",
         tags: ["product engineering", "frontend"],
-        title: "About Me · Buğra Aydıngöz",
+        title: "About this website · Buğra Aydıngöz",
         type: "article",
         updatedDate: "2026-05-02",
       },
@@ -44,8 +44,8 @@ describe("Layout", () => {
     expect(html).toContain('property="article:published_time" content="2026-05-01"');
     expect(html).toContain('property="article:modified_time" content="2026-05-02"');
     expect(html).toContain('property="article:tag" content="product engineering"');
-    expect(html).toContain('property="og:image" content="https://bugraaydingoz.com/og/articles/about-me.png"');
+    expect(html).toContain('property="og:image" content="https://bugraaydingoz.com/og/articles/about-this-website.png"');
     expect(html).toContain('"@type":"BlogPosting"');
-    expect(html).toContain('"headline":"About Me"');
+    expect(html).toContain('"headline":"About this website"');
   });
 });
