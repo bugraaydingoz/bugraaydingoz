@@ -8,6 +8,7 @@
     "check": "pnpm -r --if-present check",
     "dev:bugraaydingoz": "pnpm --filter bugraaydingoz-web dev",
     "dev:myanaesthesie": "pnpm --filter myanaesthesie-web dev",
+    "dev:robofleet": "pnpm --parallel --filter 'robofleet-*' dev",
     "format": "oxfmt --ignore-path .gitignore --ignore-path .oxfmtignore --write .",
     "format:check": "oxfmt --ignore-path .gitignore --ignore-path .oxfmtignore --check .",
     "lint": "oxlint .",
