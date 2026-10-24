@@ -5,3 +5,7 @@ bugraaydingoz.com {
 myanaesthesie.bugraaydingoz.com {
 	reverse_proxy myanaesthesie-web:3000
 }
+
+robofleet.bugraaydingoz.com {
+	reverse_proxy robofleet-web:3000
+}

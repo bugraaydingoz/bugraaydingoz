@@ -5,6 +5,7 @@ services:
     depends_on:
       - bugraaydingoz-web
       - myanaesthesie-web
+      - robofleet-web
     ports:
       - "80:80"
       - "443:443"
@@ -27,6 +28,26 @@ services:
       context: ..
       dockerfile: infra/myanaesthesie-web.Dockerfile
     restart: unless-stopped
+    expose:
+      - "3000"
+
+  robofleet-web:
+    build:
+      context: ..
+      dockerfile: infra/robofleet-web.Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - robofleet-api
+    expose:
+      - "3000"
+
+  robofleet-api:
+    build:
+      context: ..
+      dockerfile: infra/robofleet-api.Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT: "3000"
     expose:
       - "3000"
 
