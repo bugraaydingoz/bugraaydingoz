@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "bun run --hot src/index.ts",
-    "start": "bun src/index.ts",
-    "migrate": "bun drizzle-kit generate:pg"
+    "dev": "tsx --watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "migrate": "drizzle-kit generate:pg"
   },
   "dependencies": {
     "hono": "^4.5.8",
@@ -15,11 +15,9 @@
     "postgres": "^3.4.4"
   },
   "devDependencies": {
-    "bun-types": "^1.1.22",
+    "tsx": "^4.16.2",
     "drizzle-kit": "^0.24.0",
     "typescript": "^5.5.4"
-  },
-  "engines": {
-    "bun": "^1.1.22"
   }
+
 }
