@@ -1,0 +1,44 @@
+:root {
+  --background: hsl(180 35% 98%);
+  --foreground: hsl(192 32% 13%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(192 32% 13%);
+  --muted: hsl(178 28% 93%);
+  --muted-foreground: hsl(188 14% 39%);
+  --border: hsl(181 24% 86%);
+  --input: hsl(181 24% 86%);
+  --ring: hsl(174 79% 32%);
+  --primary: hsl(174 79% 32%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(180 28% 92%);
+  --secondary-foreground: hsl(190 26% 17%);
+  --accent: hsl(174 68% 92%);
+  --accent-foreground: hsl(178 74% 23%);
+  --destructive: hsl(0 72% 51%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --radius: 0.75rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}

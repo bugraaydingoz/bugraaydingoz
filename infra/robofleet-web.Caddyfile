@@ -1,0 +1,12 @@
+:3000 {
+	@api path /api /api/*
+	handle @api {
+		reverse_proxy robofleet-api:3000
+	}
+
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}
