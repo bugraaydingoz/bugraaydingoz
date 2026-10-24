@@ -28,14 +28,15 @@ target. Redis is deferred. Ctrl+C stops the apps while leaving the shared databa
 - `src/utils/utils.ts`: shared UI utilities.
 
 Tailwind uses the Vite plugin and `src/index.css`. The local component aliases are configured in
-`components.json`, Vite, and TypeScript. The app uses the shadcn Nova/Radix foundation
+`components.json`, Vite, and TypeScript. The app uses the shadcn Nova/Base UI foundation
 with the shared neutral palette. `src/index.css` imports `@repo/design-tokens/tokens.css` and
 `@repo/design-tokens/tailwind.css` directly; there is no duplicate local theme. Animations
 come from `tw-animate-css`. The default theme is light; adding `.dark` to `<html>` activates
 the shared dark palette.
 
-The Button follows the official shadcn Nova component with React 18 ref forwarding and the
-existing local `cn` utility. To add components, run the official CLI from this app:
+The Button follows the official shadcn Nova Base UI component with React 18 ref forwarding and the
+existing local `cn` utility. Composition uses Base UI’s `render` prop. To add components,
+run the official CLI from this app:
 
 ```sh
 pnpm dlx shadcn@latest add @shadcn/<component>

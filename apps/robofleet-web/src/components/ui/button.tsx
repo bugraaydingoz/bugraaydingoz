@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Slot } from "@radix-ui/react-slot";
+import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/utils/utils";
 
@@ -37,25 +37,18 @@ export const buttonVariants = cva(
   },
 );
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
-  asChild?: boolean;
-}
+export type ButtonProps = ButtonPrimitive.Props & VariantProps<typeof buttonVariants>;
 
-// Keep React 18 ref support for Radix triggers using asChild.
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "default", size = "default", asChild = false, ...props }, ref) => {
-    const Component = asChild ? Slot : "button";
-    return (
-      <Component
-        ref={ref}
-        data-slot="button"
-        data-variant={variant}
-        data-size={size}
-        className={cn(buttonVariants({ variant, size, className }))}
-        {...props}
-      />
-    );
-  },
+export const Button = React.forwardRef<React.ComponentRef<typeof ButtonPrimitive>, ButtonProps>(
+  ({ className, variant = "default", size = "default", ...props }, ref) => (
+    <ButtonPrimitive
+      ref={ref}
+      data-slot="button"
+      data-variant={variant}
+      data-size={size}
+      className={cn(buttonVariants({ variant, size, className }))}
+      {...props}
+    />
+  ),
 );
 Button.displayName = "Button";
