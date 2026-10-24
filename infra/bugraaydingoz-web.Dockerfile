@@ -6,10 +6,12 @@ RUN corepack enable
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/bugraaydingoz-web/package.json apps/bugraaydingoz-web/package.json
+COPY packages/design-tokens/package.json packages/design-tokens/package.json
 
 RUN pnpm install --frozen-lockfile --ignore-scripts --filter bugraaydingoz-web...
 
 COPY apps/bugraaydingoz-web apps/bugraaydingoz-web
+COPY packages/design-tokens packages/design-tokens
 
 RUN pnpm --filter bugraaydingoz-web build
 
