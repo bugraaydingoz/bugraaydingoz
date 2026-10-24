@@ -1,24 +1,27 @@
-import { useState } from "react";
+import { useEffect, useRef } from "react";
 import { Bot, CircleDashed } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { cn } from "@/utils/utils";
+import { useFleet } from "@/stores/fleet";
 import { demoRobots, needsAttention } from "@/data/robots";
 import { RobotCard } from "./RobotCard";
 
-type Filter = "all" | "active" | "attention";
-
-export function RobotsPanel() {
-  const [filter, setFilter] = useState<Filter>("all");
-  const [expandedId, setExpandedId] = useState<string | null>(demoRobots[0].id);
+export function RobotsPanel({ className }: { className?: string }) {
+  const { filter, selectedId, setFilter, toggleRobot } = useFleet();
+  const selectedCard = useRef<HTMLLIElement>(null);
+  useEffect(() => {
+    selectedCard.current?.scrollIntoView?.({ block: "nearest" });
+  }, [selectedId, filter]);
   const active = demoRobots.filter((robot) => robot.status === "Working");
   const attention = demoRobots.filter(needsAttention);
   const visible = filter === "active" ? active : filter === "attention" ? attention : demoRobots;
 
   return (
-    <aside aria-label="Robot fleet" className="h-full w-[360px] max-w-full">
+    <aside aria-label="Robot fleet" className={cn("h-full w-[360px] max-w-full", className)}>
       <Card className="h-full gap-0 py-0">
         <CardHeader className="gap-4 py-5">
           <div className="flex items-center gap-2.5">
@@ -58,11 +61,11 @@ export function RobotsPanel() {
           <ScrollArea className="h-full">
             <ul className="flex flex-col gap-3 p-4" aria-label="Robots">
               {visible.map((robot) => (
-                <li key={robot.id}>
+                <li key={robot.id} ref={selectedId === robot.id ? selectedCard : undefined}>
                   <RobotCard
                     robot={robot}
-                    expanded={expandedId === robot.id}
-                    onToggle={() => setExpandedId(expandedId === robot.id ? null : robot.id)}
+                    expanded={selectedId === robot.id}
+                    onToggle={() => toggleRobot(robot.id)}
                   />
                 </li>
               ))}
