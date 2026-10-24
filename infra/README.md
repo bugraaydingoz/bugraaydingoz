@@ -93,6 +93,53 @@ The Caddy routes are:
 
 The RoboFleet images use Node.js 24 and pnpm 12.15.0. Configure the hostname's DNS before deployment.
 
+### Automatic deployment
+
+The [Deploy workflow](../.github/workflows/deploy.yml) runs on pushes to `main`. It can also be
+started manually from GitHub Actions by selecting **Deploy → Run workflow** on `main`.
+Deployments run one at a time.
+
+The workflow connects to the server over SSH, updates the checkout at `/srv/bugraaydingoz`
+to the latest `main`, and runs `sudo -n /usr/local/sbin/deploy-bugraaydingoz`.
+
+#### Server prerequisites
+
+Replace `<deploy-user>` with your deployment account username.
+
+- Install Git, Docker, and the Docker Compose plugin.
+- Keep the repository at `/srv/bugraaydingoz`, owned by the `<deploy-user>` user.
+- Add the deployment SSH public key to `/home/<deploy-user>/.ssh/authorized_keys`.
+- Ensure `<deploy-user>` can run `git fetch origin`; private repositories require separate GitHub credentials.
+- Complete the initial database setup described above.
+- Create `/usr/local/sbin/deploy-bugraaydingoz` as a root-owned script that rebuilds and starts
+  the Docker Compose services and waits for them to be running or healthy.
+- Allow `<deploy-user>` to run only that script without a password using the following sudoers rule:
+
+  ```sudoers
+  <deploy-user> ALL=(root) NOPASSWD: /usr/local/sbin/deploy-bugraaydingoz ""
+  ```
+
+Keep the script, production Compose configuration, Dockerfiles, and environment file under
+administrator control, outside the writable checkout (for example, `/etc/bugraaydingoz`).
+Use the existing Compose project name to preserve database volumes. Configuration changes
+require an administrator to update the protected files separately. The `<deploy-user>` user does
+not need general sudo access or Docker group membership.
+
+#### GitHub secrets
+
+Add these repository secrets under **Settings → Secrets and variables → Actions**:
+
+| Secret               | Value                                                            |
+| -------------------- | ---------------------------------------------------------------- |
+| `DEPLOY_HOST`        | Server IP address or hostname                                    |
+| `DEPLOY_USER`        | `<deploy-user>`                                                  |
+| `DEPLOY_SSH_KEY`     | Private SSH key matching the authorized public key on the server |
+| `DEPLOY_KNOWN_HOSTS` | Verified server host-key entry matching `DEPLOY_HOST`            |
+
+Use the complete matching line from your local `~/.ssh/known_hosts` for
+`DEPLOY_KNOWN_HOSTS`; hashed hostnames are supported. Never commit private keys or production
+environment files. Check deployment results and failures in the GitHub **Actions** tab.
+
 ## Backup and restore
 
 Back up each database separately and copy the dumps off the deployment host:
