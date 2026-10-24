@@ -8,7 +8,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["bun-types"]
+    "types": ["node"]
   },
   "include": ["src/**/*", "drizzle/**/*"],
   "exclude": ["node_modules", "dist"]

@@ -5,19 +5,22 @@
   "scripts": {
     "dev": "tsx --watch src/index.ts",
     "start": "tsx src/index.ts",
+    "lint": "oxlint",
     "migrate": "drizzle-kit generate:pg"
   },
   "dependencies": {
-    "hono": "^4.5.8",
-    "zod": "^3.23.8",
+    "@hono/node-server": "^2.1.5",
     "@hono/zod-openapi": "^0.16.0",
+    "@hono/zod-validator": "0.3.0",
     "drizzle-orm": "^0.33.0",
-    "postgres": "^3.4.4"
+    "hono": "^4.5.8",
+    "postgres": "^3.4.4",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "tsx": "^4.16.2",
+    "@types/node": "^24.19.2",
     "drizzle-kit": "^0.24.0",
+    "tsx": "^4.16.2",
     "typescript": "^5.5.4"
   }
-
 }
