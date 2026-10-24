@@ -1,52 +1,60 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen, within } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 import App from "./App";
 
-function renderApp() {
-  const client = new QueryClient({
-    defaultOptions: { queries: { gcTime: 0 } },
-  });
-  return render(
-    <QueryClientProvider client={client}>
-      <App />
-    </QueryClientProvider>,
-  );
-}
-
-describe("RoboFleet", () => {
-  it("shows the API response and supports the counter interaction", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json({ status: "ok" })));
-    renderApp();
-
-    expect(screen.getByRole("heading", { name: "RoboFleet" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Count: 0" }));
-    expect(screen.getByRole("button", { name: "Count: 1" })).toBeTruthy();
-    expect((await screen.findByLabelText("API response")).textContent).toContain('"status": "ok"');
+describe("Robots panel", () => {
+  it("replaces the scaffold with fleet cards and the first robot's task details", () => {
+    render(<App />);
+    expect(screen.getByRole("heading", { name: "Robots" })).toBeTruthy();
+    expect(
+      within(screen.getByRole("list", { name: "Robots" })).getAllByRole("listitem"),
+    ).toHaveLength(8);
+    expect(
+      screen
+        .getByRole("progressbar", { name: "Delivering pallet #024" })
+        .getAttribute("aria-valuenow"),
+    ).toBe("64");
+    expect(screen.getByLabelText("Atlas battery 84%")).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "API Health Check" })).toBeNull();
+    expect(screen.queryByRole("navigation")).toBeNull();
   });
 
-  it("shows a loading state while waiting for telemetry services", () => {
-    vi.stubGlobal("fetch", vi.fn().mockReturnValue(new Promise(() => {})));
-    renderApp();
-
-    expect(screen.getByRole("status").textContent).toBe("Loading...");
-    expect(screen.queryByLabelText("API response")).toBeNull();
-  });
-
-  it("reports an unsuccessful API response", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi
-        .fn()
-        .mockImplementation(() =>
-          Promise.resolve(Response.json({ error: "Unavailable" }, { status: 503 })),
-        ),
+  it("expands one robot at a time and allows details to collapse", () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Nova details" }));
+    expect(screen.getByRole("button", { name: "Nova details" }).getAttribute("aria-expanded")).toBe(
+      "true",
     );
-    renderApp();
-
-    expect((await screen.findByRole("alert", {}, { timeout: 3000 })).textContent).toContain(
-      "Unable to reach the API",
+    expect(
+      screen.getByText("Charging at dock C-02. Ready in approximately 24 minutes."),
+    ).toBeTruthy();
+    expect(screen.queryByRole("progressbar", { name: "Delivering pallet #024" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Nova details" }));
+    expect(screen.getByRole("button", { name: "Nova details" }).getAttribute("aria-expanded")).toBe(
+      "false",
     );
-    expect(screen.queryByLabelText("API response")).toBeNull();
+    expect(
+      screen.queryByText("Charging at dock C-02. Ready in approximately 24 minutes."),
+    ).toBeNull();
+  });
+
+  it("filters active and attention robots without showing unrelated cards", () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Attention 2" }));
+    expect(
+      within(screen.getByRole("list", { name: "Robots" })).getAllByRole("listitem"),
+    ).toHaveLength(2);
+    expect(screen.getByRole("article", { name: "Bolt" })).toBeTruthy();
+    expect(screen.getByRole("article", { name: "Milo" })).toBeTruthy();
+    expect(screen.queryByRole("article", { name: "Atlas" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Active 4" }));
+    expect(
+      within(screen.getByRole("list", { name: "Robots" })).getAllByRole("listitem"),
+    ).toHaveLength(4);
+    expect(screen.queryByRole("article", { name: "Bolt" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "All robots" }));
+    expect(
+      within(screen.getByRole("list", { name: "Robots" })).getAllByRole("listitem"),
+    ).toHaveLength(8);
   });
 });

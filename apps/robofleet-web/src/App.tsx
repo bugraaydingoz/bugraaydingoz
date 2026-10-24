@@ -1,19 +1,9 @@
-import { useState } from "react";
-import { ApiHealth } from "@/components/ApiHealth";
-import { Button } from "@/components/ui/button";
+import { RobotsPanel } from "@/components/robots/RobotsPanel";
 
 function App() {
-  const [count, setCount] = useState(0);
   return (
-    <main className="min-h-screen p-8">
-      <h1 className="text-3xl font-bold">RoboFleet</h1>
-      <p className="mt-2 text-muted-foreground">A fleet management system for robots.</p>
-
-      <div className="mt-8">
-        <Button onClick={() => setCount((c) => c + 1)}>Count: {count}</Button>
-      </div>
-
-      <ApiHealth />
+    <main className="h-dvh overflow-hidden bg-muted/40 p-4 max-sm:p-3">
+      <RobotsPanel />
     </main>
   );
 }
