@@ -11,9 +11,11 @@ pnpm install
 pnpm dev:robofleet
 ```
 
+Configure the env files as described in `infra/README.md`. Docker must be running. The command
+starts shared Postgres and applies migrations before starting the apps.
 The UI runs on `http://localhost:5173` and forwards `/api` to the Hono API on
 `http://localhost:3000`. Set `ROBOFLEET_API_URL` to change the development or preview proxy
-target. Database and Redis services are deferred.
+target. Redis is deferred. Ctrl+C stops the apps while leaving the shared database running.
 
 ## Structure
 
