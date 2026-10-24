@@ -25,6 +25,7 @@ COPY apps/robofleet-api/package.json apps/robofleet-api/package.json
 RUN pnpm install --frozen-lockfile --ignore-scripts --prod --filter robofleet-api...
 
 COPY --from=builder /app/apps/robofleet-api/dist apps/robofleet-api/dist
+COPY --from=builder /app/apps/robofleet-api/drizzle/migrations apps/robofleet-api/drizzle/migrations
 
 USER node
 
