@@ -19,14 +19,30 @@ target. Redis is deferred. Ctrl+C stops the apps while leaving the shared databa
 
 ## Structure
 
-- `src/lib/components/ui`: local shadcn-style React primitives.
-- `src/lib/components/app`: application-specific components.
-- `src/lib/styles/theme.css`: local design tokens using shadcn CSS variables.
-- `src/lib/api.ts`: the typed Hono client and request functions.
-- `src/lib/utils.ts`: shared UI utilities.
+- `src/components`: application components, with PascalCase filenames.
+- `src/components/ui`: shadcn/ui components, with one file per component.
+- `src/test/setup.ts`: shared Vitest setup; unit tests stay beside their source.
+- `tests`: Playwright browser tests, kept flat.
+- `@repo/design-tokens`: shared shadcn variables, light/dark palettes, and Tailwind mappings.
+- `src/utils/api.ts`: the typed Hono client and request functions.
+- `src/utils/utils.ts`: shared UI utilities.
 
-Tailwind uses the Vite plugin and `src/app.css`. The local component aliases are configured in
-`components.json`, Vite, and TypeScript.
+Tailwind uses the Vite plugin and `src/index.css`. The local component aliases are configured in
+`components.json`, Vite, and TypeScript. The app uses the shadcn Nova/Radix foundation
+with the shared neutral palette. `src/index.css` imports `@repo/design-tokens/tokens.css` and
+`@repo/design-tokens/tailwind.css` directly; there is no duplicate local theme. Animations
+come from `tw-animate-css`. The default theme is light; adding `.dark` to `<html>` activates
+the shared dark palette.
+
+The Button follows the official shadcn Nova component with React 18 ref forwarding and the
+existing local `cn` utility. To add components, run the official CLI from this app:
+
+```sh
+pnpm dlx shadcn@latest add @shadcn/<component>
+```
+
+The CLI writes components directly to `src/components/ui`. Reuse `@/utils/utils` for `cn`,
+and keep color/radius variables in the shared design-tokens package.
 
 ## Validation
 
@@ -43,7 +59,7 @@ the code as `*.spec.tsx` or `*.spec.ts` and cover API loading, success, failure,
 
 `pnpm test:e2e` installs Chromium and runs Playwright against a production UI build and the
 real API. Playwright starts its own servers on ports `4174` and `3031`, checks the same-origin
-API proxy, and covers the unavailable-API state. Browser tests use `*.e2e.ts`.
+API proxy, and covers the unavailable-API state. Browser tests live in `tests/*.spec.ts`.
 
 ## Deployment
 

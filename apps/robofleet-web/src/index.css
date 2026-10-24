@@ -1,0 +1,14 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@repo/design-tokens/tokens.css";
+@import "@repo/design-tokens/tailwind.css";
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply m-0 bg-background text-foreground font-sans antialiased;
+  }
+}

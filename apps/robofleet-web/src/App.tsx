@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { ApiHealth } from "@/lib/components/app/api-health";
-import { Button } from "@/lib/components/ui/button";
+import { ApiHealth } from "@/components/ApiHealth";
+import { Button } from "@/components/ui/button";
 
 function App() {
   const [count, setCount] = useState(0);

@@ -28,10 +28,18 @@ test("shows an error when the API is unavailable", async ({ page }) => {
   await expect(page.getByRole("alert")).toContainText("Unable to reach the API");
 });
 
-test("applies Tailwind layout and the local theme variables", async ({ page }) => {
+test("uses shared design tokens in light and dark themes", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("main")).toHaveCSS("padding", "32px");
+  await expect(page.locator("body")).toHaveCSS("background-color", "oklch(1 0 0)");
+  await page.evaluate(() => document.documentElement.classList.add("dark"));
+  await expect(page.locator("body")).toHaveCSS("background-color", "oklch(0.145 0 0)");
+  await expect(page.getByRole("button", { name: "Count: 0" })).toHaveCSS(
+    "background-color",
+    "oklch(0.922 0 0)",
+  );
   await page.evaluate(() => {
+    document.documentElement.classList.remove("dark");
     document.documentElement.style.setProperty("--primary", "rgb(1, 2, 3)");
   });
   await expect(page.getByRole("button", { name: "Count: 0" })).toHaveCSS(

@@ -18,7 +18,7 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
-    setupFiles: ["./src/tests/setup.ts"],
+    setupFiles: ["./src/test/setup.ts"],
     include: ["src/**/*.spec.{ts,tsx}"],
     expect: { requireAssertions: true },
   },
