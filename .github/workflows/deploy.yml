@@ -37,5 +37,8 @@ jobs:
           cd /srv/bugraaydingoz
           git switch master
           git pull --ff-only origin master
-          sudo -n /usr/local/sbin/deploy-bugraaydingoz
+          docker --context rootless compose \
+            --env-file .env \
+            -f infra/docker-compose.yml \
+            up -d --build --wait --wait-timeout 180
           EOF

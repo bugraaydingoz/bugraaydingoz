@@ -1,158 +1,82 @@
 # Infra
 
-Docker Compose runs Caddy, the app containers, and shared PostgreSQL 18.
-
-## Services
-
-- `caddy`: terminates HTTP/HTTPS and proxies by hostname.
-- `bugraaydingoz-web`: serves the static Astro output on port `3000`.
-- `myanaesthesie-web`: serves the static Vite output on port `3000`.
-- `robofleet-web`: serves the Vite output and forwards `/api` to `robofleet-api`.
-- `robofleet-api`: runs the Hono API on port `3000`.
-- `postgres`: stores data in the persistent `postgres_data` volume.
-- `robofleet-migrate`: applies committed SQL migrations before the API starts.
-
-Postgres initializes the default `postgres` database. Application databases are created separately.
-For now, RoboFleet and its migrations use the built-in `postgres` user and the shared Postgres
-password. There is no separate RoboFleet password. Redis is deferred.
+[Docker Compose](docker-compose.yml) runs the apps, Caddy, and shared PostgreSQL 18.
+[Caddyfile](Caddyfile) defines the domain routes. Run commands from the repository root.
 
 ## Local development
-
-From the repository root:
 
 ```sh
 cp .env.example .env.local
 cp apps/robofleet-api/.env.example apps/robofleet-api/.env.local
 ```
 
-Generate a password with `openssl rand -hex 24`. Set `POSTGRES_PASSWORD` in the root `.env.local`
-and use the same value for `PGPASSWORD` in the API's `.env.local`. These files are ignored by Git
-and excluded from Docker build contexts.
-
-Start Postgres and create the application database once:
+Set `POSTGRES_PASSWORD` and the API's `PGPASSWORD` to the same value.
+Generate one with `openssl rand -hex 24`. Then:
 
 ```sh
 pnpm db:up
-pnpm db:compose exec -T postgres createdb -U postgres robofleet
+pnpm db:compose exec -T postgres createdb -U postgres robofleet # First setup only
+pnpm dev:robofleet
 ```
 
-Skip `createdb` if the database already exists. Then run `pnpm dev:robofleet`.
+Postgres is available at `127.0.0.1:5432`. Stop it with `pnpm db:compose stop postgres`.
 
-This starts Postgres, waits for readiness, applies migrations, and starts the API and UI.
-Docker must be running. The API loads its local env file using Node's built-in env-file support.
-There are no custom orchestration scripts.
-
-Development uses the `bugraaydingoz-dev` Compose project and publishes Postgres only on
-`127.0.0.1:5432`. To change the host port, update `POSTGRES_PORT` in the root env file and the
-port in the API's `DATABASE_URL`. Ctrl+C stops the apps and leaves Postgres running.
-
-Database commands:
+For database tests:
 
 ```sh
-pnpm db:up
-pnpm db:compose stop postgres
+pnpm db:compose exec -T postgres createdb -U postgres robofleet_test # First setup only
+pnpm db:test:robofleet
 ```
-
-The volume is mounted at `/var/lib/postgresql`. Changing initialization settings or passwords in
-the env file does not modify an existing cluster. Keep the existing password when reusing its
-volume; apply schema changes through migrations.
-
-## Database tests
-
-Create the dedicated test database once:
-
-```sh
-pnpm db:up
-pnpm db:compose exec -T postgres createdb -U postgres robofleet_test
-```
-
-Then run `pnpm db:test:robofleet`. Tests use `robofleet_test` with the API's configured connection
-credentials and check concurrent migrations, repeatability, and data preservation. They do not
-write test rows into the application database. Set `TEST_DATABASE_URL` to use another test database.
 
 ## Deployment
 
+Use a deployment account with Git, rootless Docker, and Compose. Point DNS to the VPS and
+allow inbound TCP ports `80` and `443` in the host and provider firewalls.
+
+First setup, as the deployment account:
+
 ```sh
+docker context use rootless
+systemctl --user enable --now docker
 cp .env.example .env
-# Set POSTGRES_PASSWORD.
+chmod 600 .env
+# Set POSTGRES_PASSWORD in .env before continuing.
 docker compose --env-file .env -f infra/docker-compose.yml up -d --wait postgres
-# First setup only: skip this command if robofleet already exists.
 docker compose --env-file .env -f infra/docker-compose.yml exec -T postgres createdb -U postgres robofleet
-docker compose --env-file .env -f infra/docker-compose.yml up -d --build
 ```
 
-Production does not publish Postgres's port. Startup order is Postgres readiness, migrations,
-API readiness, then the UI. Migration failures prevent API startup. `/api/health` checks process
-liveness and `/api/ready` checks database connectivity.
+An administrator enables startup after reboot with `sudo loginctl enable-linger <deploy-user>`.
+The deployment account needs no sudo access or system `docker` group membership.
 
-The Caddy routes are:
+Start or update all services:
 
-- `bugraaydingoz.com` -> `bugraaydingoz-web:3000`
-- `myanaesthesie.bugraaydingoz.com` -> `myanaesthesie-web:3000`
-- `robofleet.bugraaydingoz.com` -> `robofleet-web:3000`, with `/api` forwarded to the API.
+```sh
+docker compose --env-file .env -f infra/docker-compose.yml up -d --build --wait
+```
 
-The RoboFleet images use Node.js 24 and pnpm 12.15.0. Configure the hostname's DNS before deployment.
+Migrations run before the API starts. Postgres data persists in a volume; changing `.env`
+does not change an existing database password. Rootless and system Docker have separate volumes.
 
-### Automatic deployment
+### GitHub Actions
 
-The [Deploy workflow](../.github/workflows/deploy.yml) runs on pushes to `master`. It can also be
-started manually from GitHub Actions by selecting **Deploy → Run workflow** on `master`.
-Deployments run one at a time.
+The [Deploy workflow](../.github/workflows/deploy.yml) updates `/srv/bugraaydingoz` over SSH
+and deploys with rootless Docker on pushes to `master`. Manual runs are available in Actions.
+The deployment account must own the checkout and have SSH and Git access.
 
-The workflow connects to the server over SSH, updates the checkout at `/srv/bugraaydingoz`
-to the latest `master`, and runs `sudo -n /usr/local/sbin/deploy-bugraaydingoz`.
+Add these repository secrets:
 
-#### Server prerequisites
-
-Replace `<deploy-user>` with your deployment account username.
-
-- Install Git, Docker, and the Docker Compose plugin.
-- Keep the repository at `/srv/bugraaydingoz`, owned by the `<deploy-user>` user.
-- Add the deployment SSH public key to `/home/<deploy-user>/.ssh/authorized_keys`.
-- Ensure `<deploy-user>` can run `git fetch origin`; private repositories require separate GitHub credentials.
-- Complete the initial database setup described above.
-- Create `/usr/local/sbin/deploy-bugraaydingoz` as a root-owned script that rebuilds and starts
-  the Docker Compose services and waits for them to be running or healthy.
-- Allow `<deploy-user>` to run only that script without a password using the following sudoers rule:
-
-  ```sudoers
-  <deploy-user> ALL=(root) NOPASSWD: /usr/local/sbin/deploy-bugraaydingoz ""
-  ```
-
-Keep the script, production Compose configuration, Dockerfiles, and environment file under
-administrator control, outside the writable checkout (for example, `/etc/bugraaydingoz`).
-Use the existing Compose project name to preserve database volumes. Configuration changes
-require an administrator to update the protected files separately. The `<deploy-user>` user does
-not need general sudo access or Docker group membership.
-
-#### GitHub secrets
-
-Add these repository secrets under **Settings → Secrets and variables → Actions**:
-
-| Secret               | Value                                                            |
-| -------------------- | ---------------------------------------------------------------- |
-| `DEPLOY_HOST`        | Server IP address or hostname                                    |
-| `DEPLOY_USER`        | `<deploy-user>`                                                  |
-| `DEPLOY_SSH_KEY`     | Private SSH key matching the authorized public key on the server |
-| `DEPLOY_KNOWN_HOSTS` | Verified server host-key entry matching `DEPLOY_HOST`            |
-
-Use the complete matching line from your local `~/.ssh/known_hosts` for
-`DEPLOY_KNOWN_HOSTS`; hashed hostnames are supported. Never commit private keys or production
-environment files. Check deployment results and failures in the GitHub **Actions** tab.
+- `DEPLOY_HOST`: server IP or hostname.
+- `DEPLOY_USER`: deployment account username.
+- `DEPLOY_SSH_KEY`: deployment private SSH key.
+- `DEPLOY_KNOWN_HOSTS`: verified matching line from `~/.ssh/known_hosts`.
 
 ## Backup and restore
-
-Back up each database separately and copy the dumps off the deployment host:
 
 ```sh
 mkdir -p backups
 docker compose --env-file .env -f infra/docker-compose.yml exec -T postgres pg_dump -U postgres -d robofleet -Fc > backups/robofleet.dump
-```
-
-Restore into an empty `robofleet` database:
-
-```sh
+# Restore into an empty robofleet database:
 docker compose --env-file .env -f infra/docker-compose.yml exec -T postgres pg_restore -U postgres --no-owner --dbname=robofleet < backups/robofleet.dump
 ```
 
-The `backups/` directory is excluded from Git and Docker build contexts.
+Copy backups off the server. Environment files and `backups/` are excluded from Git.
