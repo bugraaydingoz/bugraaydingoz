@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import App from "./App";
 import { useFleet } from "@/stores/fleet";
 
-beforeEach(() => useFleet.setState({ selectedId: "AMR-001", filter: "all" }));
+beforeEach(() => useFleet.setState({ selectedId: "AMR-001", hoveredId: null, filter: "all" }));
 
 describe("Robots panel", () => {
   it("replaces the scaffold with fleet cards and the first robot's task details", () => {
@@ -17,12 +17,14 @@ describe("Robots panel", () => {
     ).toBe("64");
     expect(screen.getByLabelText("Atlas battery 84%")).toBeTruthy();
     expect(screen.queryByRole("heading", { name: "API Health Check" })).toBeNull();
-    expect(screen.queryByRole("navigation")).toBeNull();
+    expect(
+      within(screen.getByRole("navigation", { name: "Main navigation" })).getAllByRole("button"),
+    ).toHaveLength(5);
   });
 
   it("expands one robot at a time and allows details to collapse", () => {
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: "Nova details" }));
+    fireEvent.click(screen.getByText("Reception dock"));
     expect(screen.getByRole("button", { name: "Nova details" }).getAttribute("aria-expanded")).toBe(
       "true",
     );

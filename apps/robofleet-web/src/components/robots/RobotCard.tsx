@@ -16,10 +16,11 @@ import { Progress, ProgressLabel, ProgressValue } from "@/components/ui/progress
 import { Separator } from "@/components/ui/separator";
 import type { Robot, RobotStatus } from "@/data/robots";
 import { cn } from "@/utils/utils";
+import { useFleet } from "@/stores/fleet";
 
 function StatusBadge({ status }: { status: RobotStatus }) {
   const variant =
-    status === "Blocked" ? "destructive" : status === "Working" ? "default" : "secondary";
+    status === "Blocked" ? "destructive" : status === "Working" ? "success" : "secondary";
   return (
     <Badge variant={variant}>
       {status === "Working" && <span className="size-1 rounded-full bg-current" />}
@@ -40,16 +41,25 @@ export function RobotCard({
   expanded: boolean;
   onToggle: () => void;
 }) {
+  const { hoveredId, hoverRobot } = useFleet();
   return (
-    <Card size="sm" role="article" aria-labelledby={`${robot.id}-name`}>
+    <Card
+      size="sm"
+      variant="interactive"
+      role="article"
+      aria-labelledby={`${robot.id}-name`}
+      data-highlighted={expanded ? "selected" : hoveredId === robot.id ? "hovered" : undefined}
+      onClick={onToggle}
+      onPointerEnter={() => hoverRobot(robot.id)}
+      onPointerLeave={() => hoverRobot(null)}
+    >
       <CardHeader>
         <Button
-          variant="ghost"
+          variant="card"
           className="h-auto w-full justify-start px-0 py-0"
           aria-label={`${robot.name} details`}
           aria-expanded={expanded}
           aria-controls={`${robot.id}-details`}
-          onClick={onToggle}
         >
           <span className="grid size-8 shrink-0 place-items-center rounded-lg border bg-muted/50">
             <Bot aria-hidden="true" />

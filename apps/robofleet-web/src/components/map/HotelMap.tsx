@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { demoRobots } from "@/data/robots";
 import { hotelDestinations, hotelRobotPlacements, hotelRoute } from "@/data/hotel";
 import { useFleet } from "@/stores/fleet";
@@ -11,7 +11,7 @@ const ROBOT_SIZE = 110;
 const ROBOT_HEIGHT = (ROBOT_SIZE * 235) / 260;
 
 export function HotelMap() {
-  const { selectedId, selectRobot } = useFleet();
+  const { selectedId, hoveredId, selectRobot, hoverRobot } = useFleet();
   const selected = demoRobots.find((robot) => robot.id === selectedId);
   const destination = selected?.destination ? hotelDestinations[selected.destination] : undefined;
   const placement = selected ? hotelRobotPlacements[selected.id] : undefined;
@@ -27,11 +27,7 @@ export function HotelMap() {
     .sort((a, b) => a.point.y - b.point.y);
 
   return (
-    <Card
-      role="region"
-      aria-labelledby="hotel-map-title"
-      className="relative h-full min-h-0 min-w-0 gap-0 py-0"
-    >
+    <Card role="region" aria-label="Hotel" className="relative h-full min-h-0 min-w-0 gap-0 py-0">
       <MapViewport className="bg-card">
         <HotelFloor />
         <svg
@@ -58,17 +54,19 @@ export function HotelMap() {
             </g>
           )}
           {markers.map(({ robot, placement, point }) => (
-            <g key={robot.id}>
-              {selectedId === robot.id && (
+            <g key={robot.id} data-robot-id={robot.id}>
+              {(selectedId === robot.id || hoveredId === robot.id) && (
                 <ellipse
+                  data-slot="robot-highlight"
                   cx={point.x}
                   cy={point.y}
-                  rx="20"
-                  ry="9"
+                  rx="26"
+                  ry="12"
                   fill="var(--primary)"
-                  fillOpacity=".08"
+                  fillOpacity={selectedId === robot.id ? 0.12 : 0.05}
                   stroke="var(--primary)"
-                  strokeWidth="1.5"
+                  strokeOpacity={selectedId === robot.id ? 1 : 0.4}
+                  strokeWidth="2.5"
                   aria-hidden="true"
                   pointerEvents="none"
                 />
@@ -87,6 +85,8 @@ export function HotelMap() {
                   aria-pressed={selectedId === robot.id}
                   title={`${robot.name} · ${robot.status}`}
                   onClick={() => selectRobot(robot.id)}
+                  onPointerEnter={() => hoverRobot(robot.id)}
+                  onPointerLeave={() => hoverRobot(null)}
                 >
                   <Robot
                     size={ROBOT_SIZE}
@@ -100,17 +100,6 @@ export function HotelMap() {
           ))}
         </svg>
       </MapViewport>
-      <Card
-        size="sm"
-        className="pointer-events-none absolute top-6 left-6 w-88 max-w-[calc(100%_-_3rem)] gap-0 max-md:top-3 max-md:left-3 max-md:max-w-[calc(100%_-_1.5rem)]"
-      >
-        <CardHeader className="gap-x-3">
-          <CardTitle>
-            <h2 id="hotel-map-title">Hotel</h2>
-          </CardTitle>
-          <CardDescription>10 guest rooms · Reception · Dining</CardDescription>
-        </CardHeader>
-      </Card>
     </Card>
   );
 }

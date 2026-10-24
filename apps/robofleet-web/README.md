@@ -19,10 +19,15 @@ target. Redis is deferred. Ctrl+C stops the apps while leaving the shared databa
 
 ## Fleet workspace
 
+An icon rail provides placeholder Home, Robots, Time, Library, and Profile controls. Home
+is visually active; navigation and profile actions are deferred.
+
 The Robots panel sits beside a full-height isometric hotel map. Cards show status, current
 location, destination, battery, and task details. Selecting a card highlights its robot on
 the map; selecting a map robot reveals its card and clears any filter hiding it. Shared
 selection and filtering live in Zustand. On mobile, the map sits above a scrollable panel.
+Hovering a card or map robot highlights both with a light primary outline; the selected robot keeps
+its highlight after the pointer leaves. Hovering does not change selection or expand details.
 
 The supplied hotel floor and robot renderer are retained in
 `src/components/map/illustrations`, with provenance and original bundle notes in `SOURCE.md`.
@@ -53,8 +58,9 @@ or claim a live connection. Replace `src/data/robots.ts` when the simulator and 
 
 Tailwind uses the Vite plugin and `src/index.css`. The local component aliases are configured in
 `components.json`, Vite, and TypeScript. The app uses the shadcn Nova/Base UI foundation
-with the shared neutral palette. `src/index.css` imports `@repo/design-tokens/tokens.css` and
-`@repo/design-tokens/tailwind.css` directly; there is no duplicate local theme. Animations
+with the shared neutral palette. `src/index.css` imports
+`@repo/design-tokens/tokens.css` and `@repo/design-tokens/tailwind.css` directly, adding green
+success tokens for Working badges. Animations
 come from `tw-animate-css`; `shadcn/tailwind.css` supplies Nova’s state/orientation variants. The default theme is light; adding `.dark` to `<html>` activates
 the shared dark palette.
 

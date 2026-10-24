@@ -8,15 +8,35 @@ test("shows the left fleet panel and expands the selected robot", async ({ page,
     "aria-valuenow",
     "64",
   );
-  await page.getByRole("button", { name: "Scout details" }).click();
+  await page.getByRole("article", { name: "Scout", exact: true }).getByText("Kitchen").click();
   await expect(page.getByRole("progressbar", { name: "Delivering room service" })).toHaveAttribute(
     "aria-valuenow",
     "28",
   );
   await expect(page.getByRole("progressbar", { name: "Delivering towels" })).toHaveCount(0);
-  await page.getByRole("button", { name: "Scout details" }).click();
+  await page.getByLabel("Scout battery 72%", { exact: true }).click();
   await expect(page.getByRole("progressbar", { name: "Delivering room service" })).toHaveCount(0);
-  await expect(page.getByRole("navigation")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Select Scout on map" })).toHaveAttribute(
+    "aria-pressed",
+    "false",
+  );
+  await page.getByRole("button", { name: "Scout details" }).focus();
+  await page.keyboard.press("Space");
+  await expect(page.getByRole("button", { name: "Scout details" })).toHaveAttribute(
+    "aria-expanded",
+    "true",
+  );
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("button", { name: "Scout details" })).toHaveAttribute(
+    "aria-expanded",
+    "false",
+  );
+  const navigation = page.getByRole("navigation", { name: "Main navigation" });
+  await expect(navigation.getByRole("button")).toHaveCount(5);
+  await expect(navigation.getByRole("button", { name: "Home", exact: true })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
   await expect(page.getByRole("heading", { name: "API Health Check" })).toHaveCount(0);
   const response = await request.get("/api/health?check=ready");
   expect(response.ok()).toBe(true);
@@ -56,14 +76,78 @@ test("keeps the fleet list scrollable on mobile without page overflow", async ({
   expect(dimensions.height).toBeLessThanOrEqual(dimensions.viewportHeight);
 });
 
-test("uses the shared light and dark design tokens", async ({ page }) => {
+test("uses shared light and dark surfaces with green working badges", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("body")).toHaveCSS("background-color", "oklch(1 0 0)");
+  const working = page
+    .getByRole("article", { name: "Atlas" })
+    .getByText("Working", { exact: true });
+  await expect(working).toHaveCSS("background-color", "oklch(0.527 0.154 150.069)");
   await page.evaluate(() => document.documentElement.classList.add("dark"));
   await expect(page.locator("body")).toHaveCSS("background-color", "oklch(0.145 0 0)");
-  await expect(
-    page.getByRole("article", { name: "Atlas" }).getByText("Working", { exact: true }),
-  ).toHaveCSS("background-color", "oklch(0.922 0 0)");
+  await expect(working).toHaveCSS("background-color", "oklch(0.792 0.209 151.711)");
+});
+
+test("links neutral card and robot highlights on hover and preserves selection", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const scout = page.getByRole("article", { name: "Scout", exact: true });
+  const atlas = page.getByRole("article", { name: "Atlas", exact: true });
+  const bolt = page.getByRole("article", { name: "Bolt", exact: true });
+  const scoutMarker = page.locator('[data-robot-id="AMR-002"] [data-slot="robot-highlight"]');
+  const boltMarker = page.locator('[data-robot-id="AMR-006"] [data-slot="robot-highlight"]');
+  const primary = "oklch(0.205 0 0)";
+  const ringPrimary = await page.evaluate(() =>
+    getComputedStyle(document.documentElement).getPropertyValue("--primary").trim(),
+  );
+  const leave = () => page.getByRole("heading", { name: "Robots", exact: true }).hover();
+
+  await scout.hover();
+  await expect(scout).toHaveCSS("--tw-ring-color", /40%/);
+  await expect(scoutMarker).toHaveCSS("stroke", primary);
+  await expect(scoutMarker).toHaveCSS("stroke-opacity", "0.4");
+  await expect(atlas).toHaveCSS("--tw-ring-color", ringPrimary);
+  await expect(page.getByRole("button", { name: "Scout details" })).toHaveAttribute(
+    "aria-expanded",
+    "false",
+  );
+  await leave();
+  await expect(scout).not.toHaveCSS("--tw-ring-color", ringPrimary);
+  await expect(scoutMarker).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Scout details" }).click();
+  await leave();
+  await expect(scout).toHaveCSS("--tw-ring-color", ringPrimary);
+  await expect(scoutMarker).toHaveCSS("stroke", primary);
+  await expect(scoutMarker).toHaveCSS("stroke-opacity", "1");
+  await expect(atlas).not.toHaveCSS("--tw-ring-color", ringPrimary);
+  await expect(page.getByRole("button", { name: "Scout details" })).toHaveCSS(
+    "background-color",
+    "rgba(0, 0, 0, 0)",
+  );
+
+  const mapRobot = page.getByRole("button", { name: "Select Bolt on map" });
+  await mapRobot.hover();
+  await expect(bolt).toHaveCSS("--tw-ring-color", /40%/);
+  await expect(boltMarker).toHaveCSS("stroke", primary);
+  await expect(boltMarker).toHaveCSS("stroke-opacity", "0.4");
+  await leave();
+  await expect(bolt).not.toHaveCSS("--tw-ring-color", ringPrimary);
+  await expect(boltMarker).toHaveCount(0);
+
+  await mapRobot.click();
+  await leave();
+  await expect(bolt).toHaveCSS("--tw-ring-color", ringPrimary);
+  await expect(boltMarker).toHaveCSS("stroke", primary);
+  await expect(boltMarker).toHaveCSS("stroke-opacity", "1");
+  await expect(scout).not.toHaveCSS("--tw-ring-color", ringPrimary);
+  await page.evaluate(() => document.documentElement.classList.add("dark"));
+  const darkRingPrimary = await page.evaluate(() =>
+    getComputedStyle(document.documentElement).getPropertyValue("--primary").trim(),
+  );
+  await expect(bolt).toHaveCSS("--tw-ring-color", darkRingPrimary);
+  await expect(boltMarker).toHaveCSS("stroke", "oklch(0.922 0 0)");
 });
 
 test("fills the area beside the panel and links map robots to their cards", async ({ page }) => {
