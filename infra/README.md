@@ -95,12 +95,12 @@ The RoboFleet images use Node.js 24 and pnpm 12.15.0. Configure the hostname's D
 
 ### Automatic deployment
 
-The [Deploy workflow](../.github/workflows/deploy.yml) runs on pushes to `main`. It can also be
-started manually from GitHub Actions by selecting **Deploy → Run workflow** on `main`.
+The [Deploy workflow](../.github/workflows/deploy.yml) runs on pushes to `master`. It can also be
+started manually from GitHub Actions by selecting **Deploy → Run workflow** on `master`.
 Deployments run one at a time.
 
 The workflow connects to the server over SSH, updates the checkout at `/srv/bugraaydingoz`
-to the latest `main`, and runs `sudo -n /usr/local/sbin/deploy-bugraaydingoz`.
+to the latest `master`, and runs `sudo -n /usr/local/sbin/deploy-bugraaydingoz`.
 
 #### Server prerequisites
 

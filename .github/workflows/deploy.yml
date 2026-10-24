@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   workflow_dispatch:
 
 permissions:
@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   deploy:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -35,7 +35,7 @@ jobs:
           ssh -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
             "$DEPLOY_USER@$DEPLOY_HOST" 'bash -se' <<'EOF'
           cd /srv/bugraaydingoz
-          git switch main
-          git pull --ff-only origin main
+          git switch master
+          git pull --ff-only origin master
           sudo -n /usr/local/sbin/deploy-bugraaydingoz
           EOF
