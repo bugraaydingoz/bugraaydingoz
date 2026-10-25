@@ -8,6 +8,8 @@ export function presentRobot(robot: FleetRobot): Robot {
     ...robot,
     id: robot.robotId,
     battery: Math.round(robot.battery),
+    speedMps: robot.speedMps ?? 0,
+    sampleAgeMs: robot.sampleAgeMs ?? 0,
     task: robot.task
       ? {
           ...robot.task,

@@ -45,6 +45,23 @@ stream sends a fresh snapshot on reconnect. Zustand owns selection, hover, and f
 The panel reports connection state and never substitutes a demo fleet during outages.
 Battery and task values are formatted for display; numeric telemetry remains in the API.
 
+## Robot motion
+
+The map animates independently of the one-second telemetry cadence. A local animation
+loop predicts each working robot along its remaining corridor route using reported
+speed and sample age. It follows corners, trims the route preview, and keeps selection
+highlights attached to the displayed pose. Cards and the React Query cache update only
+when server data changes.
+
+Prediction stops after 1.5 seconds without a fresh sample. Repeated snapshots and hover
+changes do not restart that clock. Small corrections settle over roughly 200 ms along
+the corridor; an overshoot slows down longer to avoid reversing. Large corrections
+(over 1.5 metres), producer restarts, and map changes reset immediately. Nonmoving
+statuses stop prediction, and reduced-motion preferences show authoritative positions.
+Map headings are converted to renderer camera yaw using the isometric ground projection,
+so the robot’s front faces its direction of travel. These positions are display estimates;
+persisted telemetry remains authoritative.
+
 ## Structure
 
 - `src/components/map`: hotel composition and the adapted pan/zoom viewport.

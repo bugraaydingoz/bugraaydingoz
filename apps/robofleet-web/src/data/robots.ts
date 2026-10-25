@@ -9,6 +9,11 @@ export type Robot = {
   destination: string | null;
   detail: string;
   lastSeenAt: string | null;
+  generation: number;
+  sequence: number;
+  recordedAt: string;
+  speedMps: number;
+  sampleAgeMs: number;
   color: string;
   mapId: string;
   mapVersion: number;

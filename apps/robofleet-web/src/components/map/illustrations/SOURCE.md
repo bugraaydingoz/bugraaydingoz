@@ -27,7 +27,7 @@ import { Robot, RobotFleet } from './robot';
 
 ## Robot
 
-`color`: six-digit hex. `heading`: degrees on the ground plane (0 right, 90 away, 180 left, 270 toward the viewer). `wheelAngle`: radians. `size`: SVG width in pixels. Also accepts `label`, `className`, and `style`.
+`color`: six-digit hex. `heading`: degrees in map coordinates (0 = +X, 90 = +Y, 180 = -X, 270 = -Y). The app converts this to renderer camera yaw using the map projection so the robot faces along its route. `groundRatio` is the map projection’s Y/X scale ratio (default 0.5). `wheelAngle`: radians. `size`: SVG width in pixels. Also accepts `label`, `className`, and `style`.
 
 Geometry is modeled in 3D and projected into SVG. Changing heading recomputes visible faces, shading, and depth ordering; it does not rotate a flat image. The oval contact shadow stays on the ground. There is no dust.
 

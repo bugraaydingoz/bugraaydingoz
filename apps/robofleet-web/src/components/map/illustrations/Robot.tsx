@@ -1,12 +1,14 @@
 "use client";
 
 import { memo, useMemo, type CSSProperties } from "react";
-import { renderRobot } from "./robot-renderer.js";
+import { renderRobot, robotCameraYaw } from "./robot-renderer.js";
 
 export interface RobotProps {
   color?: string;
-  /** World heading in degrees: 0 = right, 90 = away, 180 = left, 270 = toward you. */
+  /** Map heading in degrees: 0 = +X, 90 = +Y, 180 = -X, 270 = -Y. */
   heading?: number;
+  /** Ratio of the map's projected ground Y and X scales. */
+  groundRatio?: number;
   /** Wheel rotation in radians. */
   wheelAngle?: number;
   size?: number;
@@ -19,6 +21,7 @@ export interface RobotProps {
 export const Robot = memo(function Robot({
   color = "#79bca0",
   heading = 60,
+  groundRatio = 0.5,
   wheelAngle = 0,
   size = 240,
   label = "Robot",
@@ -27,11 +30,11 @@ export const Robot = memo(function Robot({
 }: RobotProps) {
   const html = useMemo(
     () =>
-      renderRobot(color, 90 + heading, wheelAngle).replace(
+      renderRobot(color, robotCameraYaw(heading, groundRatio), wheelAngle).replace(
         "<svg ",
         '<svg style="width:100%;height:100%" ',
       ),
-    [color, heading, wheelAngle],
+    [color, heading, groundRatio, wheelAngle],
   );
   return (
     <div

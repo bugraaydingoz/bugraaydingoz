@@ -307,3 +307,90 @@ test("recovers when the first SSE request fails before the backend starts", asyn
   await expect.poll(() => connections).toBeGreaterThan(1);
   await expect(page.getByRole("article")).toHaveCount(8);
 });
+
+test("animates between samples, keeps overlays aligned, and stops on stale snapshots", async ({
+  page,
+}) => {
+  const moving = {
+    ...fixture.robots[0],
+    speedMps: 0.8,
+    sampleAgeMs: 0,
+    route: [
+      [1520, 876],
+      [1520, 1196],
+    ],
+  };
+  const robots = [moving, ...fixture.robots.slice(1)];
+
+  await page.clock.install();
+  await page.route("**/api/robots", (route) => route.fulfill({ json: { robots } }));
+  await page.route("**/api/events", (route) =>
+    route.fulfill({
+      contentType: "text/event-stream",
+      body: `event: fleet.snapshot\ndata: ${JSON.stringify({ robots })}\n\n`,
+    }),
+  );
+  await page.goto("/");
+
+  const marker = page.locator('[data-robot-id="AMR-001"] foreignObject');
+  await expect(marker).toBeVisible();
+  await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now() + 100)));
+
+  const initial = Number(await marker.getAttribute("x"));
+  await page.clock.runFor(250);
+  const next = Number(await marker.getAttribute("x"));
+  expect(initial - next).toBeGreaterThan(1.5);
+  expect(initial - next).toBeLessThan(3);
+
+  await page.clock.runFor(250);
+  expect(next - Number(await marker.getAttribute("x"))).toBeGreaterThan(1.5);
+
+  const ring = page.locator('[data-robot-id="AMR-001"] [data-slot="robot-highlight"]');
+  const centerX = Number(await ring.getAttribute("cx"));
+  const centerY = Number(await ring.getAttribute("cy"));
+  expect(centerX - Number(await marker.getAttribute("x"))).toBeCloseTo(
+    (((110 * 0.28) / 0.43) * 120) / 260,
+    5,
+  );
+  const path = await page
+    .getByRole("group", { name: "Hotel robot positions" })
+    .locator("polyline")
+    .getAttribute("points");
+  const [routeX, routeY] = path!.split(" ")[0].split(",").map(Number);
+  expect(routeX).toBeCloseTo(centerX, 5);
+  expect(routeY).toBeCloseTo(centerY, 5);
+
+  await page.clock.runFor(2000);
+  const frozen = await marker.getAttribute("x");
+  await page.clock.runFor(3000);
+  await expect(marker).toHaveAttribute("x", frozen!);
+});
+
+test("respects reduced-motion preferences for predicted robot movement", async ({ page }) => {
+  const moving = {
+    ...fixture.robots[0],
+    speedMps: 0.8,
+    route: [
+      [1520, 876],
+      [1520, 1196],
+    ],
+  };
+  const robots = [moving, ...fixture.robots.slice(1)];
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.clock.install();
+  await page.route("**/api/robots", (route) => route.fulfill({ json: { robots } }));
+  await page.route("**/api/events", (route) =>
+    route.fulfill({
+      contentType: "text/event-stream",
+      body: `event: fleet.snapshot\ndata: ${JSON.stringify({ robots })}\n\n`,
+    }),
+  );
+  await page.goto("/");
+
+  const marker = page.locator('[data-robot-id="AMR-001"] foreignObject');
+  await expect(marker).toBeVisible();
+  const initial = await marker.getAttribute("x");
+  await page.clock.runFor(1000);
+  await expect(marker).toHaveAttribute("x", initial!);
+});

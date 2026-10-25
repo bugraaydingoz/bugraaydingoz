@@ -1,5 +1,20 @@
 /* eslint-disable no-unused-vars -- Preserve the supplied renderer and its shared illustration helpers. */
 // Colorfigures geometry, isolated per render: no globals, DOM access, or animation loops.
+export const ROBOT_CAMERA_PITCH = 24;
+
+/** Convert map heading to camera yaw so the robot's local +X front follows the route. */
+export function robotCameraYaw(heading, groundRatio = 0.5) {
+  if (!Number.isFinite(heading) || !Number.isFinite(groundRatio) || groundRatio <= 0)
+    throw new TypeError("Robot heading and ground ratio must be finite, with a positive ratio");
+
+  const radians = (heading * Math.PI) / 180;
+  const projectedX = Math.cos(radians) - Math.sin(radians);
+  const projectedY = (Math.cos(radians) + Math.sin(radians)) * groundRatio;
+  const pitch = (ROBOT_CAMERA_PITCH * Math.PI) / 180;
+
+  return (Math.atan2(projectedX * Math.sin(pitch), projectedY) * 180) / Math.PI;
+}
+
 export function renderRobot(color, yaw = 30, wheelAngle = 0) {
   if (!/^#[0-9a-f]{6}$/i.test(color))
     throw new TypeError("Robot color must be a six-digit hex value");
@@ -414,7 +429,7 @@ export function renderRobot(color, yaw = 30, wheelAngle = 0) {
     botJoint = matOf("#677273"),
     botVisor = matOf("#293d42");
   function botRender(col, yaw = 30, wheelAngle = 0) {
-    setCam(yaw, 24);
+    setCam(yaw, ROBOT_CAMERA_PITCH);
     const bm = matOf(col),
       bits = [];
     const put = (a, b, s) => bits.push({ box: [a, b], svg: s });

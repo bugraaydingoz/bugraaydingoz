@@ -199,7 +199,9 @@
       "sequence": 1,
       "recordedAt": "2026-10-25T20:02:10.451Z",
       "receivedAt": "2026-10-25T20:02:10.452Z",
-      "lastSeenAt": "2026-10-25T20:02:10.453Z"
+      "lastSeenAt": "2026-10-25T20:02:10.453Z",
+      "speedMps": 0,
+      "sampleAgeMs": 0
     },
     {
       "mapId": "hotel",
@@ -231,7 +233,9 @@
       "sequence": 1,
       "recordedAt": "2026-10-25T20:02:10.453Z",
       "receivedAt": "2026-10-25T20:02:10.453Z",
-      "lastSeenAt": "2026-10-25T20:02:10.453Z"
+      "lastSeenAt": "2026-10-25T20:02:10.453Z",
+      "speedMps": 0,
+      "sampleAgeMs": 0
     },
     {
       "mapId": "hotel",
@@ -257,7 +261,9 @@
       "sequence": 1,
       "recordedAt": "2026-10-25T20:02:10.453Z",
       "receivedAt": "2026-10-25T20:02:10.453Z",
-      "lastSeenAt": "2026-10-25T20:02:10.453Z"
+      "lastSeenAt": "2026-10-25T20:02:10.453Z",
+      "speedMps": 0,
+      "sampleAgeMs": 0
     },
     {
       "mapId": "hotel",
@@ -289,7 +295,9 @@
       "sequence": 1,
       "recordedAt": "2026-10-25T20:02:10.453Z",
       "receivedAt": "2026-10-25T20:02:10.453Z",
-      "lastSeenAt": "2026-10-25T20:02:10.453Z"
+      "lastSeenAt": "2026-10-25T20:02:10.453Z",
+      "speedMps": 0,
+      "sampleAgeMs": 0
     },
     {
       "mapId": "hotel",
@@ -315,7 +323,9 @@
       "sequence": 1,
       "recordedAt": "2026-10-25T20:02:10.453Z",
       "receivedAt": "2026-10-25T20:02:10.453Z",
-      "lastSeenAt": "2026-10-25T20:02:10.453Z"
+      "lastSeenAt": "2026-10-25T20:02:10.453Z",
+      "speedMps": 0,
+      "sampleAgeMs": 0
     },
     {
       "mapId": "hotel",
@@ -347,7 +357,9 @@
       "sequence": 1,
       "recordedAt": "2026-10-25T20:02:10.453Z",
       "receivedAt": "2026-10-25T20:02:10.453Z",
-      "lastSeenAt": "2026-10-25T20:02:10.453Z"
+      "lastSeenAt": "2026-10-25T20:02:10.453Z",
+      "speedMps": 0,
+      "sampleAgeMs": 0
     },
     {
       "mapId": "hotel",
@@ -379,7 +391,9 @@
       "sequence": 1,
       "recordedAt": "2026-10-25T20:02:10.453Z",
       "receivedAt": "2026-10-25T20:02:10.453Z",
-      "lastSeenAt": "2026-10-25T20:02:10.453Z"
+      "lastSeenAt": "2026-10-25T20:02:10.453Z",
+      "speedMps": 0,
+      "sampleAgeMs": 0
     },
     {
       "mapId": "hotel",
@@ -405,7 +419,9 @@
       "sequence": 1,
       "recordedAt": "2026-10-25T20:02:10.453Z",
       "receivedAt": "2026-10-25T20:02:10.453Z",
-      "lastSeenAt": null
+      "lastSeenAt": null,
+      "speedMps": 0,
+      "sampleAgeMs": 0
     }
   ]
 }
