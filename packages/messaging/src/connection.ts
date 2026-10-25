@@ -43,7 +43,7 @@ export function redisConnection(
 
 export function queuePrefix(namespace: string) {
   if (!/^[a-zA-Z0-9_-]+(?::[a-zA-Z0-9_-]+)*$/.test(namespace)) {
-    throw new Error("Messaging namespace must contain app/environment names separated by colons");
+    throw new Error("Messaging namespace must contain app names separated by colons");
   }
-  return `bull:${namespace}`;
+  return namespace;
 }

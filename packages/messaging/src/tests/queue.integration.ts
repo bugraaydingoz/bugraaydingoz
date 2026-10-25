@@ -14,7 +14,7 @@ test(
   "retains jobs across producer restarts and retries a failed job",
   { timeout: 15_000 },
   async () => {
-    const options = { namespace: `test:${randomUUID()}`, redisUrl };
+    const options = { namespace: `messaging:test-${randomUUID()}`, redisUrl };
     const first = createQueue<{ message: string }, string>("jobs", options);
     await first.waitUntilReady();
     const job = await first.add(
@@ -52,7 +52,7 @@ test(
   "isolates namespaces and processes one job at a time with bounded history",
   { timeout: 15_000 },
   async () => {
-    const options = { namespace: `test:${randomUUID()}`, redisUrl };
+    const options = { namespace: `messaging:test-${randomUUID()}`, redisUrl };
     const queue = createQueue("jobs", {
       ...options,
       defaultJobOptions: { removeOnComplete: { count: 1 } },

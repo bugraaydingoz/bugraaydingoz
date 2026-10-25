@@ -41,9 +41,9 @@ test("producers fail quickly while workers can reconnect without a request retry
   assert.equal(worker.commandTimeout, undefined);
 });
 
-test("requires explicit namespaces to separate applications and environments", () => {
-  assert.notEqual(queuePrefix("production:robofleet"), queuePrefix("development:robofleet"));
-  assert.notEqual(queuePrefix("production:robofleet"), queuePrefix("production:other-app"));
+test("uses the app name directly to isolate applications", () => {
+  assert.equal(queuePrefix("robofleet"), "robofleet");
+  assert.notEqual(queuePrefix("robofleet"), queuePrefix("other-app"));
   for (const value of ["", " ", ":", "app:*", "app::prod"])
     assert.throws(() => queuePrefix(value), /namespace/);
 });

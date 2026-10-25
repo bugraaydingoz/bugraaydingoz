@@ -14,13 +14,13 @@ Set `REDIS_URL` in the app's environment. Use `redis` as the hostname inside Com
 REDIS_URL=redis://:YOUR_REDIS_PASSWORD@redis:6379/0
 ```
 
-Use the same namespace in the producer and worker, and distinct namespaces for each app/environment. Prefixes prevent collisions; they do not provide access control.
+Use the same namespace in the producer and worker, and the app name as the namespace. Keys start with the app name (for example, `my-app:emails:…`), without a library or environment prefix. Prefixes prevent collisions; they do not provide access control.
 
 ```ts
 import { createQueue, createWorker } from "@repo/messaging";
 
 type EmailJob = { userId: string };
-const options = { namespace: "production:my-app" };
+const options = { namespace: "my-app" };
 
 // In the API:
 const emails = createQueue<EmailJob>("emails", options);

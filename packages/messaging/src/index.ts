@@ -1,10 +1,11 @@
+export { UnrecoverableError } from "bullmq";
 import { Queue, Worker, type JobsOptions, type Processor } from "bullmq";
 import { queuePrefix, redisConnection } from "./connection.js";
 
 export type { Job, JobsOptions, Processor } from "bullmq";
 
 export type MessagingOptions = {
-  /** Use a distinct app/environment pair, e.g. production:robofleet. */
+  /** Use the app name, e.g. robofleet. */
   namespace: string;
   /** Defaults to REDIS_URL. */
   redisUrl?: string;
