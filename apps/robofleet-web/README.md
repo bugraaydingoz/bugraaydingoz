@@ -34,11 +34,14 @@ The supplied hotel floor and robot renderer are retained in
 The fixed-angle viewport supports cursor-centered wheel zoom, drag-to-pan, zoom/reset
 buttons, and keyboard input: arrow keys pan, `+` / `-` zoom, and `0` resets.
 
-Robot positions and doorway routes use the supplied 1400 × 950 SVG projection. Map and robot
+Robot positions and doorway routes use the supplied 1400 × 1000 SVG projection. Map and robot
 overlays share the same viewBox and camera transform, keeping their alignment during zoom,
 pan, and resizing. Edit `src/data/hotel.ts` for floor-plan positions and destination doors.
 The scene is one decorative floor with stationary demo robots; routes are preview paths
-through the corridor, and furniture occlusion/navigation simulation are future work.
+around the courtyard corridor and through the supplied corner vestibules. The square hotel has
+twelve guest rooms, a central garden, reception, kitchen, dining, and robot service. The supplied
+world coordinates and doorway graph live in `src/data/hotel-layout.ts`; furniture occlusion and
+navigation simulation are future work.
 
 The fleet is **demo data**, labeled in the panel footer. The panel does not fetch telemetry
 or claim a live connection. Replace `src/data/robots.ts` when the simulator and API are ready.

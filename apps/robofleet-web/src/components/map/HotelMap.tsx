@@ -2,12 +2,14 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { demoRobots } from "@/data/robots";
 import { hotelDestinations, hotelRobotPlacements, hotelRoute } from "@/data/hotel";
+import { HOTEL_VIEWBOX } from "@/data/hotel-layout";
 import { useFleet } from "@/stores/fleet";
 import { MapViewport } from "./MapViewport";
 import { HotelFloor, projectHotelPoint } from "./illustrations/HotelFloor";
 import { Robot } from "./illustrations/Robot";
 
-const ROBOT_SIZE = 110;
+// Keep the robot's world size consistent with the new map projection.
+const ROBOT_SIZE = (110 * 0.28) / 0.43;
 const ROBOT_HEIGHT = (ROBOT_SIZE * 235) / 260;
 
 export function HotelMap() {
@@ -31,7 +33,7 @@ export function HotelMap() {
       <MapViewport className="bg-card">
         <HotelFloor />
         <svg
-          viewBox="0 0 1400 950"
+          viewBox={`0 0 ${HOTEL_VIEWBOX.width} ${HOTEL_VIEWBOX.height}`}
           role="group"
           aria-label="Hotel robot positions"
           className="absolute inset-0 h-full w-full"
@@ -60,8 +62,8 @@ export function HotelMap() {
                   data-slot="robot-highlight"
                   cx={point.x}
                   cy={point.y}
-                  rx="26"
-                  ry="12"
+                  rx={(26 * ROBOT_SIZE) / 110}
+                  ry={(12 * ROBOT_SIZE) / 110}
                   fill="var(--primary)"
                   fillOpacity={selectedId === robot.id ? 0.12 : 0.05}
                   stroke="var(--primary)"

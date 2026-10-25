@@ -52,9 +52,17 @@ Drawing primitives adapted from the supplied Colorfigures skill. Preserve any up
 
 ## Hotel floor styling study
 
-`HotelFloor` adds an independent hotel map layer with ten guest rooms, reception, kitchen, lounge, and dining. Place it inside a relative container with a set height. It uses a 1400 × 950 SVG viewBox, with a 2160 × 660 (x runs from -360 to 1800) floor plan; `projectHotelPoint(x,y,z)` converts plan coordinates to viewBox points. When positioning overlays, also apply the SVG's centered `meet` scaling and offset. Anchor a robot at its wheel contact (120,178 in its 260 × 235 viewBox).
+`HotelFloor` was updated from the user's `robot 2` bundle. The supplied SVG geometry
+and projection are retained: a 2200 × 2200 square hotel in a 1400 × 1000 viewBox,
+twelve guest rooms (three per side), a central garden, reception, kitchen, dining,
+and robot service. `projectHotelPoint(x,y,z)` converts plan coordinates to viewBox
+points. Anchor robots at wheel contact (120,178 in their 260 × 235 viewBox).
 
-The standalone HTML demo demonstrates corridor/doorway routes. `RobotFleet` remains the earlier free-roaming demo; map routing and furniture occlusion are not built into that React component. The map is currently one decorative floor, ready for styling review before adding floor switching.
+The supplied `hotel-layout.ts` lives in `src/data` and includes the 16-node corridor
+ring, doorway entries, and corner vestibule waypoints. The app maps its existing
+fleet to those coordinates and previews the shorter corridor route to each doorway.
+Robot SVGs keep their aspect ratio and world scale under the new floor projection.
+Furniture occlusion and navigation simulation remain future work.
 
 ## Fixed-angle zoom and pan
 

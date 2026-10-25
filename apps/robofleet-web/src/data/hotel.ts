@@ -1,35 +1,73 @@
+import { HOTEL_RING, HOTEL_ROOMS } from "./hotel-layout";
+
 export type HotelPoint = readonly [number, number];
 
-// Coordinates match the supplied hotel's 2160 × 660 floor plan (x: -360…1800).
-export const hotelDestinations: Record<string, HotelPoint> = {
-  "Room 101": [150, 260],
-  "Room 102": [450, 260],
-  "Room 103": [750, 260],
-  "Room 104": [1050, 260],
-  "Room 105": [1350, 260],
-  "Room 106": [150, 400],
-  "Room 107": [450, 400],
-  "Room 108": [750, 400],
-  "Room 109": [1050, 400],
-  "Room 110": [1350, 400],
-};
+// World coordinates from the supplied square courtyard hotel.
+export const hotelDestinations: Record<string, HotelPoint> = Object.fromEntries(
+  HOTEL_ROOMS.map((room) => [
+    typeof room.id === "number" ? `Room ${room.id}` : room.id,
+    [room.entry.x, room.entry.y],
+  ]),
+);
+
+const corridorPoint = (node: number): HotelPoint => [HOTEL_RING[node].x, HOTEL_RING[node].y];
 
 // Static preview positions. These are not autonomous or collision-avoiding robots.
 export const hotelRobotPlacements: Record<
   string,
   { point: HotelPoint; color: string; heading: number }
 > = {
-  "AMR-001": { point: [780, 330], color: "#79bca0", heading: -28 },
-  "AMR-002": { point: [-150, 460], color: "#e9ad39", heading: 60 },
-  "AMR-003": { point: [-260, 310], color: "#ce94b5", heading: 120 },
-  "AMR-004": { point: [1580, 230], color: "#7d9dce", heading: 150 },
-  "AMR-005": { point: [-100, 200], color: "#c2c6a7", heading: 60 },
-  "AMR-006": { point: [1110, 330], color: "#e77960", heading: -28 },
-  "AMR-007": { point: [1720, 360], color: "#87b9c6", heading: 150 },
-  "AMR-008": { point: [-150, 580], color: "#b5b9ad", heading: 60 },
+  "AMR-001": { point: corridorPoint(5), color: "#79bca0", heading: -28 },
+  "AMR-002": { point: corridorPoint(4), color: "#e9ad39", heading: 60 },
+  "AMR-003": { point: hotelDestinations["Robot service"], color: "#ce94b5", heading: 120 },
+  "AMR-004": { point: corridorPoint(9), color: "#7d9dce", heading: 150 },
+  "AMR-005": { point: hotelDestinations.Reception, color: "#c2c6a7", heading: 60 },
+  "AMR-006": { point: corridorPoint(6), color: "#e77960", heading: -28 },
+  "AMR-007": { point: corridorPoint(13), color: "#87b9c6", heading: 150 },
+  "AMR-008": { point: hotelDestinations.Kitchen, color: "#b5b9ad", heading: 60 },
 };
 
-/** A preview route through the shared corridor to a room's doorway. */
+function distance(a: HotelPoint, b: HotelPoint) {
+  return Math.hypot(a[0] - b[0], a[1] - b[1]);
+}
+
+function corridorConnection(point: HotelPoint) {
+  const room = HOTEL_ROOMS.find(({ entry }) => entry.x === point[0] && entry.y === point[1]);
+  if (room) {
+    return {
+      node: room.node,
+      via: "via" in room ? room.via.map(({ x, y }): HotelPoint => [x, y]) : [],
+    };
+  }
+  const node = HOTEL_RING.reduce(
+    (nearest, _, index) =>
+      distance(point, corridorPoint(index)) < distance(point, corridorPoint(nearest))
+        ? index
+        : nearest,
+    0,
+  );
+  return { node, via: [] };
+}
+
+/** Follow the shorter side of the courtyard corridor, then enter through the doorway. */
 export function hotelRoute(start: HotelPoint, destination: HotelPoint): HotelPoint[] {
-  return [start, [start[0], 330], [destination[0], 330], destination];
+  const from = corridorConnection(start);
+  const to = corridorConnection(destination);
+  function walk(direction: number) {
+    const points = [corridorPoint(from.node)];
+    let length = 0;
+    for (let node = from.node; node !== to.node; ) {
+      const next = (node + direction + HOTEL_RING.length) % HOTEL_RING.length;
+      length += distance(corridorPoint(node), corridorPoint(next));
+      points.push(corridorPoint(next));
+      node = next;
+    }
+    return { points, length };
+  }
+  const clockwise = walk(1);
+  const counterclockwise = walk(-1);
+  const corridor = clockwise.length <= counterclockwise.length ? clockwise : counterclockwise;
+  return [start, ...[...from.via].reverse(), ...corridor.points, ...to.via, destination].filter(
+    (point, index, points) => index === 0 || distance(point, points[index - 1]) > 0,
+  );
 }
