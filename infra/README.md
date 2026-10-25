@@ -10,7 +10,8 @@ cp .env.example .env.local
 cp apps/robofleet-api/.env.example apps/robofleet-api/.env.local
 ```
 
-Set `POSTGRES_PASSWORD` and the API's `PGPASSWORD` to the same value. Set a separate `REDIS_PASSWORD` in the root environment file.
+Set `POSTGRES_PASSWORD` and the API's `PGPASSWORD` to the same value. Set a separate
+`REDIS_PASSWORD` in the root env file; the API reads it during development. Set a separate `REDIS_PASSWORD` in the root environment file.
 Generate one with `openssl rand -hex 24`. Then:
 
 ```sh
@@ -23,7 +24,7 @@ Postgres is available at `127.0.0.1:5432`. Stop it with `pnpm db:compose stop po
 
 Start Redis with `pnpm redis:up`; it is available at `127.0.0.1:6379` for local apps. Run `pnpm test:messaging` to check queue processing against it.
 
-For database tests:
+For database/telemetry tests (the command loads both root and API env files):
 
 ```sh
 pnpm db:compose exec -T postgres createdb -U postgres robofleet_test # First setup only
@@ -94,3 +95,12 @@ docker compose --env-file .env -f infra/docker-compose.yml exec -T postgres pg_r
 ```
 
 Copy backups off the server. Environment files and `backups/` are excluded from Git.
+
+### RoboFleet telemetry
+
+The API image includes the shared messaging package. Compose waits for Redis and
+Postgres/migrations before starting the API, worker, and simulator. Telemetry jobs
+use `robofleet:telemetry:…` keys in shared Redis. The migration seeds the hotel map
+and eight robots; raw telemetry expires after one hour. SSE uses the existing
+same-origin `/api/events` proxy through Caddy. See the API README for contracts and
+retention behavior.

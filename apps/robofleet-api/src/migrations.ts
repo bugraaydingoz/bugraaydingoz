@@ -12,6 +12,7 @@ export async function migrateDatabase(value?: string) {
     max_lifetime: 0,
     onnotice: () => {},
   });
+
   try {
     // A single connection retains this session lock until client.end().
     // Concurrent deployments wait before inspecting Drizzle's migration journal.

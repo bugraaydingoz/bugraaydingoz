@@ -6,8 +6,10 @@ import * as schema from "../drizzle/schema";
 
 export function databaseUrl(value = process.env.DATABASE_URL) {
   if (!value) throw new Error("DATABASE_URL is required for database commands");
+
   try {
     const url = new URL(value);
+
     if (
       !["postgres:", "postgresql:"].includes(url.protocol) ||
       !url.hostname ||
@@ -18,12 +20,14 @@ export function databaseUrl(value = process.env.DATABASE_URL) {
   } catch {
     throw new Error("DATABASE_URL must be a PostgreSQL URL with a host and database name");
   }
+
   return value;
 }
 
 export function createDatabase(value?: string) {
   const client = postgres(databaseUrl(value), { max: 5, connect_timeout: 5 });
   const db = drizzle(client, { schema });
+
   return {
     client,
     db,

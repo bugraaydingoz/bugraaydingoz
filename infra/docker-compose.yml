@@ -86,11 +86,17 @@ services:
       context: ..
       dockerfile: infra/robofleet-api.Dockerfile
     restart: unless-stopped
+    stop_grace_period: 30s
     depends_on:
+      redis:
+        condition: service_healthy
       robofleet-migrate:
         condition: service_completed_successfully
     environment:
       PORT: "3000"
+      REDIS_URL: redis://redis:6379/0
+      REDIS_PASSWORD: "${REDIS_PASSWORD:?Set REDIS_PASSWORD in the environment or env file}"
+      SIMULATOR_ENABLED: "true"
       DATABASE_URL: postgresql://postgres@postgres:5432/robofleet
       PGPASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in the environment or env file}"
     expose:

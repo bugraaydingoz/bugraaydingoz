@@ -8,14 +8,16 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/robofleet-web/package.json apps/robofleet-web/package.json
 COPY apps/robofleet-api/package.json apps/robofleet-api/package.json
 COPY packages/design-tokens/package.json packages/design-tokens/package.json
+COPY packages/messaging/package.json packages/messaging/package.json
 
 RUN pnpm install --frozen-lockfile --ignore-scripts --filter robofleet-web... --filter robofleet-api
 
 COPY apps/robofleet-web apps/robofleet-web
 COPY apps/robofleet-api apps/robofleet-api
 COPY packages/design-tokens packages/design-tokens
+COPY packages/messaging packages/messaging
 
-RUN pnpm --filter robofleet-web check && pnpm --filter robofleet-web build
+RUN pnpm --filter @repo/messaging build && pnpm --filter robofleet-web check && pnpm --filter robofleet-web build
 
 FROM caddy:2-alpine
 

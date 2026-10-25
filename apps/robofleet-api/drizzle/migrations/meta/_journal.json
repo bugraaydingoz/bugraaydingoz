@@ -8,6 +8,13 @@
       "when": 1792850231421,
       "tag": "0000_init",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792958263251,
+      "tag": "0001_telemetry_maps",
+      "breakpoints": true
     }
   ]
 }
