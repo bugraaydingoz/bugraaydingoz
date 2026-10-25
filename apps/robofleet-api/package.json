@@ -6,12 +6,15 @@
     "dev": "node --env-file-if-exists=.env.local --import tsx --watch src/index.ts",
     "build": "esbuild src/index.ts src/migrate.ts --bundle --platform=node --target=node24 --format=esm --packages=external --outdir=dist",
     "start": "node dist/index.js",
-    "lint": "oxlint",
+    "lint": "oxlint --config ../../.oxlintrc.json .",
     "check": "tsc --noEmit",
     "test": "tsx --test src/tests/*.spec.ts",
     "test:db": "node --env-file-if-exists=.env.local --import tsx --test src/tests/*.integration.ts",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "node --env-file-if-exists=.env.local --import tsx src/migrate.ts"
+    "db:migrate": "node --env-file-if-exists=.env.local --import tsx src/migrate.ts",
+    "lint:fix": "oxlint --config ../../.oxlintrc.json . --fix",
+    "format": "oxfmt --config ../../.oxfmtrc.json --ignore-path ../../.gitignore --ignore-path ../../.oxfmtignore --write .",
+    "format:check": "oxfmt --config ../../.oxfmtrc.json --ignore-path ../../.gitignore --ignore-path ../../.oxfmtignore --check ."
   },
   "dependencies": {
     "@hono/node-server": "^2.1.5",
@@ -26,6 +29,8 @@
     "@types/node": "^24.19.2",
     "drizzle-kit": "^0.24.0",
     "esbuild": "^0.28.1",
+    "oxfmt": "^0.53.0",
+    "oxlint": "^1.68.0",
     "tsx": "^4.16.2",
     "typescript": "^5.5.4"
   }
