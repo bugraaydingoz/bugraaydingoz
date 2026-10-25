@@ -55,12 +55,12 @@ Drawing primitives adapted from the supplied Colorfigures skill. Preserve any up
 `HotelFloor` was updated from the user's `robot 2` bundle. The supplied SVG geometry
 and projection are retained: a 2200 × 2200 square hotel in a 1400 × 1000 viewBox,
 twelve guest rooms (three per side), a central garden, reception, kitchen, dining,
-and robot service. `projectHotelPoint(x,y,z)` converts plan coordinates to viewBox
+and robot service. The persisted projection converts plan coordinates to viewBox
 points. Anchor robots at wheel contact (120,178 in their 260 × 235 viewBox).
 
-The supplied `hotel-layout.ts` lives in `src/data` and includes the 16-node corridor
-ring, doorway entries, and corner vestibule waypoints. The app maps its existing
-fleet to those coordinates and previews the shorter corridor route to each doorway.
+The supplied layout is seeded into Postgres by the API migration, including the
+16-node corridor ring, doorway entries, and corner vestibule waypoints. The simulator
+reads that graph and the UI renders its persisted positions and remaining routes.
 Robot SVGs keep their aspect ratio and world scale under the new floor projection.
 Furniture occlusion and navigation simulation remain future work.
 

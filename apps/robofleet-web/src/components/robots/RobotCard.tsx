@@ -152,7 +152,9 @@ export function RobotCard({
           ) : robot.status === "Offline" ? (
             <>
               <WifiOff className="size-3" aria-hidden="true" />
-              Last seen 3 min ago
+              {robot.lastSeenAt
+                ? `Last seen ${Math.max(1, Math.floor((Date.now() - Date.parse(robot.lastSeenAt)) / 1000))}s ago`
+                : "No telemetry received"}
             </>
           ) : (
             "Ready for a task"

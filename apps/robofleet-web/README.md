@@ -12,10 +12,10 @@ pnpm dev:robofleet
 ```
 
 Configure the env files as described in `infra/README.md`. Docker must be running. The command
-starts shared Postgres and applies migrations before starting the apps.
+starts shared Postgres and Redis, builds messaging, and applies migrations before starting the apps.
 The UI runs on `http://localhost:5173` and forwards `/api` to the Hono API on
 `http://localhost:3000`. Set `ROBOFLEET_API_URL` to change the development or preview proxy
-target. Redis is deferred. Ctrl+C stops the apps while leaving the shared database running.
+target. Ctrl+C stops the apps while leaving shared Postgres and Redis running.
 
 ## Fleet workspace
 
@@ -34,24 +34,25 @@ The supplied hotel floor and robot renderer are retained in
 The fixed-angle viewport supports cursor-centered wheel zoom, drag-to-pan, zoom/reset
 buttons, and keyboard input: arrow keys pan, `+` / `-` zoom, and `0` resets.
 
-Robot positions and doorway routes use the supplied 1400 × 1000 SVG projection. Map and robot
-overlays share the same viewBox and camera transform, keeping their alignment during zoom,
-pan, and resizing. Edit `src/data/hotel.ts` for floor-plan positions and destination doors.
-The scene is one decorative floor with stationary demo robots; routes are preview paths
-around the courtyard corridor and through the supplied corner vestibules. The square hotel has
-twelve guest rooms, a central garden, reception, kitchen, dining, and robot service. The supplied
-world coordinates and doorway graph live in `src/data/hotel-layout.ts`; furniture occlusion and
-navigation simulation are future work.
+Robot positions and remaining routes now come from persisted API telemetry. The map
+viewBox, projection, destinations, and corridor graph live in Postgres and are read
+through the map API. The existing hotel SVG remains a static visual asset. The UI
+projects live coordinates into that asset without changing its proportions.
 
-The fleet is **demo data**, labeled in the panel footer. The panel does not fetch telemetry
-or claim a live connection. Replace `src/data/robots.ts` when the simulator and API are ready.
+React Query owns fleet and map server state; one SSE connection updates the fleet
+cache, ignores older generation/sequence values, and reconnects after failures. The
+stream sends a fresh snapshot on reconnect. Zustand owns selection, hover, and filters.
+The panel reports connection state and never substitutes a demo fleet during outages.
+Battery and task values are formatted for display; numeric telemetry remains in the API.
 
 ## Structure
 
 - `src/components/map`: hotel composition and the adapted pan/zoom viewport.
 - `src/stores/fleet.ts`: shared map/card selection and list filtering.
 - `src/components/robots`: the fleet panel and expandable robot cards.
-- `src/data/robots.ts`: demo fleet fixtures; telemetry integration is deferred.
+- `src/data/robots.ts`: presentation types and fleet filtering helpers.
+- `src/hooks/use-fleet-data.tsx`: REST bootstrap, SSE subscription, reconnection and cache updates.
+- `src/test/fleet.json`: test-only fixtures, never loaded by the application.
 - `src/components/ui`: shadcn/ui components, with one file per component.
 - `src/test/setup.ts`: shared Vitest setup; unit tests stay beside their source.
 - `tests`: Playwright browser tests, kept flat.
@@ -93,7 +94,7 @@ the code as `*.spec.tsx` or `*.spec.ts` and cover fleet filtering, expandable de
 
 `pnpm test:e2e` installs Chromium and runs Playwright against a production UI build and the
 real API. Playwright starts its own servers on ports `4174` and `3031`, checks the same-origin
-API proxy, fleet selection/filtering, keyboard/camera controls, linked map selection, mobile scrolling, and shared light/dark themes. Browser tests live in `tests/*.spec.ts`.
+API health proxy, uses fixed REST/SSE fixtures, and covers fleet selection/filtering, keyboard/camera controls, linked map selection, mobile scrolling, shared light/dark themes, live event updates, stale events, backend failures, and reconnects. Browser tests live in `tests/*.spec.ts`.
 
 ## Deployment
 

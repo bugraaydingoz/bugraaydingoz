@@ -1,39 +1,51 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { demoRobots } from "@/data/robots";
-import { hotelDestinations, hotelRobotPlacements, hotelRoute } from "@/data/hotel";
-import { HOTEL_VIEWBOX } from "@/data/hotel-layout";
+import { useFleetData } from "@/hooks/use-fleet-data";
 import { useFleet } from "@/stores/fleet";
 import { MapViewport } from "./MapViewport";
-import { HotelFloor, projectHotelPoint } from "./illustrations/HotelFloor";
+import { HotelFloor } from "./illustrations/HotelFloor";
 import { Robot } from "./illustrations/Robot";
-
-// Keep the robot's world size consistent with the new map projection.
-const ROBOT_SIZE = (110 * 0.28) / 0.43;
-const ROBOT_HEIGHT = (ROBOT_SIZE * 235) / 260;
 
 export function HotelMap() {
   const { selectedId, hoveredId, selectRobot, hoverRobot } = useFleet();
-  const selected = demoRobots.find((robot) => robot.id === selectedId);
-  const destination = selected?.destination ? hotelDestinations[selected.destination] : undefined;
-  const placement = selected ? hotelRobotPlacements[selected.id] : undefined;
-  const route =
-    placement && destination
-      ? hotelRoute(placement.point, destination).map(([x, y]) => projectHotelPoint(x, y))
-      : [];
-  const markers = demoRobots
-    .flatMap((robot) => {
-      const placement = hotelRobotPlacements[robot.id];
-      return placement ? [{ robot, placement, point: projectHotelPoint(...placement.point) }] : [];
-    })
+  const { robots, maps } = useFleetData();
+  const selected = robots.find((robot) => robot.id === selectedId);
+  const map =
+    maps.find((map) => map.id === selected?.mapId && map.version === selected?.mapVersion) ??
+    maps[0];
+  if (!map)
+    return (
+      <Card
+        role="region"
+        aria-label="Hotel"
+        className="relative h-full min-h-0 min-w-0 gap-0 py-0"
+      />
+    );
+  const { viewBox, projection } = map.definition;
+  const ROBOT_SIZE = (110 * projection.scaleX) / 0.43;
+  const ROBOT_HEIGHT = (ROBOT_SIZE * 235) / 260;
+  const project = (x: number, y: number) => ({
+    x: projection.x + (x - y) * projection.scaleX,
+    y: projection.y + (x + y) * projection.scaleY,
+  });
+  const route = (
+    selected?.mapId === map.id && selected.mapVersion === map.version ? selected.route : []
+  ).map(([x, y]) => project(x, y));
+  const markers = robots
+    .filter((robot) => robot.mapId === map.id && robot.mapVersion === map.version)
+    .map((robot) => ({
+      robot,
+      placement: { color: robot.color, heading: robot.position.heading },
+      point: project(robot.position.x, robot.position.y),
+    }))
     .sort((a, b) => a.point.y - b.point.y);
 
   return (
     <Card role="region" aria-label="Hotel" className="relative h-full min-h-0 min-w-0 gap-0 py-0">
       <MapViewport className="bg-card">
-        <HotelFloor />
+        {map.definition.asset === "hotel-courtyard" && <HotelFloor />}
         <svg
-          viewBox={`0 0 ${HOTEL_VIEWBOX.width} ${HOTEL_VIEWBOX.height}`}
+          viewBox={`0 0 ${viewBox.width} ${viewBox.height}`}
           role="group"
           aria-label="Hotel robot positions"
           className="absolute inset-0 h-full w-full"

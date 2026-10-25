@@ -1,4 +1,16 @@
+import fixture from "../src/test/fleet.json" with { type: "json" };
 import { expect, test } from "@playwright/test";
+
+test.beforeEach(async ({ page }) => {
+  await page.route("**/api/robots", (route) => route.fulfill({ json: { robots: fixture.robots } }));
+  await page.route("**/api/maps", (route) => route.fulfill({ json: { maps: fixture.maps } }));
+  await page.route("**/api/events", (route) =>
+    route.fulfill({
+      contentType: "text/event-stream",
+      body: "event: fleet.snapshot\ndata: " + JSON.stringify({ robots: fixture.robots }) + "\n\n",
+    }),
+  );
+});
 
 test("shows the left fleet panel and expands the selected robot", async ({ page, request }) => {
   await page.goto("/");
@@ -65,7 +77,7 @@ test("keeps the fleet list scrollable on mobile without page overflow", async ({
   await expect(page.getByRole("heading", { name: "Robots" })).toBeVisible();
   await page.getByRole("button", { name: "Milo details" }).click();
   await expect(page.getByRole("article", { name: "Milo" })).toContainText("Connection lost.");
-  await expect(page.getByText("Demo fleet", { exact: true })).toBeVisible();
+  await expect(page.getByRole("status")).toBeVisible();
   const dimensions = await page.evaluate(() => ({
     width: document.documentElement.scrollWidth,
     height: document.documentElement.scrollHeight,
@@ -240,4 +252,58 @@ test("keeps map robots anchored while pressing and selecting them", async ({ pag
     );
     expect(await artwork.boundingBox()).toEqual(initial);
   }
+});
+
+test("updates fleet cards and map positions from SSE and ignores older telemetry", async ({
+  page,
+}) => {
+  const robot = {
+    ...fixture.robots[0],
+    sequence: 2,
+    battery: 99,
+    position: { ...fixture.robots[0].position, x: 1700 },
+  };
+  await page.route("**/api/events", (route) =>
+    route.fulfill({
+      contentType: "text/event-stream",
+      body:
+        `event: fleet.snapshot\ndata: ${JSON.stringify({ robots: fixture.robots })}\n\n` +
+        `event: robot.updated\ndata: ${JSON.stringify({ robot })}\n\n` +
+        `event: robot.updated\ndata: ${JSON.stringify({ robot: { ...robot, sequence: 1, battery: 1 } })}\n\n`,
+    }),
+  );
+  await page.goto("/");
+  await expect(page.getByLabel("Atlas battery 99%")).toBeVisible();
+  const marker = page.locator('[data-robot-id="AMR-001"] foreignObject');
+  const x = 700 + (1700 - robot.position.y) * 0.28 - (((110 * 0.28) / 0.43) * 120) / 260;
+  await expect(marker).toHaveAttribute("x", String(x));
+});
+
+test("shows a backend failure without a demo fleet fallback", async ({ page }) => {
+  await page.route("**/api/robots", (route) =>
+    route.fulfill({ status: 503, json: { error: "unavailable" } }),
+  );
+  await page.route("**/api/maps", (route) =>
+    route.fulfill({ status: 503, json: { error: "unavailable" } }),
+  );
+  await page.route("**/api/events", (route) => route.fulfill({ status: 503, body: "unavailable" }));
+  await page.goto("/");
+  await expect(page.getByRole("status")).toHaveText("Backend unavailable");
+  await expect(page.getByRole("article")).toHaveCount(0);
+});
+
+test("recovers when the first SSE request fails before the backend starts", async ({ page }) => {
+  let connections = 0;
+  await page.route("**/api/events", (route) => {
+    connections++;
+    return connections === 1
+      ? route.fulfill({ status: 503, body: "starting" })
+      : route.fulfill({
+          contentType: "text/event-stream",
+          body: `event: fleet.snapshot\ndata: ${JSON.stringify({ robots: fixture.robots })}\n\n`,
+        });
+  });
+  await page.goto("/");
+  await expect.poll(() => connections).toBeGreaterThan(1);
+  await expect(page.getByRole("article")).toHaveCount(8);
 });

@@ -1,7 +1,23 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { FleetDataContext, presentRobot } from "@/hooks/use-fleet-data";
+import fixture from "@/test/fleet.json";
+import type { FleetRobot, FleetMap } from "@/utils/api";
+import { fireEvent, render as renderReact, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import App from "./App";
 import { useFleet } from "@/stores/fleet";
+
+const render = (node: React.ReactNode) =>
+  renderReact(
+    <FleetDataContext.Provider
+      value={{
+        robots: (fixture.robots as FleetRobot[]).map(presentRobot),
+        maps: fixture.maps as FleetMap[],
+        connection: "live",
+      }}
+    >
+      {node}
+    </FleetDataContext.Provider>,
+  );
 
 beforeEach(() => useFleet.setState({ selectedId: "AMR-001", hoveredId: null, filter: "all" }));
 

@@ -1,3 +1,4 @@
+import { LiveFleetProvider } from "@/hooks/use-fleet-data";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
@@ -9,7 +10,9 @@ const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <LiveFleetProvider>
+        <App />
+      </LiveFleetProvider>
     </QueryClientProvider>
   </React.StrictMode>,
 );

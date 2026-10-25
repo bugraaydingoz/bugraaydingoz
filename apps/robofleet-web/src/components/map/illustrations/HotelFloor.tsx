@@ -13,8 +13,3 @@ export function HotelFloor({ style, className }: { style?: CSSProperties; classN
     />
   );
 }
-
-/** Convert floor-plan units to SVG viewBox coordinates; z lifts objects above the floor. */
-export function projectHotelPoint(x: number, y: number, z = 0) {
-  return { x: 700 + (x - y) * 0.28, y: 160 + (x + y) * 0.14 - z };
-}

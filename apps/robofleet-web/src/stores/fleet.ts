@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { demoRobots } from "@/data/robots";
 
 type Filter = "all" | "active" | "attention";
 type FleetState = {
@@ -14,7 +13,7 @@ type FleetState = {
 
 export const useFleet = create<FleetState>((set) => ({
   filter: "all",
-  selectedId: demoRobots[0].id,
+  selectedId: "AMR-001",
   hoveredId: null,
   hoverRobot: (id) => set({ hoveredId: id }),
   setFilter: (filter) => set({ filter, hoveredId: null }),

@@ -1,3 +1,4 @@
+import { useFleetData } from "@/hooks/use-fleet-data";
 import { useEffect, useRef } from "react";
 import { Bot, CircleDashed } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -7,18 +8,19 @@ import { Separator } from "@/components/ui/separator";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/utils/utils";
 import { useFleet } from "@/stores/fleet";
-import { demoRobots, needsAttention } from "@/data/robots";
+import { needsAttention } from "@/data/robots";
 import { RobotCard } from "./RobotCard";
 
 export function RobotsPanel({ className }: { className?: string }) {
+  const { robots, maps, connection } = useFleetData();
   const { filter, selectedId, setFilter, toggleRobot } = useFleet();
   const selectedCard = useRef<HTMLLIElement>(null);
   useEffect(() => {
     selectedCard.current?.scrollIntoView?.({ block: "nearest" });
   }, [selectedId, filter]);
-  const active = demoRobots.filter((robot) => robot.status === "Working");
-  const attention = demoRobots.filter(needsAttention);
-  const visible = filter === "active" ? active : filter === "attention" ? attention : demoRobots;
+  const active = robots.filter((robot) => robot.status === "Working");
+  const attention = robots.filter(needsAttention);
+  const visible = filter === "active" ? active : filter === "attention" ? attention : robots;
 
   return (
     <aside aria-label="Robot fleet" className={cn("h-full w-[360px] max-w-full", className)}>
@@ -30,7 +32,7 @@ export function RobotsPanel({ className }: { className?: string }) {
               <h1>Robots</h1>
             </CardTitle>
             <Badge variant="secondary" className="ml-auto">
-              {demoRobots.length}
+              {robots.length}
             </Badge>
           </div>
           <ToggleGroup
@@ -75,8 +77,18 @@ export function RobotsPanel({ className }: { className?: string }) {
         <CardFooter>
           <div className="flex w-full items-center gap-1.5 text-[11px] text-muted-foreground">
             <CircleDashed className="size-3.5" aria-hidden="true" />
-            <span>Demo fleet</span>
-            <span className="ml-auto">1 facility</span>
+            <span role="status">
+              {connection === "live"
+                ? "Live simulator"
+                : connection === "connecting"
+                  ? "Connecting…"
+                  : connection === "unavailable"
+                    ? "Backend unavailable"
+                    : "Reconnecting…"}
+            </span>
+            <span className="ml-auto">
+              {maps.length} {maps.length === 1 ? "facility" : "facilities"}
+            </span>
           </div>
         </CardFooter>
       </Card>
