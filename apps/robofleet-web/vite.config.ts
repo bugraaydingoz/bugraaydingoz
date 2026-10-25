@@ -7,6 +7,9 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [tailwindcss(), react()],
   server: {
+    host: "127.0.0.1",
+    port: 5173,
+    strictPort: true,
     proxy: {
       "/api": process.env.ROBOFLEET_API_URL ?? "http://localhost:3000",
     },
