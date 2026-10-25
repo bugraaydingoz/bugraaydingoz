@@ -1,0 +1,31 @@
+{
+  "name": "@repo/messaging",
+  "version": "0.0.1",
+  "private": true,
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "check": "tsc --noEmit",
+    "lint": "oxlint src",
+    "test": "tsx --test src/tests/*.spec.ts",
+    "test:integration": "node --env-file-if-exists=../../.env.local --import tsx --test src/tests/*.integration.ts"
+  },
+  "dependencies": {
+    "bullmq": "^6.4.2",
+    "ioredis": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.4"
+  }
+}
