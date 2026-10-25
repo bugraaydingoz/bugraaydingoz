@@ -4,6 +4,8 @@ import { createMapRepository } from "../maps/repository";
 import { advance, mapRoute, routeLength } from "../maps/routing";
 import type { createTelemetryProducer } from "../telemetry/producer";
 
+const SPEED_MPS = 0.8;
+
 export async function startSimulator(
   database: Database,
   producer: Pick<ReturnType<typeof createTelemetryProducer>, "publish">,
@@ -138,7 +140,7 @@ export async function startSimulator(
         }
 
         if (state.status === "Working" && state.task && state.route.length) {
-          const moved = advance(state.route, (elapsed * 0.8) / map.definition.metresPerUnit);
+          const moved = advance(state.route, (elapsed * SPEED_MPS) / map.definition.metresPerUnit);
 
           state.position = { x: moved.point[0], y: moved.point[1], heading: moved.heading };
           state.route = moved.route;
@@ -149,7 +151,7 @@ export async function startSimulator(
           state.task = {
             ...state.task,
             remainingDistance: remaining,
-            etaSeconds: Math.ceil(remaining / 0.8),
+            etaSeconds: Math.ceil(remaining / SPEED_MPS),
             progress: robot.total
               ? Math.min(100, 100 * (1 - routeLength(state.route) / robot.total))
               : 100,
@@ -178,6 +180,8 @@ export async function startSimulator(
           generation: robot.generation,
           sequence: ++robot.sequence,
           recordedAt: new Date(now).toISOString(),
+          speedMps:
+            state.status === "Working" && state.task && state.route.length > 1 ? SPEED_MPS : 0,
         };
 
         try {

@@ -43,6 +43,11 @@ older generations/sequences cannot overwrite newer state. Jobs complete after co
 transient errors retry, invalid payloads fail without retry. SIGTERM stops publishers,
 closes SSE, drains the worker, and releases Redis/DB connections.
 
+Telemetry includes nonnegative `speedMps` (zero when stationary). Fleet responses also
+include server-calculated `sampleAgeMs`, allowing clients to predict movement with a
+local monotonic clock. Older queued messages without speed default to zero. These
+additive fields require no database migration; sample age is computed at read time.
+
 ## Retention
 
 Raw telemetry is retained for **one hour**, measured by server-assigned queue receipt

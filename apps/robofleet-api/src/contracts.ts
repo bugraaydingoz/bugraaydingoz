@@ -66,6 +66,7 @@ export const telemetrySchema = z
     }),
     status: z.enum(["Working", "Charging", "Idle", "Blocked"]),
     battery: z.number().min(0).max(100),
+    speedMps: z.number().finite().nonnegative().default(0),
     location: z.string(),
     destination: z.string().nullable(),
     detail: z.string(),
@@ -83,7 +84,7 @@ export type RobotProfile = {
   scenario: "working" | "charging" | "idle" | "blocked" | "offline";
   initial: Omit<
     Telemetry,
-    "version" | "eventId" | "robotId" | "generation" | "sequence" | "recordedAt"
+    "version" | "eventId" | "robotId" | "generation" | "sequence" | "recordedAt" | "speedMps"
   >;
 };
 
@@ -93,6 +94,8 @@ export type FleetRobot = Omit<Telemetry, "status"> & {
   status: Telemetry["status"] | "Offline";
   receivedAt: string | null;
   lastSeenAt: string | null;
+  /** Age at response creation; clients can use a monotonic clock without server clock skew. */
+  sampleAgeMs: number | null;
 };
 
 export const RETENTION_MS = 60 * 60 * 1000;

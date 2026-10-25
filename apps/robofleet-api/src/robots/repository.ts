@@ -37,6 +37,8 @@ export function createRobotRepository(database: Database) {
           : Date.now() - Date.parse(lastSeenAt) > OFFLINE_MS
             ? "Connection lost. Showing last-known telemetry."
             : message!.detail,
+        speedMps: message?.speedMps ?? 0,
+        sampleAgeMs: lastSeenAt ? Math.max(0, Date.now() - Date.parse(lastSeenAt)) : null,
         lastSeenAt,
         receivedAt: row.received_at ? new Date(row.received_at).toISOString() : null,
       };

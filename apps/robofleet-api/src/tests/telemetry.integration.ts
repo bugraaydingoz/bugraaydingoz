@@ -58,6 +58,7 @@ test(
       await database.client`insert into robots(id,name,status,profile,generation)values(${id},'Test','Idle',${JSON.stringify(profile)}::jsonb,2)`;
 
       const message: Telemetry = {
+        speedMps: 0.8,
         ...profile.initial,
         version: 1,
         eventId: crypto.randomUUID(),
@@ -176,9 +177,14 @@ test(
       assert.match(new TextDecoder().decode(initial.value), /fleet.snapshot/);
       simulator = await startSimulator(database, producer);
       assert.equal(simulator.active, true);
-      await waitFor(
-        async () => !!(await createRobotRepository(database).get("AMR-001"))?.lastSeenAt,
-      );
+      const [registeredProducer] =
+        await database.client`select generation from robots where id='AMR-001'`;
+
+      await waitFor(async () => {
+        const robot = await createRobotRepository(database).get("AMR-001");
+
+        return !!robot?.lastSeenAt && robot.generation === registeredProducer.generation;
+      });
 
       const first = (await createRobotRepository(database).get("AMR-001"))!;
       let updates = "";
@@ -204,6 +210,9 @@ test(
       const second = (await createRobotRepository(database).get("AMR-001"))!;
 
       assert.notDeepEqual(second.position, first.position);
+      assert.equal(second.speedMps, 0.8);
+      assert.ok(second.sampleAgeMs !== null && second.sampleAgeMs >= 0);
+      assert.equal((await createRobotRepository(database).get("AMR-003"))?.speedMps, 0);
 
       const secondSimulator = await startSimulator(database, producer);
 
