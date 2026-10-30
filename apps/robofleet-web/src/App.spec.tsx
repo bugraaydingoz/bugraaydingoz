@@ -1,6 +1,7 @@
 import { FleetDataContext, presentRobot } from "@/hooks/use-fleet-data";
 import fixture from "@/test/fleet.json";
-import type { FleetRobot, FleetMap } from "@/utils/api";
+import type { FleetRobot } from "@/features/robots/api/robots.api";
+import type { FleetMap } from "@/features/maps/api/maps.api";
 import { fireEvent, render as renderReact, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import App from "./App";

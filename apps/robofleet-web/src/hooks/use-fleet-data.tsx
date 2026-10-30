@@ -1,6 +1,9 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getMaps, getRobots, type FleetRobot, type FleetMap } from "@/utils/api";
+import type { FleetRobot } from "@/features/robots/api/robots.api";
+import { robotsQueryKey, robotsQueryOptions } from "@/features/robots/api/robots.queries";
+import type { FleetMap } from "@/features/maps/api/maps.api";
+import { mapsQueryOptions } from "@/features/maps/api/maps.queries";
 import type { Robot } from "@/data/robots";
 
 export function presentRobot(robot: FleetRobot): Robot {
@@ -40,32 +43,8 @@ export const useFleetData = () => useContext(FleetDataContext);
 
 export function LiveFleetProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
-  const fleet = useQuery({
-    queryKey: ["robots"],
-    queryFn: async () => {
-      const incoming = await getRobots();
-      const cached = queryClient.getQueryData<FleetRobot[]>(["robots"]);
-
-      return incoming.map((robot) => {
-        const prior = cached?.find((r) => r.robotId === robot.robotId);
-
-        return prior &&
-          (prior.generation > robot.generation ||
-            (prior.generation === robot.generation && prior.sequence >= robot.sequence))
-          ? prior
-          : robot;
-      });
-    },
-    retry: 1,
-    refetchOnWindowFocus: false,
-  });
-  const maps = useQuery({
-    queryKey: ["maps"],
-    queryFn: getMaps,
-    staleTime: 60_000,
-    retry: 1,
-    refetchInterval: (query) => (query.state.status === "error" ? 5000 : false),
-  });
+  const fleet = useQuery(robotsQueryOptions(queryClient));
+  const maps = useQuery(mapsQueryOptions());
   const [connection, setConnection] = useState<FleetData["connection"]>("connecting");
 
   useEffect(() => {
@@ -85,7 +64,7 @@ export function LiveFleetProvider({ children }: { children: ReactNode }) {
         try {
           const incoming = (JSON.parse(event.data) as { robots: FleetRobot[] }).robots;
 
-          queryClient.setQueryData<FleetRobot[]>(["robots"], (current) =>
+          queryClient.setQueryData<FleetRobot[]>(robotsQueryKey, (current) =>
             incoming.map((robot) => {
               const prior = current?.find((r) => r.robotId === robot.robotId);
 
@@ -101,7 +80,7 @@ export function LiveFleetProvider({ children }: { children: ReactNode }) {
         try {
           const { robot } = JSON.parse(event.data) as { robot: FleetRobot };
 
-          queryClient.setQueryData<FleetRobot[]>(["robots"], (current) => {
+          queryClient.setQueryData<FleetRobot[]>(robotsQueryKey, (current) => {
             if (!current) return [robot];
 
             const prior = current.find((r) => r.robotId === robot.robotId);

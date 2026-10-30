@@ -74,7 +74,9 @@ persisted telemetry remains authoritative.
 - `src/test/setup.ts`: shared Vitest setup; unit tests stay beside their source.
 - `tests`: Playwright browser tests, kept flat.
 - `@repo/design-tokens`: shared shadcn variables, light/dark palettes, and Tailwind mappings.
-- `src/utils/api.ts`: the typed Hono client and request functions.
+- `src/shared/api`: the typed Hono client and shared health request.
+- `src/features/robots/api`: robot requests and React Query options.
+- `src/features/maps/api`: map requests and React Query options.
 - `src/utils/utils.ts`: shared UI utilities.
 
 Tailwind uses the Vite plugin and `src/index.css`. The local component aliases are configured in
