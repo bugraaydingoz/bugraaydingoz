@@ -1,13 +1,18 @@
 import { Card } from "@/shared/components/Card/Card";
-import { useFleetData } from "@/hooks/use-fleet-data";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { robotsQueryOptions } from "@/features/robots/api/robots.queries";
+import { mapsQueryOptions } from "@/features/maps/api/maps.queries";
 import { useSelectedRobot } from "@/features/robots/hooks/use-selected-robot";
 import { MapViewport } from "../MapViewport/MapViewport";
 import { HotelFloor } from "../HotelFloor/HotelFloor";
 import { RobotMapLayer } from "../RobotMapLayer/RobotMapLayer";
 
 export function HotelMap() {
+  const queryClient = useQueryClient();
+  const { data: robots = [] } = useQuery(robotsQueryOptions(queryClient));
+  const { data: maps = [] } = useQuery(mapsQueryOptions());
+
   const [selectedId] = useSelectedRobot();
-  const { robots, maps } = useFleetData();
   const selected = robots.find((robot) => robot.id === selectedId);
   const map =
     maps.find((map) => map.id === selected?.mapId && map.version === selected?.mapVersion) ??

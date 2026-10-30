@@ -1,4 +1,7 @@
-import { useFleetData } from "@/hooks/use-fleet-data";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { robotsQueryOptions } from "@/features/robots/api/robots.queries";
+import { mapsQueryOptions } from "@/features/maps/api/maps.queries";
+import type { EventConnection } from "@/shared/hooks/use-event-listener";
 import { useEffect, useRef } from "react";
 import { Bot, CircleDashed } from "lucide-react";
 import { Badge } from "@/shared/components/Badge/Badge";
@@ -19,15 +22,27 @@ import { useRobotFilter } from "@/features/robots/hooks/use-robot-filter";
 import { needsAttention } from "@/features/robots/utils/needs-attention";
 import { RobotCard } from "../RobotCard/RobotCard";
 
-export function RobotsPanel({ className }: { className?: string }) {
-  const { robots, maps, connection } = useFleetData();
+export function RobotsPanel({
+  className,
+  connection,
+}: {
+  className?: string;
+  connection: EventConnection;
+}) {
+  const queryClient = useQueryClient();
+  const { data: robots = [], isError: robotsError } = useQuery(robotsQueryOptions(queryClient));
+  const { data: maps = [], isError: mapsError } = useQuery(mapsQueryOptions());
+  const status = robotsError || mapsError ? "unavailable" : connection;
+
   const [filter, setFilter] = useRobotFilter();
   const [selectedId, setSelectedId] = useSelectedRobot();
   const hoverRobot = useRobotsStore((state) => state.hoverRobot);
   const selectedCard = useRef<HTMLLIElement>(null);
+
   useEffect(() => {
     selectedCard.current?.scrollIntoView?.({ block: "nearest" });
   }, [selectedId, filter]);
+
   const active = robots.filter((robot) => robot.status === "Working");
   const attention = robots.filter(needsAttention);
   const visible = filter === "active" ? active : filter === "attention" ? attention : robots;
@@ -93,11 +108,11 @@ export function RobotsPanel({ className }: { className?: string }) {
           <div className="flex w-full items-center gap-1.5 text-[11px] text-muted-foreground">
             <CircleDashed className="size-3.5" aria-hidden="true" />
             <span role="status">
-              {connection === "live"
+              {status === "live"
                 ? "Live simulator"
-                : connection === "connecting"
+                : status === "connecting"
                   ? "Connecting…"
-                  : connection === "unavailable"
+                  : status === "unavailable"
                     ? "Backend unavailable"
                     : "Reconnecting…"}
             </span>

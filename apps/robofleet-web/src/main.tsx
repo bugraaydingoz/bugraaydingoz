@@ -1,4 +1,3 @@
-import { LiveFleetProvider } from "@/hooks/use-fleet-data";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
@@ -12,9 +11,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <NuqsAdapter>
       <QueryClientProvider client={queryClient}>
-        <LiveFleetProvider>
-          <App />
-        </LiveFleetProvider>
+        <App />
       </QueryClientProvider>
     </NuqsAdapter>
   </React.StrictMode>,

@@ -1,30 +1,46 @@
-import { FleetDataContext } from "@/hooks/use-fleet-data";
-import { presentRobot } from "@/features/robots/utils/present-robot";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { robotsQueryKey } from "@/features/robots/api/robots.queries";
+import { mapsQueryKey } from "@/features/maps/api/maps.queries";
 import fixture from "@/test/fleet.json";
+import { TestEventSource } from "@/test/event-source";
 import type { FleetRobot } from "@/features/robots/api/robots.api";
 import type { FleetMap } from "@/features/maps/api/maps.api";
-import { fireEvent, render as renderReact, screen, within } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import {
+  act,
+  fireEvent,
+  render as renderReact,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
 import { useRobotsStore } from "@/features/robots/stores/robots.store";
 import { NuqsTestingAdapter } from "nuqs/adapters/testing";
 
-const render = (node: React.ReactNode) =>
-  renderReact(
-    <NuqsTestingAdapter searchParams="?robot=AMR-001" hasMemory>
-      <FleetDataContext.Provider
-        value={{
-          robots: (fixture.robots as FleetRobot[]).map(presentRobot),
-          maps: fixture.maps as FleetMap[],
-          connection: "live",
-        }}
-      >
-        {node}
-      </FleetDataContext.Provider>
-    </NuqsTestingAdapter>,
-  );
+const render = (node: React.ReactNode) => {
+  const client = new QueryClient({
+    defaultOptions: { queries: { staleTime: Infinity, gcTime: Infinity } },
+  });
 
-beforeEach(() => useRobotsStore.setState({ hoveredId: null }));
+  client.setQueryData(robotsQueryKey, fixture.robots as FleetRobot[]);
+  client.setQueryData(mapsQueryKey, fixture.maps as FleetMap[]);
+
+  return {
+    client,
+    ...renderReact(
+      <NuqsTestingAdapter searchParams="?robot=AMR-001" hasMemory>
+        <QueryClientProvider client={client}>{node}</QueryClientProvider>
+      </NuqsTestingAdapter>,
+    ),
+  };
+};
+
+beforeEach(() => {
+  useRobotsStore.setState({ hoveredId: null });
+  TestEventSource.instances = [];
+  vi.stubGlobal("EventSource", TestEventSource);
+});
 
 describe("Robots panel", () => {
   it("replaces the scaffold with fleet cards and the first robot's task details", () => {
@@ -98,5 +114,33 @@ describe("Robots panel", () => {
     expect(
       screen.getByRole("button", { name: "Select Nova on map" }).getAttribute("aria-pressed"),
     ).toBe("true");
+  });
+
+  it("updates both query subscribers from one SSE subscription", async () => {
+    const { client } = render(<App />);
+    const source = TestEventSource.instances[0];
+    const robot = { ...fixture.robots[0], name: "Updated Atlas", sequence: 2, battery: 70.4 };
+
+    act(() => {
+      source.emit("open");
+      source.emit("robot.updated", { robot });
+    });
+
+    await waitFor(() => {
+      expect(screen.getByRole("article", { name: "Updated Atlas" })).toBeTruthy();
+      expect(screen.getByLabelText("Updated Atlas battery 70%")).toBeTruthy();
+      expect(screen.getByRole("button", { name: "Select Updated Atlas on map" })).toBeTruthy();
+    });
+
+    expect(screen.getByRole("status").textContent).toBe("Live simulator");
+    expect(client.getQueryData<FleetRobot[]>(robotsQueryKey)?.[0]).toEqual(robot);
+    expect(TestEventSource.instances).toHaveLength(1);
+
+    act(() => client.setQueryData(mapsQueryKey, []));
+
+    await waitFor(() => {
+      expect(screen.queryByRole("group", { name: "Hotel robot positions" })).toBeNull();
+      expect(screen.getByText("0 facilities")).toBeTruthy();
+    });
   });
 });

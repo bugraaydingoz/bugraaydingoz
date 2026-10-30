@@ -41,10 +41,11 @@ through the map API. The existing hotel SVG remains a static visual asset. The U
 projects live coordinates into that asset without changing its proportions.
 
 React Query owns fleet and map server state; one SSE connection updates the fleet
-cache, ignores older generation/sequence values, and reconnects after failures. The
+cache, ignores older generation/sequence values, and reconnects after failures. Components
+subscribe directly through feature query options, without a fleet context. The
 stream sends a fresh snapshot on reconnect. Zustand owns hover; nuqs owns selection and filters.
 The panel reports connection state and never substitutes a demo fleet during outages.
-Battery and task values are formatted for display; numeric telemetry remains in the API.
+Battery and task values are formatted through query selectors; raw telemetry stays in the cache.
 
 ## Robot motion
 
@@ -73,7 +74,11 @@ persisted telemetry remains authoritative.
 - `src/shared/components`: Navbar and shadcn/ui primitives, each in a PascalCase component folder.
 - `src/features/robots/types/robot.ts`: robot presentation types.
 - `src/features/robots/utils/needs-attention.ts`: robot attention filtering helper.
-- `src/hooks/use-fleet-data.tsx`: REST bootstrap, SSE subscription, reconnection and cache updates.
+- `src/features/robots/hooks/use-robot-events.ts`: the single robot SSE subscription, mounted in `App`, and query cache updates.
+- `src/features/robots/api/robots.events.ts`: Zod validation of snapshot and update payloads.
+- `src/features/robots/api/robots.cache.ts`: generation/sequence-aware snapshot and update merging.
+- `src/features/robots/utils/present-robot.ts`: query selectors for display formatting.
+- `src/shared/hooks/use-event-listener.ts`: shared SSE connection lifecycle and reconnection.
 - `src/test/fleet.json`: test-only fixtures, never loaded by the application.
 - `src/test/setup.ts`: shared Vitest setup; unit tests stay beside their source.
 - `tests`: Playwright browser tests, kept flat.
