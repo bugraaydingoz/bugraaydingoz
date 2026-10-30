@@ -42,7 +42,8 @@ projects live coordinates into that asset without changing its proportions.
 
 React Query owns fleet and map server state; one SSE connection updates the fleet
 cache, ignores older generation/sequence values, and reconnects after failures. Components
-subscribe directly through feature query options, without a fleet context. The
+subscribe through the `useRobots` and `useMaps` feature hooks, keeping query results as named
+objects and using feature query options internally. The
 stream sends a fresh snapshot on reconnect. Zustand owns hover; nuqs owns selection and filters.
 The panel reports connection state and never substitutes a demo fleet during outages.
 Battery and task values are formatted through query selectors; raw telemetry stays in the cache.
@@ -70,6 +71,8 @@ persisted telemetry remains authoritative.
 - `src/features/robots/stores/robots.store.ts`: transient robot hover, shared by cards and maps through selectors.
 - `src/features/robots/hooks/use-selected-robot.ts`: selected robot in the `robot` query parameter.
 - `src/features/robots/hooks/use-robot-filter.ts`: validated `all`, `active`, or `attention` filter in the `filter` query parameter.
+- `src/features/robots/hooks/use-robots.ts`: the robot query hook, returning the complete React Query result.
+- `src/features/maps/hooks/use-maps.ts`: the map query hook, returning the complete React Query result.
 - `src/features/robots/components`: the fleet panel and expandable robot cards.
 - `src/shared/components`: Navbar and shadcn/ui primitives, each in a PascalCase component folder.
 - `src/features/robots/types/robot.ts`: robot presentation types.
@@ -96,7 +99,7 @@ Each custom component has its own folder containing its implementation and a mat
 
 URLs such as `/?robot=AMR-006&filter=attention` restore the selected robot and list filter.
 Missing parameters mean no selection and all robots; an invalid filter also falls back to all.
-Both query hooks use Zod schemas through `parseAsZod`. Robot IDs must contain 1–100 characters;
+Both URL state hooks use Zod schemas through `parseAsZod`. Robot IDs must contain 1–100 characters;
 empty or oversized values are treated as no selection.
 Collapsing a selected card removes `robot`, and choosing all robots removes `filter`.
 Changes use browser history so Back/Forward restore earlier state. Selecting a map robot

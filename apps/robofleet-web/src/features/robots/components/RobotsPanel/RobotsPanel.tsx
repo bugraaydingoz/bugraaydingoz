@@ -1,6 +1,5 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { robotsQueryOptions } from "@/features/robots/api/robots.queries";
-import { mapsQueryOptions } from "@/features/maps/api/maps.queries";
+import { useRobots } from "@/features/robots/hooks/use-robots";
+import { useMaps } from "@/features/maps/hooks/use-maps";
 import type { EventConnection } from "@/shared/hooks/use-event-listener";
 import { useEffect, useRef } from "react";
 import { Bot, CircleDashed } from "lucide-react";
@@ -29,10 +28,9 @@ export function RobotsPanel({
   className?: string;
   connection: EventConnection;
 }) {
-  const queryClient = useQueryClient();
-  const { data: robots = [], isError: robotsError } = useQuery(robotsQueryOptions(queryClient));
-  const { data: maps = [], isError: mapsError } = useQuery(mapsQueryOptions());
-  const status = robotsError || mapsError ? "unavailable" : connection;
+  const robotsQuery = useRobots();
+  const mapsQuery = useMaps();
+  const status = robotsQuery.isError || mapsQuery.isError ? "unavailable" : connection;
 
   const [filter, setFilter] = useRobotFilter();
   const [selectedId, setSelectedId] = useSelectedRobot();
@@ -43,9 +41,10 @@ export function RobotsPanel({
     selectedCard.current?.scrollIntoView?.({ block: "nearest" });
   }, [selectedId, filter]);
 
-  const active = robots.filter((robot) => robot.status === "Working");
-  const attention = robots.filter(needsAttention);
-  const visible = filter === "active" ? active : filter === "attention" ? attention : robots;
+  const active = robotsQuery.data?.filter((robot) => robot.status === "Working") ?? [];
+  const attention = robotsQuery.data?.filter(needsAttention) ?? [];
+  const visible =
+    filter === "active" ? active : filter === "attention" ? attention : (robotsQuery.data ?? []);
 
   return (
     <aside aria-label="Robot fleet" className={cn("h-full w-[360px] max-w-full", className)}>
@@ -57,7 +56,7 @@ export function RobotsPanel({
               <h1>Robots</h1>
             </CardTitle>
             <Badge variant="secondary" className="ml-auto">
-              {robots.length}
+              {robotsQuery.data?.length ?? 0}
             </Badge>
           </div>
           <ToggleGroup
@@ -117,7 +116,8 @@ export function RobotsPanel({
                     : "Reconnecting…"}
             </span>
             <span className="ml-auto">
-              {maps.length} {maps.length === 1 ? "facility" : "facilities"}
+              {mapsQuery.data?.length ?? 0}{" "}
+              {mapsQuery.data?.length === 1 ? "facility" : "facilities"}
             </span>
           </div>
         </CardFooter>

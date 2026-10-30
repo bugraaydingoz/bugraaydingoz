@@ -30,9 +30,18 @@
 
 - Use `<feature>.api.ts` for HTTP request functions and API types.
 - Use `<feature>.queries.ts` for query keys and reusable `queryOptions` definitions.
-- Use `queryOptions` for reads by default. Add query hooks only when they provide meaningful behavior.
+- Always expose React Query reads through feature hooks in `hooks/`, such as `useRobots` and `useMaps`. Components must not call `useQuery` directly.
+- Keep reusable `queryOptions` definitions in `api/` and consume them inside the feature hooks. Keep `useQueryClient` and query setup inside hooks rather than passing clients from components.
+- Return the complete React Query result from query hooks. Keep that result as a named object, such as `const robotsQuery = useRobots()`, and access `robotsQuery.data`, `robotsQuery.isError`, and other fields directly. Do not destructure query result objects.
 - Use `<feature>.mutations.ts` for mutation definitions when needed, and custom hooks for mutations with side effects.
 - Keep HTTP request functions separate from React hooks and presentation formatting.
+
+```tsx
+const robotsQuery = useRobots();
+const mapsQuery = useMaps();
+
+const unavailable = robotsQuery.isError || mapsQuery.isError;
+```
 
 ```text
 src/
@@ -41,6 +50,8 @@ src/
       api/
         robots.api.ts
         robots.queries.ts
+      hooks/
+        use-robots.ts
       components/
         RobotCard/
           RobotCard.tsx
@@ -54,6 +65,7 @@ src/
           HotelMap.tsx
           HotelMap.spec.tsx
       hooks/
+        use-maps.ts
         use-robot-motion.ts
       utils/
         robot-motion.ts
