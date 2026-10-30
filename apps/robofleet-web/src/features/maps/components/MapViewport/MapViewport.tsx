@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { Minus, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Button } from "@/shared/components/Button/Button";
+import { Card } from "@/shared/components/Card/Card";
 import { cn } from "@/utils/utils";
 
 // Adapted from the supplied MapViewport: all child layers share one fixed-angle camera.

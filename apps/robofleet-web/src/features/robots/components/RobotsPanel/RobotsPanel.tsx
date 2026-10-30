@@ -1,15 +1,21 @@
 import { useFleetData } from "@/hooks/use-fleet-data";
 import { useEffect, useRef } from "react";
 import { Bot, CircleDashed } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Badge } from "@/shared/components/Badge/Badge";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/shared/components/Card/Card";
+import { ScrollArea } from "@/shared/components/ScrollArea/ScrollArea";
+import { Separator } from "@/shared/components/Separator/Separator";
+import { ToggleGroup, ToggleGroupItem } from "@/shared/components/ToggleGroup/ToggleGroup";
 import { cn } from "@/utils/utils";
 import { useFleet } from "@/stores/fleet";
 import { needsAttention } from "@/data/robots";
-import { RobotCard } from "./RobotCard";
+import { RobotCard } from "../RobotCard/RobotCard";
 
 export function RobotsPanel({ className }: { className?: string }) {
   const { robots, maps, connection } = useFleetData();

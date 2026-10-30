@@ -1,10 +1,10 @@
 import { useMemo } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/components/Button/Button";
 import { useFleet } from "@/stores/fleet";
 import { useRobotMotion } from "@/hooks/use-robot-motion";
 import type { Robot as FleetRobot } from "@/data/robots";
 import type { FleetMap } from "@/features/maps/api/maps.api";
-import { Robot } from "./illustrations/Robot";
+import { Robot } from "../Robot/Robot";
 
 export function RobotMapLayer({ robots, map }: { robots: FleetRobot[]; map: FleetMap }) {
   const { selectedId, hoveredId, selectRobot, hoverRobot } = useFleet();

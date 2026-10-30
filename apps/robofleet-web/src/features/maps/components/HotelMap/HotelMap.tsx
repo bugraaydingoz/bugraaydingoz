@@ -1,9 +1,9 @@
-import { Card } from "@/components/ui/card";
+import { Card } from "@/shared/components/Card/Card";
 import { useFleetData } from "@/hooks/use-fleet-data";
 import { useFleet } from "@/stores/fleet";
-import { MapViewport } from "./MapViewport";
-import { HotelFloor } from "./illustrations/HotelFloor";
-import { RobotMapLayer } from "./RobotMapLayer";
+import { MapViewport } from "../MapViewport/MapViewport";
+import { HotelFloor } from "../HotelFloor/HotelFloor";
+import { RobotMapLayer } from "../RobotMapLayer/RobotMapLayer";
 
 export function HotelMap() {
   const selectedId = useFleet((state) => state.selectedId);

@@ -9,11 +9,17 @@ import {
   PlugZap,
   WifiOff,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress, ProgressLabel, ProgressValue } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/shared/components/Badge/Badge";
+import { Button } from "@/shared/components/Button/Button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/shared/components/Card/Card";
+import { Progress, ProgressLabel, ProgressValue } from "@/shared/components/Progress/Progress";
+import { Separator } from "@/shared/components/Separator/Separator";
 import type { Robot, RobotStatus } from "@/data/robots";
 import { cn } from "@/utils/utils";
 import { useFleet } from "@/stores/fleet";

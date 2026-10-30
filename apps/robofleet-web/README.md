@@ -30,7 +30,7 @@ Hovering a card or map robot highlights both with a light primary outline; the s
 its highlight after the pointer leaves. Hovering does not change selection or expand details.
 
 The supplied hotel floor and robot renderer are retained in
-`src/components/map/illustrations`, with provenance and original bundle notes in `SOURCE.md`.
+`src/features/maps/components`, with provenance and original bundle notes in `SOURCE.md`.
 The fixed-angle viewport supports cursor-centered wheel zoom, drag-to-pan, zoom/reset
 buttons, and keyboard input: arrow keys pan, `+` / `-` zoom, and `0` resets.
 
@@ -64,13 +64,13 @@ persisted telemetry remains authoritative.
 
 ## Structure
 
-- `src/components/map`: hotel composition and the adapted pan/zoom viewport.
+- `src/features/maps/components`: hotel composition, robot map rendering, and the adapted pan/zoom viewport.
 - `src/stores/fleet.ts`: shared map/card selection and list filtering.
-- `src/components/robots`: the fleet panel and expandable robot cards.
+- `src/features/robots/components`: the fleet panel and expandable robot cards.
+- `src/shared/components`: Navbar and shadcn/ui primitives, each in a PascalCase component folder.
 - `src/data/robots.ts`: presentation types and fleet filtering helpers.
 - `src/hooks/use-fleet-data.tsx`: REST bootstrap, SSE subscription, reconnection and cache updates.
 - `src/test/fleet.json`: test-only fixtures, never loaded by the application.
-- `src/components/ui`: shadcn/ui components, with one file per component.
 - `src/test/setup.ts`: shared Vitest setup; unit tests stay beside their source.
 - `tests`: Playwright browser tests, kept flat.
 - `@repo/design-tokens`: shared shadcn variables, light/dark palettes, and Tailwind mappings.
@@ -78,6 +78,9 @@ persisted telemetry remains authoritative.
 - `src/features/robots/api`: robot requests and React Query options.
 - `src/features/maps/api`: map requests and React Query options.
 - `src/utils/utils.ts`: shared UI utilities.
+
+Each custom component has its own folder containing its implementation and a matching
+`.spec.tsx` file. New component specs use `describe.todo` placeholders until tests are added.
 
 Tailwind uses the Vite plugin and `src/index.css`. The local component aliases are configured in
 `components.json`, Vite, and TypeScript. The app uses the shadcn Nova/Base UI foundation
@@ -95,7 +98,9 @@ run the official CLI from this app:
 pnpm dlx shadcn@latest add @shadcn/<component>
 ```
 
-The CLI writes components directly to `src/components/ui`. Reuse `@/utils/utils` for `cn`,
+The CLI targets `src/shared/components`. After adding a component, move its generated file into
+a matching PascalCase folder (for example, `Button/Button.tsx`) and update its imports.
+Reuse `@/utils/utils` for `cn`,
 and keep color/radius variables in the shared design-tokens package.
 
 ## Validation

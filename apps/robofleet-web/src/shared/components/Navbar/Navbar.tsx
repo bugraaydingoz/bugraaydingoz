@@ -1,5 +1,5 @@
 import { Bot, CircleUserRound, Clock3, House, LibraryBig } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/components/Button/Button";
 
 const items = [
   { label: "Home", icon: House, current: true },
@@ -8,7 +8,7 @@ const items = [
   { label: "Library", icon: LibraryBig },
 ];
 
-export function NavigationRail() {
+export function Navbar() {
   return (
     <nav
       aria-label="Main navigation"
