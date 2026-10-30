@@ -1,0 +1,11 @@
+services:
+  robofleet-web:
+    build:
+      context: ../../..
+      dockerfile: apps/robofleet-web/infra/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      robofleet-api:
+        condition: service_healthy
+    expose:
+      - "3000"

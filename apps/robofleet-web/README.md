@@ -146,5 +146,7 @@ API health proxy, uses fixed REST/SSE fixtures, and covers fleet selection/filte
 
 ## Deployment
 
-Docker and Caddy configuration lives in `infra/`. See the repository's `infra/README.md` for
-the Compose command and hostname routing. Both the UI and API have dedicated Dockerfiles.
+The UI’s Dockerfile, Compose service, and Caddyfile live in [infra/](infra/). The API owns
+its [deployment files](../robofleet-api/infra/), including migrations. The
+[root Compose file](../../infra/docker-compose.yml) combines all apps with shared services;
+see the [infra README](../../infra/README.md) for deployment commands and public routing.

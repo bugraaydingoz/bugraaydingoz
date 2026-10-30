@@ -15,7 +15,7 @@ RUN pnpm --filter myanaesthesie-web build
 
 FROM caddy:2-alpine
 
-COPY infra/myanaesthesie-web.Caddyfile /etc/caddy/Caddyfile
+COPY apps/myanaesthesie-web/infra/Caddyfile /etc/caddy/Caddyfile
 COPY --from=builder /app/apps/myanaesthesie-web/dist /srv
 
 EXPOSE 3000

@@ -17,7 +17,7 @@ RUN pnpm --filter bugraaydingoz-web build
 
 FROM caddy:2-alpine
 
-COPY infra/bugraaydingoz-web.Caddyfile /etc/caddy/Caddyfile
+COPY apps/bugraaydingoz-web/infra/Caddyfile /etc/caddy/Caddyfile
 COPY --from=builder /app/apps/bugraaydingoz-web/dist /srv
 
 EXPOSE 3000

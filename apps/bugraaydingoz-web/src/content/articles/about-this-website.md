@@ -43,6 +43,10 @@ I like keeping personal projects in a monorepo because it gives me one place for
 apps/
   (deployable apps)
   bugraaydingoz-web/
+    infra/
+      Dockerfile
+      compose.yml
+      Caddyfile
   ...
 packages/
   (shared packages)
@@ -50,7 +54,7 @@ packages/
 infra/
   docker-compose.yml
   Caddyfile
-  *.Dockerfile
+  redis.conf
 ```
 
 The root workspace currently uses `pnpm` to discover apps through `apps/*`. Each app can keep its own framework, scripts, tests, and deployment needs, while the root keeps shared commands for formatting, linting, building, and testing. For now, pnpm is enough. If the repository grows to include more diverse technologies, I may revisit that decision.

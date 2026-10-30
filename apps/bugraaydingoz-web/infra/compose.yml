@@ -1,0 +1,8 @@
+services:
+  bugraaydingoz-web:
+    build:
+      context: ../../..
+      dockerfile: apps/bugraaydingoz-web/infra/Dockerfile
+    restart: unless-stopped
+    expose:
+      - "3000"

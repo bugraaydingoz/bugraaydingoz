@@ -1,0 +1,47 @@
+services:
+  robofleet-api:
+    build:
+      context: ../../..
+      dockerfile: apps/robofleet-api/infra/Dockerfile
+    restart: unless-stopped
+    stop_grace_period: 30s
+    depends_on:
+      redis:
+        condition: service_healthy
+      robofleet-migrate:
+        condition: service_completed_successfully
+    environment:
+      PORT: "3000"
+      REDIS_URL: redis://redis:6379/0
+      REDIS_PASSWORD: "${REDIS_PASSWORD:?Set REDIS_PASSWORD in the environment or env file}"
+      SIMULATOR_ENABLED: "true"
+      DATABASE_URL: postgresql://postgres@postgres:5432/robofleet
+      PGPASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in the environment or env file}"
+    expose:
+      - "3000"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "--input-type=module",
+          "-e",
+          "const r = await fetch('http://127.0.0.1:3000/api/ready'); process.exit(r.ok ? 0 : 1)",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  robofleet-migrate:
+    build:
+      context: ../../..
+      dockerfile: apps/robofleet-api/infra/Dockerfile
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres@postgres:5432/robofleet
+      PGPASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in the environment or env file}"
+    command: ["node", "apps/robofleet-api/dist/migrate.js"]

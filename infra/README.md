@@ -1,7 +1,10 @@
 # Infra
 
 [Docker Compose](docker-compose.yml) runs the apps, Caddy, shared PostgreSQL 18, and Redis 8.
-[Caddyfile](Caddyfile) defines the domain routes. Run commands from the repository root.
+[Caddyfile](Caddyfile) defines the public domain routes. Each app owns its Dockerfile,
+Compose services, and optional Caddyfile in `apps/<app>/infra/`. The root Compose file
+includes these alongside the shared services. Requires Docker Compose 2.20.3 or newer;
+run commands from the repository root.
 
 ## Local development
 

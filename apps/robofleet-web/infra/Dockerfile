@@ -21,7 +21,7 @@ RUN pnpm --filter @repo/messaging build && pnpm --filter robofleet-web check && 
 
 FROM caddy:2-alpine
 
-COPY infra/robofleet-web.Caddyfile /etc/caddy/Caddyfile
+COPY apps/robofleet-web/infra/Caddyfile /etc/caddy/Caddyfile
 COPY --from=builder /app/apps/robofleet-web/dist /srv
 
 EXPOSE 3000
