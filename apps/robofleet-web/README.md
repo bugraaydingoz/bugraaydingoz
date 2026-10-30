@@ -25,7 +25,8 @@ is visually active; navigation and profile actions are deferred.
 The Robots panel sits beside a full-height isometric hotel map. Cards show status, current
 location, destination, battery, and task details. Selecting a card highlights its robot on
 the map; selecting a map robot reveals its card and clears any filter hiding it. Shared
-selection and filtering live in Zustand. On mobile, the map sits above a scrollable panel.
+selection and filtering live in URL query parameters through nuqs. Hover stays in Zustand.
+On mobile, the map sits above a scrollable panel.
 Hovering a card or map robot highlights both with a light primary outline; the selected robot keeps
 its highlight after the pointer leaves. Hovering does not change selection or expand details.
 
@@ -41,7 +42,7 @@ projects live coordinates into that asset without changing its proportions.
 
 React Query owns fleet and map server state; one SSE connection updates the fleet
 cache, ignores older generation/sequence values, and reconnects after failures. The
-stream sends a fresh snapshot on reconnect. Zustand owns selection, hover, and filters.
+stream sends a fresh snapshot on reconnect. Zustand owns hover; nuqs owns selection and filters.
 The panel reports connection state and never substitutes a demo fleet during outages.
 Battery and task values are formatted for display; numeric telemetry remains in the API.
 
@@ -65,7 +66,9 @@ persisted telemetry remains authoritative.
 ## Structure
 
 - `src/features/maps/components`: hotel composition, robot map rendering, and the adapted pan/zoom viewport.
-- `src/stores/fleet.ts`: shared map/card selection and list filtering.
+- `src/features/robots/stores/robots.store.ts`: transient robot hover, shared by cards and maps through selectors.
+- `src/features/robots/hooks/use-selected-robot.ts`: selected robot in the `robot` query parameter.
+- `src/features/robots/hooks/use-robot-filter.ts`: validated `all`, `active`, or `attention` filter in the `filter` query parameter.
 - `src/features/robots/components`: the fleet panel and expandable robot cards.
 - `src/shared/components`: Navbar and shadcn/ui primitives, each in a PascalCase component folder.
 - `src/features/robots/types/robot.ts`: robot presentation types.
@@ -81,9 +84,18 @@ persisted telemetry remains authoritative.
 - `src/features/maps/hooks/use-robot-motion.ts`: predicted robot animation on the map.
 - `src/features/maps/utils/robot-motion.ts`: motion calculations and colocated unit tests.
 - `src/shared/utils/cn.ts`: shared class name utility.
+- `src/shared/utils/parse-as-zod.ts`: shared nuqs parser adapter for Zod string schemas.
 
 Each custom component has its own folder containing its implementation and a matching
 `.spec.tsx` file. New component specs use `describe.todo` placeholders until tests are added.
+
+URLs such as `/?robot=AMR-006&filter=attention` restore the selected robot and list filter.
+Missing parameters mean no selection and all robots; an invalid filter also falls back to all.
+Both query hooks use Zod schemas through `parseAsZod`. Robot IDs must contain 1–100 characters;
+empty or oversized values are treated as no selection.
+Collapsing a selected card removes `robot`, and choosing all robots removes `filter`.
+Changes use browser history so Back/Forward restore earlier state. Selecting a map robot
+updates selection and clears the filter together, preserving unrelated query parameters.
 
 Tailwind uses the Vite plugin and `src/index.css`. The local component aliases are configured in
 `components.json`, Vite, and TypeScript. The app uses the shadcn Nova/Base UI foundation

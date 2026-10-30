@@ -5,22 +5,25 @@ import type { FleetMap } from "@/features/maps/api/maps.api";
 import { fireEvent, render as renderReact, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import App from "./App";
-import { useFleet } from "@/stores/fleet";
+import { useRobotsStore } from "@/features/robots/stores/robots.store";
+import { NuqsTestingAdapter } from "nuqs/adapters/testing";
 
 const render = (node: React.ReactNode) =>
   renderReact(
-    <FleetDataContext.Provider
-      value={{
-        robots: (fixture.robots as FleetRobot[]).map(presentRobot),
-        maps: fixture.maps as FleetMap[],
-        connection: "live",
-      }}
-    >
-      {node}
-    </FleetDataContext.Provider>,
+    <NuqsTestingAdapter searchParams="?robot=AMR-001" hasMemory>
+      <FleetDataContext.Provider
+        value={{
+          robots: (fixture.robots as FleetRobot[]).map(presentRobot),
+          maps: fixture.maps as FleetMap[],
+          connection: "live",
+        }}
+      >
+        {node}
+      </FleetDataContext.Provider>
+    </NuqsTestingAdapter>,
   );
 
-beforeEach(() => useFleet.setState({ selectedId: "AMR-001", hoveredId: null, filter: "all" }));
+beforeEach(() => useRobotsStore.setState({ hoveredId: null }));
 
 describe("Robots panel", () => {
   it("replaces the scaffold with fleet cards and the first robot's task details", () => {

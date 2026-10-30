@@ -22,7 +22,7 @@ import { Progress, ProgressLabel, ProgressValue } from "@/shared/components/Prog
 import { Separator } from "@/shared/components/Separator/Separator";
 import type { Robot, RobotStatus } from "@/features/robots/types/robot";
 import { cn } from "@/shared/utils/cn";
-import { useFleet } from "@/stores/fleet";
+import { useRobotsStore } from "@/features/robots/stores/robots.store";
 
 function StatusBadge({ status }: { status: RobotStatus }) {
   const variant =
@@ -47,14 +47,16 @@ export function RobotCard({
   expanded: boolean;
   onToggle: () => void;
 }) {
-  const { hoveredId, hoverRobot } = useFleet();
+  const hovered = useRobotsStore((state) => state.hoveredId === robot.id);
+  const hoverRobot = useRobotsStore((state) => state.hoverRobot);
+
   return (
     <Card
       size="sm"
       variant="interactive"
       role="article"
       aria-labelledby={`${robot.id}-name`}
-      data-highlighted={expanded ? "selected" : hoveredId === robot.id ? "hovered" : undefined}
+      data-highlighted={expanded ? "selected" : hovered ? "hovered" : undefined}
       onClick={onToggle}
       onPointerEnter={() => hoverRobot(robot.id)}
       onPointerLeave={() => hoverRobot(null)}

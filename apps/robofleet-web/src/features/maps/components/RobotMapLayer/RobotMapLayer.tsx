@@ -1,13 +1,18 @@
 import { useMemo } from "react";
 import { Button } from "@/shared/components/Button/Button";
-import { useFleet } from "@/stores/fleet";
+import { useRobotsStore } from "@/features/robots/stores/robots.store";
+import { useSelectedRobot } from "@/features/robots/hooks/use-selected-robot";
+import { useRobotFilter } from "@/features/robots/hooks/use-robot-filter";
 import { useRobotMotion } from "@/features/maps/hooks/use-robot-motion";
 import type { Robot as FleetRobot } from "@/features/robots/types/robot";
 import type { FleetMap } from "@/features/maps/api/maps.api";
 import { Robot } from "../Robot/Robot";
 
 export function RobotMapLayer({ robots, map }: { robots: FleetRobot[]; map: FleetMap }) {
-  const { selectedId, hoveredId, selectRobot, hoverRobot } = useFleet();
+  const [selectedId, setSelectedId] = useSelectedRobot();
+  const [, setFilter] = useRobotFilter();
+  const hoveredId = useRobotsStore((state) => state.hoveredId);
+  const hoverRobot = useRobotsStore((state) => state.hoverRobot);
   const visible = useMemo(
     () => robots.filter((robot) => robot.mapId === map.id && robot.mapVersion === map.version),
     [robots, map.id, map.version],
@@ -90,7 +95,10 @@ export function RobotMapLayer({ robots, map }: { robots: FleetRobot[]; map: Flee
               aria-label={`Select ${robot.name} on map`}
               aria-pressed={selectedId === robot.id}
               title={`${robot.name} · ${robot.status}`}
-              onClick={() => selectRobot(robot.id)}
+              onClick={() => {
+                void setSelectedId(robot.id);
+                void setFilter("all");
+              }}
               onPointerEnter={() => hoverRobot(robot.id)}
               onPointerLeave={() => hoverRobot(null)}
             >

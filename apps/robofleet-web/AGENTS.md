@@ -12,6 +12,10 @@
 - Keep feature hooks and utilities in that feature's `hooks/` and `utils/` folders; map motion belongs to `maps`.
 - Put reusable cross-feature utilities in `src/shared/utils/`, such as `cn.ts`.
 - Keep feature presentation types in that feature's `types/` folder, such as `features/robots/types/robot.ts`.
+- Keep feature UI stores in that feature's `stores/` folder. Robot hover belongs to `features/robots/stores/robots.store.ts`, even when maps consume it.
+- Keep shareable UI state in URL query parameters using nuqs, with a separate feature hook per parameter. Robot selection uses `use-selected-robot.ts` (`robot`) and filtering uses `use-robot-filter.ts` (`filter`); do not duplicate them in Zustand.
+- Define string query parameter validation with Zod schemas through `src/shared/utils/parse-as-zod.ts`; keep defaults and history options in the feature hooks.
+- Subscribe to Zustand stores through selectors for the fields a component needs. Keep server data in React Query rather than duplicating it in UI stores.
 
 ## Components
 

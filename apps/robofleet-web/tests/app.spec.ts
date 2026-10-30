@@ -13,7 +13,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("shows the left fleet panel and expands the selected robot", async ({ page, request }) => {
-  await page.goto("/");
+  await page.goto("/?robot=AMR-001");
   await expect(page.getByRole("heading", { name: "Robots" })).toBeVisible();
   await expect(page.getByRole("list", { name: "Robots" }).getByRole("listitem")).toHaveCount(8);
   await expect(page.getByRole("progressbar", { name: "Delivering towels" })).toHaveAttribute(
@@ -71,6 +71,95 @@ test("filters attention and active robots and supports keyboard navigation", asy
   await expect(page.getByRole("article", { name: "Milo" })).toHaveCount(0);
 });
 
+test("restores URL state after reload and batches map selection with filter reset", async ({
+  page,
+}) => {
+  await page.goto("/?robot=AMR-006&filter=attention&view=hotel");
+  await expect(page.getByRole("list", { name: "Robots" }).getByRole("listitem")).toHaveCount(2);
+  await expect(page.getByRole("button", { name: "Bolt details" })).toHaveAttribute(
+    "aria-expanded",
+    "true",
+  );
+  await expect(page.getByRole("button", { name: "Select Bolt on map" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+
+  await page.getByRole("button", { name: "Select Pixel on map" }).click();
+  await expect(page).toHaveURL(/robot=AMR-007/);
+  expect(new URL(page.url()).searchParams.has("filter")).toBe(false);
+  expect(new URL(page.url()).searchParams.get("view")).toBe("hotel");
+  await expect(page.getByRole("button", { name: "Pixel details" })).toHaveAttribute(
+    "aria-expanded",
+    "true",
+  );
+
+  await page.reload();
+  await expect(page.getByRole("list", { name: "Robots" }).getByRole("listitem")).toHaveCount(8);
+  await expect(page.getByRole("button", { name: "Pixel details" })).toHaveAttribute(
+    "aria-expanded",
+    "true",
+  );
+
+  await page.getByRole("button", { name: "Pixel details" }).click();
+  await expect(page).toHaveURL("/?view=hotel");
+  await expect(page.getByRole("button", { name: "Select Pixel on map" })).toHaveAttribute(
+    "aria-pressed",
+    "false",
+  );
+
+  await page.goBack();
+  await expect(page.getByRole("button", { name: "Pixel details" })).toHaveAttribute(
+    "aria-expanded",
+    "true",
+  );
+  await page.goBack();
+  await expect(page.getByRole("button", { name: "Attention 2" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(page.getByRole("button", { name: "Bolt details" })).toHaveAttribute(
+    "aria-expanded",
+    "true",
+  );
+});
+
+test("navigates robot and filter changes with browser Back and Forward", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator('[aria-expanded="true"]')).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Attention 2" }).click();
+  await expect(page).toHaveURL("/?filter=attention");
+  await page.getByRole("button", { name: "Bolt details" }).click();
+  await expect(page).toHaveURL(/robot=AMR-006/);
+  await page.getByRole("button", { name: "Active 4" }).click();
+  await expect(page).toHaveURL(/filter=active/);
+
+  await page.goBack();
+  await expect(page.getByRole("button", { name: "Attention 2" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(page.getByRole("button", { name: "Bolt details" })).toHaveAttribute(
+    "aria-expanded",
+    "true",
+  );
+  await page.goBack();
+  await expect(page.getByRole("button", { name: "Bolt details" })).toHaveAttribute(
+    "aria-expanded",
+    "false",
+  );
+  await page.goBack();
+  await expect(page.getByRole("list", { name: "Robots" }).getByRole("listitem")).toHaveCount(8);
+  await page.goForward();
+  await expect(page.getByRole("list", { name: "Robots" }).getByRole("listitem")).toHaveCount(2);
+  await page.goForward();
+  await expect(page.getByRole("button", { name: "Select Bolt on map" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+});
+
 test("keeps the fleet list scrollable on mobile without page overflow", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
@@ -103,7 +192,7 @@ test("uses shared light and dark surfaces with green working badges", async ({ p
 test("links neutral card and robot highlights on hover and preserves selection", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto("/?robot=AMR-001");
   const scout = page.getByRole("article", { name: "Scout", exact: true });
   const atlas = page.getByRole("article", { name: "Atlas", exact: true });
   const bolt = page.getByRole("article", { name: "Bolt", exact: true });
@@ -330,7 +419,7 @@ test("animates between samples, keeps overlays aligned, and stops on stale snaps
       body: `event: fleet.snapshot\ndata: ${JSON.stringify({ robots })}\n\n`,
     }),
   );
-  await page.goto("/");
+  await page.goto("/?robot=AMR-001");
 
   const marker = page.locator('[data-robot-id="AMR-001"] foreignObject');
   await expect(marker).toBeVisible();

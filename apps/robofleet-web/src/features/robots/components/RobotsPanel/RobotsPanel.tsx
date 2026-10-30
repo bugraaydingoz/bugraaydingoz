@@ -13,13 +13,17 @@ import { ScrollArea } from "@/shared/components/ScrollArea/ScrollArea";
 import { Separator } from "@/shared/components/Separator/Separator";
 import { ToggleGroup, ToggleGroupItem } from "@/shared/components/ToggleGroup/ToggleGroup";
 import { cn } from "@/shared/utils/cn";
-import { useFleet } from "@/stores/fleet";
+import { useRobotsStore } from "@/features/robots/stores/robots.store";
+import { useSelectedRobot } from "@/features/robots/hooks/use-selected-robot";
+import { useRobotFilter } from "@/features/robots/hooks/use-robot-filter";
 import { needsAttention } from "@/features/robots/utils/needs-attention";
 import { RobotCard } from "../RobotCard/RobotCard";
 
 export function RobotsPanel({ className }: { className?: string }) {
   const { robots, maps, connection } = useFleetData();
-  const { filter, selectedId, setFilter, toggleRobot } = useFleet();
+  const [filter, setFilter] = useRobotFilter();
+  const [selectedId, setSelectedId] = useSelectedRobot();
+  const hoverRobot = useRobotsStore((state) => state.hoverRobot);
   const selectedCard = useRef<HTMLLIElement>(null);
   useEffect(() => {
     selectedCard.current?.scrollIntoView?.({ block: "nearest" });
@@ -45,7 +49,10 @@ export function RobotsPanel({ className }: { className?: string }) {
             value={[filter]}
             onValueChange={(value) => {
               const next = value[0];
-              if (next === "all" || next === "active" || next === "attention") setFilter(next);
+              if (next === "all" || next === "active" || next === "attention") {
+                hoverRobot(null);
+                void setFilter(next);
+              }
             }}
             variant="outline"
             size="sm"
@@ -73,7 +80,9 @@ export function RobotsPanel({ className }: { className?: string }) {
                   <RobotCard
                     robot={robot}
                     expanded={selectedId === robot.id}
-                    onToggle={() => toggleRobot(robot.id)}
+                    onToggle={() => {
+                      void setSelectedId((current) => (current === robot.id ? null : robot.id));
+                    }}
                   />
                 </li>
               ))}
