@@ -2,7 +2,7 @@ import process from "node:process";
 import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
-  testDir: "./tests",
+  testDir: "./e2e",
   webServer: [
     {
       command: "pnpm --filter robofleet-api build && pnpm --filter robofleet-api start",

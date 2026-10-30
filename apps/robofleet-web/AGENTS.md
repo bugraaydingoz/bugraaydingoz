@@ -87,5 +87,7 @@ src/
 ## Tests
 
 - Keep unit specs beside their source files.
-- Keep Playwright tests directly in `tests/`, without an `e2e/` subfolder.
-- Keep shared test setup and fixtures in `src/test/`.
+- Keep Playwright specs in `e2e/features/`, with one spec file per existing feature: `robots.spec.ts` and `maps.spec.ts`.
+- Group related workflows inside each feature spec with `test.describe("Workflows")`; do not create separate workflow or shared spec files.
+- Keep shared Playwright setup and REST/SSE route mocks in `e2e/fixtures.ts`. Feature specs must import `test` and `expect` from that fixture module so the mocks are applied consistently.
+- Keep shared unit test setup and fixture data in `src/test/`; reuse that fixture data in browser tests.

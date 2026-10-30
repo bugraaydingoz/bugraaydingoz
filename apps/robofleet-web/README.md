@@ -84,7 +84,8 @@ persisted telemetry remains authoritative.
 - `src/shared/hooks/use-event-listener.ts`: shared SSE connection lifecycle and reconnection.
 - `src/test/fleet.json`: test-only fixtures, never loaded by the application.
 - `src/test/setup.ts`: shared Vitest setup; unit tests stay beside their source.
-- `tests`: Playwright browser tests, kept flat.
+- `e2e/features`: Playwright browser tests in `robots.spec.ts` and `maps.spec.ts`, with workflows grouped inside each feature spec.
+- `e2e/fixtures.ts`: shared Playwright fixtures with REST/SSE route mocks, reusing `src/test/fleet.json`.
 - `@repo/design-tokens`: shared shadcn variables, light/dark palettes, and Tailwind mappings.
 - `src/shared/api`: the typed Hono client and shared health request.
 - `src/features/robots/api`: robot requests and React Query options.
@@ -141,7 +142,7 @@ the code as `*.spec.tsx` or `*.spec.ts` and cover fleet filtering, expandable de
 
 `pnpm test:e2e` installs Chromium and runs Playwright against a production UI build and the
 real API. Playwright starts its own servers on ports `4174` and `3031`, checks the same-origin
-API health proxy, uses fixed REST/SSE fixtures, and covers fleet selection/filtering, keyboard/camera controls, linked map selection, mobile scrolling, shared light/dark themes, live event updates, stale events, backend failures, and reconnects. Browser tests live in `tests/*.spec.ts`.
+API health proxy, uses fixed REST/SSE fixtures, and covers fleet selection/filtering, keyboard/camera controls, linked map selection, mobile scrolling, shared light/dark themes, live event updates, stale events, backend failures, and reconnects. Browser tests live in `e2e/features/robots.spec.ts` and `e2e/features/maps.spec.ts`.
 
 ## Deployment
 
