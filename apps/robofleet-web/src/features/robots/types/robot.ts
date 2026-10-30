@@ -21,7 +21,3 @@ export type Robot = {
   route: [number, number][];
   task: { id: string; title: string; progress: number; distance: string; eta: string } | null;
 };
-
-export function needsAttention(robot: Robot) {
-  return robot.status === "Blocked" || robot.status === "Offline";
-}

@@ -11,6 +11,7 @@
 - Add feature `hooks/` folders when needed. Do not create empty folders or unused barrel exports.
 - Keep feature hooks and utilities in that feature's `hooks/` and `utils/` folders; map motion belongs to `maps`.
 - Put reusable cross-feature utilities in `src/shared/utils/`, such as `cn.ts`.
+- Keep feature presentation types in that feature's `types/` folder, such as `features/robots/types/robot.ts`.
 
 ## Components
 

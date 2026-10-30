@@ -20,7 +20,7 @@ import {
 } from "@/shared/components/Card/Card";
 import { Progress, ProgressLabel, ProgressValue } from "@/shared/components/Progress/Progress";
 import { Separator } from "@/shared/components/Separator/Separator";
-import type { Robot, RobotStatus } from "@/data/robots";
+import type { Robot, RobotStatus } from "@/features/robots/types/robot";
 import { cn } from "@/shared/utils/cn";
 import { useFleet } from "@/stores/fleet";
 

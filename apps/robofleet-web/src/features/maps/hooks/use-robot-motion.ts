@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import type { Robot } from "@/data/robots";
+import type { Robot } from "@/features/robots/types/robot";
 import {
   evaluateMotion,
   reconcileMotion,

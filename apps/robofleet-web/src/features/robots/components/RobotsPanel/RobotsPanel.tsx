@@ -14,7 +14,7 @@ import { Separator } from "@/shared/components/Separator/Separator";
 import { ToggleGroup, ToggleGroupItem } from "@/shared/components/ToggleGroup/ToggleGroup";
 import { cn } from "@/shared/utils/cn";
 import { useFleet } from "@/stores/fleet";
-import { needsAttention } from "@/data/robots";
+import { needsAttention } from "@/features/robots/utils/needs-attention";
 import { RobotCard } from "../RobotCard/RobotCard";
 
 export function RobotsPanel({ className }: { className?: string }) {

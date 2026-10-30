@@ -1,4 +1,4 @@
-import type { Robot } from "@/data/robots";
+import type { Robot } from "@/features/robots/types/robot";
 
 export type Point = [number, number];
 export type MotionSample = Pick<

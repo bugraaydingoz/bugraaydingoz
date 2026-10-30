@@ -4,7 +4,7 @@ import type { FleetRobot } from "@/features/robots/api/robots.api";
 import { robotsQueryKey, robotsQueryOptions } from "@/features/robots/api/robots.queries";
 import type { FleetMap } from "@/features/maps/api/maps.api";
 import { mapsQueryOptions } from "@/features/maps/api/maps.queries";
-import type { Robot } from "@/data/robots";
+import type { Robot } from "@/features/robots/types/robot";
 
 export function presentRobot(robot: FleetRobot): Robot {
   return {

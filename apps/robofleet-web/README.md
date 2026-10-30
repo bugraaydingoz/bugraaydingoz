@@ -68,7 +68,8 @@ persisted telemetry remains authoritative.
 - `src/stores/fleet.ts`: shared map/card selection and list filtering.
 - `src/features/robots/components`: the fleet panel and expandable robot cards.
 - `src/shared/components`: Navbar and shadcn/ui primitives, each in a PascalCase component folder.
-- `src/data/robots.ts`: presentation types and fleet filtering helpers.
+- `src/features/robots/types/robot.ts`: robot presentation types.
+- `src/features/robots/utils/needs-attention.ts`: robot attention filtering helper.
 - `src/hooks/use-fleet-data.tsx`: REST bootstrap, SSE subscription, reconnection and cache updates.
 - `src/test/fleet.json`: test-only fixtures, never loaded by the application.
 - `src/test/setup.ts`: shared Vitest setup; unit tests stay beside their source.
