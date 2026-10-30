@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Button } from "@/shared/components/Button/Button";
 import { useFleet } from "@/stores/fleet";
-import { useRobotMotion } from "@/hooks/use-robot-motion";
+import { useRobotMotion } from "@/features/maps/hooks/use-robot-motion";
 import type { Robot as FleetRobot } from "@/data/robots";
 import type { FleetMap } from "@/features/maps/api/maps.api";
 import { Robot } from "../Robot/Robot";

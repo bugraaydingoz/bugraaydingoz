@@ -77,7 +77,9 @@ persisted telemetry remains authoritative.
 - `src/shared/api`: the typed Hono client and shared health request.
 - `src/features/robots/api`: robot requests and React Query options.
 - `src/features/maps/api`: map requests and React Query options.
-- `src/utils/utils.ts`: shared UI utilities.
+- `src/features/maps/hooks/use-robot-motion.ts`: predicted robot animation on the map.
+- `src/features/maps/utils/robot-motion.ts`: motion calculations and colocated unit tests.
+- `src/shared/utils/cn.ts`: shared class name utility.
 
 Each custom component has its own folder containing its implementation and a matching
 `.spec.tsx` file. New component specs use `describe.todo` placeholders until tests are added.
@@ -100,7 +102,7 @@ pnpm dlx shadcn@latest add @shadcn/<component>
 
 The CLI targets `src/shared/components`. After adding a component, move its generated file into
 a matching PascalCase folder (for example, `Button/Button.tsx`) and update its imports.
-Reuse `@/utils/utils` for `cn`,
+Reuse `@/shared/utils/cn` for `cn`,
 and keep color/radius variables in the shared design-tokens package.
 
 ## Validation

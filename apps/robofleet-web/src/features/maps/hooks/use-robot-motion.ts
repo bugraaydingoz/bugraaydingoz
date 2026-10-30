@@ -5,7 +5,7 @@ import {
   reconcileMotion,
   type MotionModel,
   type MotionPose,
-} from "@/utils/robot-motion";
+} from "@/features/maps/utils/robot-motion";
 
 export function useRobotMotion(robots: Robot[], metresPerUnit: number) {
   const models = useRef(new Map<string, MotionModel>());

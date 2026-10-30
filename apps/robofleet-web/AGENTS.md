@@ -9,6 +9,8 @@
 - Put shared components, including shadcn primitives and Navbar, in `src/shared/components/`.
 - Keep component folders directly under `components/`; do not add grouping folders such as `ui`, `layout`, or `illustrations`.
 - Add feature `hooks/` folders when needed. Do not create empty folders or unused barrel exports.
+- Keep feature hooks and utilities in that feature's `hooks/` and `utils/` folders; map motion belongs to `maps`.
+- Put reusable cross-feature utilities in `src/shared/utils/`, such as `cn.ts`.
 
 ## Components
 
@@ -46,6 +48,11 @@ src/
         HotelMap/
           HotelMap.tsx
           HotelMap.spec.tsx
+      hooks/
+        use-robot-motion.ts
+      utils/
+        robot-motion.ts
+        robot-motion.spec.ts
   shared/
     api/
       client.ts
@@ -56,6 +63,8 @@ src/
       Navbar/
         Navbar.tsx
         Navbar.spec.tsx
+    utils/
+      cn.ts
 ```
 
 ## Tests

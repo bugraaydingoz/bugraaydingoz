@@ -11,9 +11,9 @@
   },
   "aliases": {
     "components": "@/shared/components",
-    "utils": "@/utils/utils",
+    "utils": "@/shared/utils/cn",
     "ui": "@/shared/components",
     "hooks": "@/hooks",
-    "lib": "@/utils"
+    "lib": "@/shared/utils"
   }
 }
