@@ -2,30 +2,10 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { FleetRobot } from "@/features/robots/api/robots.api";
 import { robotsQueryKey, robotsQueryOptions } from "@/features/robots/api/robots.queries";
+import { mergeRobotsSnapshot, mergeRobotUpdate } from "@/features/robots/api/robots.cache";
 import type { FleetMap } from "@/features/maps/api/maps.api";
 import { mapsQueryOptions } from "@/features/maps/api/maps.queries";
 import type { Robot } from "@/features/robots/types/robot";
-
-export function presentRobot(robot: FleetRobot): Robot {
-  return {
-    ...robot,
-    id: robot.robotId,
-    battery: Math.round(robot.battery),
-    speedMps: robot.speedMps ?? 0,
-    sampleAgeMs: robot.sampleAgeMs ?? 0,
-    task: robot.task
-      ? {
-          ...robot.task,
-          progress: Math.round(robot.task.progress),
-          distance: `${Math.round(robot.task.remainingDistance)} m`,
-          eta:
-            robot.task.etaSeconds === null
-              ? "Paused"
-              : `${Math.max(1, Math.ceil(robot.task.etaSeconds / 60))} min`,
-        }
-      : null,
-  };
-}
 
 export type FleetData = {
   robots: Robot[];
@@ -56,20 +36,12 @@ export function LiveFleetProvider({ children }: { children: ReactNode }) {
 
       source = new EventSource("/api/events");
 
-      const newer = (incoming: FleetRobot, current: FleetRobot) =>
-        incoming.generation > current.generation ||
-        (incoming.generation === current.generation && incoming.sequence >= current.sequence);
-
       source.addEventListener("fleet.snapshot", (event) => {
         try {
           const incoming = (JSON.parse(event.data) as { robots: FleetRobot[] }).robots;
 
           queryClient.setQueryData<FleetRobot[]>(robotsQueryKey, (current) =>
-            incoming.map((robot) => {
-              const prior = current?.find((r) => r.robotId === robot.robotId);
-
-              return prior && !newer(robot, prior) ? prior : robot;
-            }),
+            mergeRobotsSnapshot(current, incoming, "sse"),
           );
           setConnection("live");
         } catch {
@@ -80,17 +52,9 @@ export function LiveFleetProvider({ children }: { children: ReactNode }) {
         try {
           const { robot } = JSON.parse(event.data) as { robot: FleetRobot };
 
-          queryClient.setQueryData<FleetRobot[]>(robotsQueryKey, (current) => {
-            if (!current) return [robot];
-
-            const prior = current.find((r) => r.robotId === robot.robotId);
-
-            if (prior && !newer(robot, prior)) return current;
-
-            return prior
-              ? current.map((r) => (r.robotId === robot.robotId ? robot : r))
-              : [...current, robot];
-          });
+          queryClient.setQueryData<FleetRobot[]>(robotsQueryKey, (current) =>
+            mergeRobotUpdate(current, robot),
+          );
         } catch {
           setConnection("reconnecting");
         }
@@ -118,7 +82,7 @@ export function LiveFleetProvider({ children }: { children: ReactNode }) {
   return (
     <FleetDataContext.Provider
       value={{
-        robots: (fleet.data ?? []).map(presentRobot),
+        robots: fleet.data ?? [],
         maps: maps.data ?? [],
         connection: effective,
       }}

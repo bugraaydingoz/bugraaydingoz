@@ -1,4 +1,5 @@
-import { FleetDataContext, presentRobot } from "@/hooks/use-fleet-data";
+import { FleetDataContext } from "@/hooks/use-fleet-data";
+import { presentRobot } from "@/features/robots/utils/present-robot";
 import fixture from "@/test/fleet.json";
 import type { FleetRobot } from "@/features/robots/api/robots.api";
 import type { FleetMap } from "@/features/maps/api/maps.api";
