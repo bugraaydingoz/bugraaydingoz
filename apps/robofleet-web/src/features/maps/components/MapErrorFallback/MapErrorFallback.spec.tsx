@@ -38,7 +38,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("MapErrorBoundary", () => {
+describe("MapErrorFallback", () => {
   it("keeps fleet events running and waits for both validated responses before remounting the map", async () => {
     let finishMaps!: (response: Response) => void;
     fetchMock.mockImplementation((input) =>
