@@ -1,12 +1,25 @@
 import { fireEvent, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { renderWithFleet } from "@/test/render-with-fleet";
+import type { EventConnection } from "@/shared/hooks/use-event-listener";
 import { useRobotsStore } from "../../stores/robots.store";
 import { RobotsPanel } from "./RobotsPanel";
 
 beforeEach(() => useRobotsStore.setState({ hoveredId: null }));
 
 describe("RobotsPanel", () => {
+  it.each<[EventConnection, string]>([
+    ["connecting", "Connecting…"],
+    ["live", "Live simulator"],
+    ["reconnecting", "Reconnecting…"],
+    ["stale", "Updates paused · reconnecting…"],
+  ])("keeps cached cards visible while reporting %s", (connection, message) => {
+    renderWithFleet(<RobotsPanel connection={connection} />);
+
+    expect(screen.getByRole("status").textContent).toBe(message);
+    expect(screen.getAllByRole("article")).toHaveLength(8);
+  });
+
   it("shows fleet cards and the selected robot's task details", () => {
     renderWithFleet(<RobotsPanel connection="live" />);
     expect(screen.getByRole("heading", { name: "Robots" })).toBeTruthy();

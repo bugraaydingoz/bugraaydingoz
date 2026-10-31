@@ -113,7 +113,9 @@ export function RobotsPanel({
                   ? "Connecting…"
                   : status === "unavailable"
                     ? "Backend unavailable"
-                    : "Reconnecting…"}
+                    : status === "stale"
+                      ? "Updates paused · reconnecting…"
+                      : "Reconnecting…"}
             </span>
             <span className="ml-auto">
               {mapsQuery.data?.length ?? 0}{" "}

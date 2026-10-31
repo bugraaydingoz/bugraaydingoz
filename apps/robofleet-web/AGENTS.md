@@ -1,5 +1,9 @@
 # RoboFleet Web
 
+## Documentation
+
+- Keep the README lean: focus on the app overview and essential development, testing, and deployment instructions. Keep implementation details in code comments and tests.
+
 ## Folder Structure
 
 - Group feature code under `src/features/<feature>/`, such as `robots` and `maps`.

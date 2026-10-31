@@ -13,24 +13,35 @@ export function useRobotEvents() {
       "fleet.snapshot": (event: MessageEvent<string>) => {
         const robots = parseFleetSnapshot(event.data);
 
-        if (!robots) return;
+        if (!robots) return false;
 
         queryClient.setQueryData<FleetRobot[]>(robotsQueryKey, (current) =>
           mergeRobotsSnapshot(current, robots, "sse"),
         );
+
+        return true;
       },
       "robot.updated": (event: MessageEvent<string>) => {
         const robot = parseRobotUpdate(event.data);
 
-        if (!robot) return;
+        if (!robot) return false;
 
-        queryClient.setQueryData<FleetRobot[]>(robotsQueryKey, (current) =>
-          mergeRobotUpdate(current, robot),
-        );
+        const current = queryClient.getQueryData<FleetRobot[]>(robotsQueryKey);
+        const next = mergeRobotUpdate(current, robot);
+
+        if (next === current) return false;
+
+        queryClient.setQueryData(robotsQueryKey, next);
+
+        return true;
       },
     }),
     [queryClient],
   );
 
-  return useEventListener("/api/events", listeners);
+  return useEventListener("/api/events", listeners, {
+    readyEvent: "fleet.snapshot",
+    // The backend sends a snapshot every five seconds, including for an empty fleet.
+    staleAfterMs: 15_000,
+  });
 }

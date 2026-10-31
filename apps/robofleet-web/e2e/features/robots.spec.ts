@@ -89,6 +89,43 @@ test("uses shared light and dark surfaces with green working badges", async ({ p
 });
 
 test.describe("Workflows", () => {
+  test("keeps cached cards during a stalled stream and resynchronizes after reconnecting", async ({
+    page,
+    fleetEvents,
+  }) => {
+    await page.clock.install();
+    await page.goto("/?robot=AMR-001");
+    await expect(page.getByRole("article")).toHaveCount(8);
+    await expect.poll(async () => (await fleetEvents.connections()).length).toBeGreaterThan(0);
+
+    await fleetEvents.emit("open");
+    await expect(page.getByRole("status")).toHaveText("Connecting…");
+    await fleetEvents.emit("fleet.snapshot", { robots: fixture.robots });
+    await expect(page.getByRole("status")).toHaveText("Live simulator");
+
+    await page.clock.runFor(15_000);
+    await expect(page.getByRole("status")).toHaveText("Updates paused · reconnecting…");
+    await expect(page.getByRole("article")).toHaveCount(8);
+    await expect(page.getByRole("button", { name: "Atlas details" })).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
+    const connections = (await fleetEvents.connections()).length;
+    expect((await fleetEvents.connections()).every((source) => source.closed)).toBe(true);
+
+    await page.clock.runFor(2000);
+    await expect.poll(async () => (await fleetEvents.connections()).length).toBe(connections + 1);
+    await fleetEvents.emit("open");
+    const robot = { ...fixture.robots[0], sequence: 2, battery: 99 };
+    await fleetEvents.emit("robot.updated", { robot });
+    await expect(page.getByRole("status")).toHaveText("Updates paused · reconnecting…");
+    await fleetEvents.emit("fleet.snapshot", { robots: [robot, ...fixture.robots.slice(1)] });
+
+    await expect(page.getByRole("status")).toHaveText("Live simulator");
+    await expect(page.getByLabel("Atlas battery 99%")).toBeVisible();
+    expect((await fleetEvents.connections()).filter((source) => !source.closed)).toHaveLength(1);
+  });
+
   test("restores URL state after reload and batches map selection with filter reset", async ({
     page,
   }) => {

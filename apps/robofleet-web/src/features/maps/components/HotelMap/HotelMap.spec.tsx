@@ -55,6 +55,7 @@ describe("HotelMap", () => {
 
     act(() => {
       source.emit("open");
+      source.emit("fleet.snapshot", { robots: fixture.robots });
       source.emit("robot.updated", { robot });
     });
 
