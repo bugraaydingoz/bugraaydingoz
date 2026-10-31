@@ -1,4 +1,5 @@
 import { HotelMap } from "@/features/maps/components/HotelMap/HotelMap";
+import { MapErrorBoundary } from "@/features/maps/components/MapErrorBoundary/MapErrorBoundary";
 import { Navbar } from "@/shared/components/Navbar/Navbar";
 import { RobotsPanel } from "@/features/robots/components/RobotsPanel/RobotsPanel";
 import { useRobotEvents } from "@/features/robots/hooks/use-robot-events";
@@ -14,7 +15,9 @@ function App() {
           <RobotsPanel connection={connection} className="max-md:w-full" />
         </div>
         <div className="min-h-0 min-w-0 p-4 pl-2 max-md:row-start-1 max-md:p-3 max-md:pl-0">
-          <HotelMap />
+          <MapErrorBoundary>
+            <HotelMap />
+          </MapErrorBoundary>
         </div>
       </main>
     </div>
