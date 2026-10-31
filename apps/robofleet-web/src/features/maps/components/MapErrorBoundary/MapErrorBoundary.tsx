@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { ErrorBoundary } from "@/shared/components/ErrorBoundary/ErrorBoundary";
+import { ErrorBoundary } from "react-error-boundary";
 import { ErrorFallback } from "@/shared/components/ErrorFallback/ErrorFallback";
 import { useMapRecovery } from "../../hooks/use-map-recovery";
 
@@ -8,14 +8,14 @@ export function MapErrorBoundary({ children }: { children: ReactNode }) {
 
   return (
     <ErrorBoundary
-      fallback={(reset) => (
+      fallbackRender={({ resetErrorBoundary }) => (
         <ErrorFallback
           title="Map unavailable"
           description="The map could not be displayed. Your fleet data is still available."
           actionLabel="Try again"
           onRetry={async () => {
             await recover();
-            reset();
+            resetErrorBoundary();
           }}
           className="h-full justify-center"
         />
