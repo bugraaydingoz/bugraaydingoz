@@ -100,7 +100,7 @@ Follow the existing feature organization rather than introducing a parallel `fea
 
 Planned component responsibilities include `MapScene`, `Room`, `Wall`, `Door`, warehouse fixtures, `Robot`, `RobotInstances`, `RobotPath`, and `MapControls`. Add components as their implementation requires them; avoid empty scaffolding.
 
-Use a Three.js, React Three Fiber, and Drei dependency combination compatible with the app's React version. The app currently uses React 18; do not bundle a React major upgrade into the rendering migration.
+Use a Three.js, React Three Fiber, and Drei dependency combination compatible with React 19. Upgrade the app to React 19 in a separate prerequisite patch before introducing the renderer.
 
 ## Implementation sequence
 

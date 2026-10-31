@@ -1,4 +1,3 @@
-import { StrictMode, createElement, type ReactNode } from "react";
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TestEventSource } from "@/test/event-source";
@@ -241,14 +240,16 @@ describe("useEventListener", () => {
   it("cleans up the extra Strict Mode subscription", () => {
     const listeners = { snapshot: vi.fn(() => true) };
     const { unmount } = renderHook(() => useEventListener("/events", listeners, options), {
-      wrapper: ({ children }: { children: ReactNode }) => createElement(StrictMode, null, children),
+      reactStrictMode: true,
     });
+    expect(TestEventSource.instances).toHaveLength(2);
     const [first, second] = TestEventSource.instances;
 
-    first.emit("snapshot", {});
-    second.emit("snapshot", {});
+    act(() => {
+      first.emit("snapshot", {});
+      second.emit("snapshot", {});
+    });
 
-    expect(TestEventSource.instances).toHaveLength(2);
     expect(first.close).toHaveBeenCalledOnce();
     expect(second.close).not.toHaveBeenCalled();
     expect(listeners.snapshot).toHaveBeenCalledOnce();
