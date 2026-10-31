@@ -4,15 +4,18 @@ export const pointSchema = z.tuple([z.number().finite(), z.number().finite()]);
 
 export const mapDefinitionSchema = z
   .object({
-    width: z.number().positive(),
-    depth: z.number().positive(),
-    metresPerUnit: z.number().positive(),
-    viewBox: z.object({ width: z.number().positive(), height: z.number().positive() }),
+    width: z.number().finite().positive(),
+    depth: z.number().finite().positive(),
+    metresPerUnit: z.number().finite().positive(),
+    viewBox: z.object({
+      width: z.number().finite().positive(),
+      height: z.number().finite().positive(),
+    }),
     projection: z.object({
-      x: z.number(),
-      y: z.number(),
-      scaleX: z.number().positive(),
-      scaleY: z.number().positive(),
+      x: z.number().finite(),
+      y: z.number().finite(),
+      scaleX: z.number().finite().positive(),
+      scaleY: z.number().finite().positive(),
     }),
     asset: z.string(),
     nodes: z.array(pointSchema).min(1),
@@ -39,14 +42,23 @@ export type Point = z.infer<typeof pointSchema>;
 
 export type MapDefinition = z.infer<typeof mapDefinitionSchema>;
 
-export type FleetMap = { id: string; name: string; version: number; definition: MapDefinition };
+export const fleetMapSchema = z.object({
+  id: z.string().min(1),
+  name: z.string(),
+  version: z.number().int().positive(),
+  definition: mapDefinitionSchema,
+});
+
+export type FleetMap = z.infer<typeof fleetMapSchema>;
+
+export const mapsResponseSchema = z.object({ maps: z.array(fleetMapSchema) });
 
 export const taskSchema = z.object({
   id: z.string(),
   title: z.string(),
   progress: z.number().min(0).max(100),
-  remainingDistance: z.number().nonnegative(),
-  etaSeconds: z.number().nonnegative().nullable(),
+  remainingDistance: z.number().finite().nonnegative(),
+  etaSeconds: z.number().finite().nonnegative().nullable(),
 });
 
 export const telemetrySchema = z
@@ -88,15 +100,24 @@ export type RobotProfile = {
   >;
 };
 
-export type FleetRobot = Omit<Telemetry, "status"> & {
-  name: string;
-  color: string;
-  status: Telemetry["status"] | "Offline";
-  receivedAt: string | null;
-  lastSeenAt: string | null;
-  /** Age at response creation; clients can use a monotonic clock without server clock skew. */
-  sampleAgeMs: number | null;
-};
+export const fleetRobotSchema = telemetrySchema
+  .extend({
+    name: z.string(),
+    color: z.string().regex(/^#[0-9a-f]{6}$/i),
+    status: telemetrySchema.shape.status.or(z.literal("Offline")),
+    receivedAt: z.string().datetime().nullable(),
+    lastSeenAt: z.string().datetime().nullable(),
+    /** Age at response creation; clients can use a monotonic clock without server clock skew. */
+    sampleAgeMs: z.number().finite().nonnegative().nullable(),
+  })
+  // Responses may gain fields without breaking older dashboard clients.
+  .strip();
+
+export type FleetRobot = z.infer<typeof fleetRobotSchema>;
+
+// REST fleet responses and SSE snapshots carry the same payload.
+export const robotsResponseSchema = z.object({ robots: z.array(fleetRobotSchema) });
+export const robotUpdateSchema = z.object({ robot: fleetRobotSchema });
 
 export const RETENTION_MS = 60 * 60 * 1000;
 
