@@ -145,6 +145,35 @@ test("respects reduced-motion preferences for predicted robot movement", async (
 });
 
 test.describe("Workflows", () => {
+  test("rejects malformed map responses without crashing and recovers after reload", async ({
+    page,
+  }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    await page.route("**/api/maps", (route) =>
+      route.fulfill({
+        json: {
+          maps: [
+            {
+              ...fixture.maps[0],
+              definition: { ...fixture.maps[0].definition, metresPerUnit: 0 },
+            },
+          ],
+        },
+      }),
+    );
+    await page.goto("/");
+
+    await expect(page.getByRole("status")).toHaveText("Backend unavailable");
+    await expect(page.getByRole("article")).toHaveCount(8);
+    await expect(page.getByRole("group", { name: "Hotel map canvas", exact: true })).toHaveCount(0);
+    await page.route("**/api/maps", (route) => route.fulfill({ json: { maps: fixture.maps } }));
+    await page.reload();
+
+    await expect(page.getByRole("group", { name: "Hotel map canvas", exact: true })).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+
   test("links neutral card and robot highlights on hover and preserves selection", async ({
     page,
   }) => {

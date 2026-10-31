@@ -89,6 +89,32 @@ test("uses shared light and dark surfaces with green working badges", async ({ p
 });
 
 test.describe("Workflows", () => {
+  test("rejects malformed REST fleet data and recovers on a validated snapshot", async ({
+    page,
+    fleetEvents,
+  }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    await page.route("**/api/robots", (route) =>
+      route.fulfill({ json: { robots: [{ ...fixture.robots[0], color: "red" }] } }),
+    );
+    await page.goto("/");
+
+    await expect(page.getByRole("status")).toHaveText("Backend unavailable");
+    await expect(page.getByRole("heading", { name: "Robots" })).toBeVisible();
+    await expect(page.getByRole("article")).toHaveCount(0);
+    await fleetEvents.emit("fleet.snapshot", { robots: fixture.robots });
+
+    await expect(page.getByRole("status")).toHaveText("Live simulator");
+    await expect(page.getByRole("article")).toHaveCount(8);
+    await fleetEvents.emit("robot.updated", {
+      robot: { ...fixture.robots[0], sequence: 2, battery: 1, color: "red" },
+    });
+
+    await expect(page.getByLabel("Atlas battery 84%")).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+
   test("keeps cached cards during a stalled stream and resynchronizes after reconnecting", async ({
     page,
     fleetEvents,

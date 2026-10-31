@@ -100,6 +100,7 @@ describe("useRobotEvents", () => {
       source.emit("fleet.snapshot", { robots: null });
       source.emit("robot.updated", { robot: { ...robot, sequence: 2, position: { x: "bad" } } });
       source.emit("robot.updated", { robot: { ...robot, sequence: 2, battery: 101 } });
+      source.emit("robot.updated", { robot: { ...robot, sequence: 2, color: "red" } });
       source.emit("robot.updated", { unexpected: robot });
     });
 
@@ -121,6 +122,8 @@ describe("useRobotEvents", () => {
     act(() => {
       vi.advanceTimersByTime(10_000);
       source.emit("fleet.snapshot", { robots: null });
+      source.emit("fleet.snapshot", { robots: [{ ...robot, color: "red" }] });
+      source.emit("robot.updated", { robot: { ...robot, color: "red" } });
       source.emit("robot.updated", { robot: { ...robot, sequence: 9, battery: 1 } });
       source.emit("robot.updated", { robot: { ...robot, generation: robot.generation - 1 } });
       vi.advanceTimersByTime(5000);

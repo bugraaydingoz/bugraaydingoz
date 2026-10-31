@@ -1,18 +1,9 @@
-import { z } from "zod";
-import { telemetrySchema } from "../../../../../robofleet-api/src/contracts";
+import type { z } from "zod";
+import {
+  robotsResponseSchema,
+  robotUpdateSchema,
+} from "../../../../../robofleet-api/src/contracts";
 import type { FleetRobot } from "./robots.api";
-
-const fleetRobotSchema = telemetrySchema.extend({
-  name: z.string(),
-  color: z.string(),
-  status: telemetrySchema.shape.status.or(z.literal("Offline")),
-  receivedAt: z.string().datetime().nullable(),
-  lastSeenAt: z.string().datetime().nullable(),
-  sampleAgeMs: z.number().finite().nonnegative().nullable(),
-});
-
-const snapshotSchema = z.object({ robots: z.array(fleetRobotSchema) });
-const updateSchema = z.object({ robot: fleetRobotSchema });
 
 function parseEvent<T extends z.ZodTypeAny>(data: string, schema: T): z.output<T> | null {
   try {
@@ -25,9 +16,9 @@ function parseEvent<T extends z.ZodTypeAny>(data: string, schema: T): z.output<T
 }
 
 export function parseFleetSnapshot(data: string): FleetRobot[] | null {
-  return parseEvent(data, snapshotSchema)?.robots ?? null;
+  return parseEvent(data, robotsResponseSchema)?.robots ?? null;
 }
 
 export function parseRobotUpdate(data: string): FleetRobot | null {
-  return parseEvent(data, updateSchema)?.robot ?? null;
+  return parseEvent(data, robotUpdateSchema)?.robot ?? null;
 }

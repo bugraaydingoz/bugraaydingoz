@@ -1,5 +1,6 @@
 import { client } from "@/shared/api/client";
-import type { FleetRobot } from "../../../../../robofleet-api/src/contracts";
+import { parseResponse } from "@/shared/api/parse-response";
+import { robotsResponseSchema, type FleetRobot } from "../../../../../robofleet-api/src/contracts";
 
 export type { FleetRobot };
 
@@ -8,5 +9,5 @@ export async function getRobots(): Promise<FleetRobot[]> {
 
   if (!response.ok) throw new Error("Unable to load fleet");
 
-  return (await response.json()).robots;
+  return (await parseResponse(response, robotsResponseSchema, "Invalid fleet response")).robots;
 }
