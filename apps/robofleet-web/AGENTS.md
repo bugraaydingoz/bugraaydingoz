@@ -1,5 +1,10 @@
 # RoboFleet Web
 
+## Code Structure
+
+- Prefer simple implementations. KISS.
+- Group related UI behavior into feature hooks with descriptive names, such as `useRobotSelection`.
+
 ## Documentation
 
 - Keep the README lean: focus on the app overview and essential development, testing, and deployment instructions. Keep implementation details in code comments and tests.
@@ -23,6 +28,8 @@
 
 ## Components
 
+- Keep components focused. Extract self-contained UI sections into named components with explicit props.
+- Put each component in a PascalCase folder with a matching implementation and meaningful minimal spec file.
 - Use a PascalCase folder and matching PascalCase implementation file for each component, including shadcn primitives: `Button/Button.tsx`.
 - Give custom components a colocated matching spec: `RobotCard/RobotCard.spec.tsx`.
 - Until a custom component has tests, use a `describe.todo("RobotCard")` placeholder instead of a completely empty spec, so Vitest can run.
@@ -90,6 +97,7 @@ src/
 
 ## Tests
 
+- Keep tests simple. Test observable behavior, including state changes and cleanup, rather than implementation details.
 - Keep unit specs beside their source files.
 - Keep Playwright specs in `e2e/features/`, with one spec file per existing feature: `robots.spec.ts` and `maps.spec.ts`.
 - Group related workflows inside each feature spec with `test.describe("Workflows")`; do not create separate workflow or shared spec files.
