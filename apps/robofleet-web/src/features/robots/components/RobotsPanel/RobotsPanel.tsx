@@ -1,7 +1,6 @@
 import { useRobots } from "@/features/robots/hooks/use-robots";
 import { useMaps } from "@/features/maps/hooks/use-maps";
 import type { EventConnection } from "@/shared/hooks/use-event-listener";
-import { useEffect, useRef } from "react";
 import { Bot, CircleDashed } from "lucide-react";
 import { Badge } from "@/shared/components/Badge/Badge";
 import {
@@ -14,8 +13,7 @@ import {
 import { ScrollArea } from "@/shared/components/ScrollArea/ScrollArea";
 import { Separator } from "@/shared/components/Separator/Separator";
 import { cn } from "@/shared/utils/cn";
-import { useRobotsStore } from "@/features/robots/stores/robots.store";
-import { useSelectedRobot } from "@/features/robots/hooks/use-selected-robot";
+import { useRobotSelection } from "@/features/robots/hooks/use-robot-selection";
 import { useRobotFilter } from "@/features/robots/hooks/use-robot-filter";
 import { needsAttention } from "@/features/robots/utils/needs-attention";
 import { RobotFilters } from "../RobotFilters/RobotFilters";
@@ -34,13 +32,7 @@ export function RobotsPanel({
   const status = robotsQuery.isError || mapsQuery.isError ? "unavailable" : connection;
 
   const [filter, setFilter] = useRobotFilter();
-  const [selectedId, setSelectedId] = useSelectedRobot();
-  const hoverRobot = useRobotsStore((state) => state.hoverRobot);
-  const selectedCard = useRef<HTMLLIElement>(null);
-
-  useEffect(() => {
-    selectedCard.current?.scrollIntoView?.({ block: "nearest" });
-  }, [selectedId, filter]);
+  const { selectedId, setSelectedId, hoverRobot, selectedCard } = useRobotSelection(filter);
 
   const active = robotsQuery.data?.filter((robot) => robot.status === "Working") ?? [];
   const attention = robotsQuery.data?.filter(needsAttention) ?? [];
