@@ -13,12 +13,12 @@ import {
 } from "@/shared/components/Card/Card";
 import { ScrollArea } from "@/shared/components/ScrollArea/ScrollArea";
 import { Separator } from "@/shared/components/Separator/Separator";
-import { ToggleGroup, ToggleGroupItem } from "@/shared/components/ToggleGroup/ToggleGroup";
 import { cn } from "@/shared/utils/cn";
 import { useRobotsStore } from "@/features/robots/stores/robots.store";
 import { useSelectedRobot } from "@/features/robots/hooks/use-selected-robot";
 import { useRobotFilter } from "@/features/robots/hooks/use-robot-filter";
 import { needsAttention } from "@/features/robots/utils/needs-attention";
+import { RobotFilters } from "../RobotFilters/RobotFilters";
 import { RobotCard } from "../RobotCard/RobotCard";
 import { StatusBadge } from "../StatusBadge/StatusBadge";
 
@@ -60,31 +60,15 @@ export function RobotsPanel({
               {robotsQuery.data?.length ?? 0}
             </Badge>
           </div>
-          <ToggleGroup
-            value={[filter]}
-            onValueChange={(value) => {
-              const next = value[0];
-              if (next === "all" || next === "active" || next === "attention") {
-                hoverRobot(null);
-                void setFilter(next);
-              }
+          <RobotFilters
+            filter={filter}
+            activeCount={active.length}
+            attentionCount={attention.length}
+            onFilterChange={(next) => {
+              hoverRobot(null);
+              void setFilter(next);
             }}
-            variant="outline"
-            size="sm"
-            spacing={0}
-            aria-label="Filter robots"
-            className="w-full"
-          >
-            <ToggleGroupItem value="all" className="flex-1">
-              All robots
-            </ToggleGroupItem>
-            <ToggleGroupItem value="active" className="flex-1">
-              Active <span className="ml-1 text-[10px] opacity-50">{active.length}</span>
-            </ToggleGroupItem>
-            <ToggleGroupItem value="attention" className="flex-1">
-              Attention <span className="ml-1 text-[10px] opacity-50">{attention.length}</span>
-            </ToggleGroupItem>
-          </ToggleGroup>
+          />
         </CardHeader>
         <Separator />
         <CardContent className="min-h-0 flex-1 px-0">
