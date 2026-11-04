@@ -20,6 +20,7 @@ import { useSelectedRobot } from "@/features/robots/hooks/use-selected-robot";
 import { useRobotFilter } from "@/features/robots/hooks/use-robot-filter";
 import { needsAttention } from "@/features/robots/utils/needs-attention";
 import { RobotCard } from "../RobotCard/RobotCard";
+import { StatusBadge } from "../StatusBadge/StatusBadge";
 
 export function RobotsPanel({
   className,
@@ -106,17 +107,7 @@ export function RobotsPanel({
         <CardFooter>
           <div className="flex w-full items-center gap-1.5 text-[11px] text-muted-foreground">
             <CircleDashed className="size-3.5" aria-hidden="true" />
-            <span role="status">
-              {status === "live"
-                ? "Live simulator"
-                : status === "connecting"
-                  ? "Connecting…"
-                  : status === "unavailable"
-                    ? "Backend unavailable"
-                    : status === "stale"
-                      ? "Updates paused · reconnecting…"
-                      : "Reconnecting…"}
-            </span>
+            <StatusBadge status={status} />
             <span className="ml-auto">
               {mapsQuery.data?.length ?? 0}{" "}
               {mapsQuery.data?.length === 1 ? "facility" : "facilities"}
