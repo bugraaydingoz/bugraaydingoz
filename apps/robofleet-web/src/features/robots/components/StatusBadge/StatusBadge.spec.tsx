@@ -8,7 +8,6 @@ describe("StatusBadge", () => {
     ["connecting", "Connecting…"],
     ["live", "Live simulator"],
     ["reconnecting", "Reconnecting…"],
-    ["stale", "Updates paused · reconnecting…"],
     ["unavailable", "Backend unavailable"],
   ])("announces %s with its status message", (status, message) => {
     render(<StatusBadge status={status} />);
@@ -20,10 +19,10 @@ describe("StatusBadge", () => {
     const { rerender } = render(<StatusBadge status="live" />);
     const statusRegion = screen.getByRole("status");
 
-    rerender(<StatusBadge status="stale" />);
+    rerender(<StatusBadge status="reconnecting" />);
 
     expect(screen.getByRole("status")).toBe(statusRegion);
-    expect(statusRegion.textContent).toBe("Updates paused · reconnecting…");
+    expect(statusRegion.textContent).toBe("Reconnecting…");
 
     rerender(<StatusBadge status="live" />);
 

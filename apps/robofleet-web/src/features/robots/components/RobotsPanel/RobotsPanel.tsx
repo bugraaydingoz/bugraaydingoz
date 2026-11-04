@@ -1,6 +1,6 @@
 import { useRobots } from "@/features/robots/hooks/use-robots";
 import { useMaps } from "@/features/maps/hooks/use-maps";
-import type { EventConnection } from "@/shared/hooks/use-event-listener";
+import type { EventConnection } from "@/shared/hooks/use-server-events";
 import { Bot, CircleDashed } from "lucide-react";
 import { Badge } from "@/shared/components/Badge/Badge";
 import {

@@ -55,6 +55,7 @@ describe("MapErrorFallback", () => {
     expect(screen.getAllByRole("article")).toHaveLength(8);
 
     act(() => {
+      source.emit("open");
       source.emit("fleet.snapshot", { robots: fixture.robots });
       source.emit("robot.updated", {
         robot: { ...fixture.robots[0], sequence: 2, name: "Live Atlas", battery: 70 },

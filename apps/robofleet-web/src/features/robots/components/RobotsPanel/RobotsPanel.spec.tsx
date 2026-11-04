@@ -1,7 +1,7 @@
 import { fireEvent, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { renderWithFleet } from "@/test/render-with-fleet";
-import type { EventConnection } from "@/shared/hooks/use-event-listener";
+import type { EventConnection } from "@/shared/hooks/use-server-events";
 import { useRobotsStore } from "../../stores/robots.store";
 import { RobotsPanel } from "./RobotsPanel";
 
@@ -12,7 +12,6 @@ describe("RobotsPanel", () => {
     ["connecting", "Connecting…"],
     ["live", "Live simulator"],
     ["reconnecting", "Reconnecting…"],
-    ["stale", "Updates paused · reconnecting…"],
   ])("keeps cached cards visible while reporting %s", (connection, message) => {
     renderWithFleet(<RobotsPanel connection={connection} />);
 

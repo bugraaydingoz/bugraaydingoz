@@ -27,7 +27,7 @@ function setup() {
 }
 
 describe("useRobotEvents", () => {
-  it("requires a valid full snapshot before reporting a live fleet", () => {
+  it("reports transport status independently of payload validation", () => {
     const { source, result } = setup();
 
     act(() => {
@@ -36,7 +36,7 @@ describe("useRobotEvents", () => {
       source.emit("robot.updated", { robot: fixture.robots[0] });
     });
 
-    expect(result.current).toBe("connecting");
+    expect(result.current).toBe("live");
 
     act(() => source.emit("fleet.snapshot", { robots: [] }));
 
@@ -113,71 +113,4 @@ describe("useRobotEvents", () => {
     expect(TestEventSource.instances).toHaveLength(1);
   });
 
-  it("retains cached telemetry but expires freshness despite malformed and older updates", () => {
-    const { client, source, result } = setup();
-    const robot = { ...fixture.robots[0], sequence: 10 };
-
-    act(() => source.emit("fleet.snapshot", { robots: [robot] }));
-    const cached = client.getQueryData(robotsQueryKey);
-    act(() => {
-      vi.advanceTimersByTime(10_000);
-      source.emit("fleet.snapshot", { robots: null });
-      source.emit("fleet.snapshot", { robots: [{ ...robot, color: "red" }] });
-      source.emit("robot.updated", { robot: { ...robot, color: "red" } });
-      source.emit("robot.updated", { robot: { ...robot, sequence: 9, battery: 1 } });
-      source.emit("robot.updated", { robot: { ...robot, generation: robot.generation - 1 } });
-      vi.advanceTimersByTime(5000);
-    });
-
-    expect(result.current).toBe("stale");
-    expect(client.getQueryData(robotsQueryKey)).toBe(cached);
-    expect(source.close).toHaveBeenCalledOnce();
-
-    act(() => vi.advanceTimersByTime(2000));
-    const second = TestEventSource.instances[1];
-    act(() => second.emit("open"));
-
-    expect(result.current).toBe("stale");
-
-    act(() => second.emit("fleet.snapshot", { robots: [robot] }));
-
-    expect(result.current).toBe("live");
-  });
-
-  it.each(["snapshot", "update"])("accepts a same-sequence offline %s as fresh", (event) => {
-    const { source, result, client } = setup();
-    const robot = fixture.robots[0];
-    const offline = { ...robot, status: "Offline", sampleAgeMs: 15_000 };
-
-    act(() => {
-      source.emit("fleet.snapshot", { robots: [robot] });
-      vi.advanceTimersByTime(10_000);
-      source.emit(
-        event === "snapshot" ? "fleet.snapshot" : "robot.updated",
-        event === "snapshot" ? { robots: [offline] } : { robot: offline },
-      );
-      vi.advanceTimersByTime(14_999);
-    });
-
-    expect(result.current).toBe("live");
-    expect(client.getQueryData<FleetRobot[]>(robotsQueryKey)?.[0].status).toBe("Offline");
-
-    act(() => vi.advanceTimersByTime(1));
-
-    expect(result.current).toBe("stale");
-  });
-
-  it("keeps an empty fleet live while valid empty snapshots continue", () => {
-    const { source, result } = setup();
-
-    act(() => {
-      source.emit("fleet.snapshot", { robots: [] });
-      vi.advanceTimersByTime(10_000);
-      source.emit("fleet.snapshot", { robots: [] });
-      vi.advanceTimersByTime(10_000);
-    });
-
-    expect(result.current).toBe("live");
-    expect(TestEventSource.instances).toHaveLength(1);
-  });
 });

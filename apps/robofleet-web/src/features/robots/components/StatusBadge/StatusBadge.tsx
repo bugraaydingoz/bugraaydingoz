@@ -1,10 +1,9 @@
-import type { EventConnection } from "@/shared/hooks/use-event-listener";
+import type { EventConnection } from "@/shared/hooks/use-server-events";
 
 const statusLabels: Record<EventConnection | "unavailable", string> = {
   live: "Live simulator",
   connecting: "Connecting…",
   unavailable: "Backend unavailable",
-  stale: "Updates paused · reconnecting…",
   reconnecting: "Reconnecting…",
 };
 

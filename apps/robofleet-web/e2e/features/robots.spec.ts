@@ -103,6 +103,7 @@ test.describe("Workflows", () => {
     await expect(page.getByRole("status")).toHaveText("Backend unavailable");
     await expect(page.getByRole("heading", { name: "Robots" })).toBeVisible();
     await expect(page.getByRole("article")).toHaveCount(0);
+    await fleetEvents.emit("open");
     await fleetEvents.emit("fleet.snapshot", { robots: fixture.robots });
 
     await expect(page.getByRole("status")).toHaveText("Live simulator");
@@ -115,37 +116,27 @@ test.describe("Workflows", () => {
     expect(errors).toEqual([]);
   });
 
-  test("keeps cached cards during a stalled stream and resynchronizes after reconnecting", async ({
+  test("keeps cached cards during disconnection and receives updates after reopening", async ({
     page,
     fleetEvents,
   }) => {
-    await page.clock.install();
     await page.goto("/?robot=AMR-001");
     await expect(page.getByRole("article")).toHaveCount(8);
     await expect.poll(async () => (await fleetEvents.connections()).length).toBeGreaterThan(0);
 
     await fleetEvents.emit("open");
-    await expect(page.getByRole("status")).toHaveText("Connecting…");
-    await fleetEvents.emit("fleet.snapshot", { robots: fixture.robots });
     await expect(page.getByRole("status")).toHaveText("Live simulator");
-
-    await page.clock.runFor(15_000);
-    await expect(page.getByRole("status")).toHaveText("Updates paused · reconnecting…");
+    await fleetEvents.emit("error");
+    await expect(page.getByRole("status")).toHaveText("Reconnecting…");
     await expect(page.getByRole("article")).toHaveCount(8);
     await expect(page.getByRole("button", { name: "Atlas details" })).toHaveAttribute(
       "aria-expanded",
       "true",
     );
-    const connections = (await fleetEvents.connections()).length;
-    expect((await fleetEvents.connections()).every((source) => source.closed)).toBe(true);
 
-    await page.clock.runFor(2000);
-    await expect.poll(async () => (await fleetEvents.connections()).length).toBe(connections + 1);
     await fleetEvents.emit("open");
     const robot = { ...fixture.robots[0], sequence: 2, battery: 99 };
     await fleetEvents.emit("robot.updated", { robot });
-    await expect(page.getByRole("status")).toHaveText("Updates paused · reconnecting…");
-    await fleetEvents.emit("fleet.snapshot", { robots: [robot, ...fixture.robots.slice(1)] });
 
     await expect(page.getByRole("status")).toHaveText("Live simulator");
     await expect(page.getByLabel("Atlas battery 99%")).toBeVisible();
@@ -281,7 +272,7 @@ test.describe("Workflows", () => {
     await expect(page.getByRole("article")).toHaveCount(0);
   });
 
-  test("recovers when the first SSE request fails before the backend starts", async ({ page }) => {
+  test("connects after reloading when the backend becomes available", async ({ page }) => {
     let connections = 0;
     await page.route("**/api/events", (route) => {
       connections++;
@@ -293,6 +284,8 @@ test.describe("Workflows", () => {
           });
     });
     await page.goto("/");
+    await expect.poll(() => connections).toBe(1);
+    await page.reload();
     await expect.poll(() => connections).toBeGreaterThan(1);
     await expect(page.getByRole("article")).toHaveCount(8);
   });
